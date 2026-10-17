@@ -355,3 +355,5 @@ No license has been specified yet. Add an appropriate `LICENSE` file if the proj
 Research Experiment Booking System — academic software project.
 
 For project information, setup instructions, or development tasks, refer to this repository's documentation and GitHub Issues.
+
+Jenkins SCM polling test
