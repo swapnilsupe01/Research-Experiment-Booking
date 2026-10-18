@@ -1,3 +1,4 @@
+
 package com.researchbooking.research_booking_system.config;
 
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/ui").permitAll()
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/users/register"

@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Experiment Booking System</title>
+    <style>
+        :root {
+            font-family: Arial, sans-serif;
+            color: #172033;
+            background: #f3f6fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { margin: 0; }
+
+        header {
+            background: #173b70;
+            color: white;
+            padding: 24px 6%;
+        }
+
+        header h1 { margin: 0 0 8px; font-size: 26px; }
+        header p { margin: 0; color: #dce8fa; }
+
+        main { max-width: 1100px; margin: 28px auto; padding: 0 20px; }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px #14213d0c;
+        }
+
+        h2 { margin-top: 0; color: #173b70; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .experiment-card {
+            border: 1px solid #dce4f0;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .experiment-card h3 { margin-top: 0; }
+
+        button {
+            background: #245bb5;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #173b70; }
+
+        input {
+            display: block;
+            width: 100%;
+            max-width: 460px;
+            padding: 11px;
+            margin: 7px 0 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        label { font-weight: bold; }
+
+        .muted { color: #64748b; }
+        #message { white-space: pre-wrap; margin-top: 12px; }
+        .error { color: #b42318; }
+        .success { color: #167647; }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 22px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Research Experiment Booking System</h1>
+    <p>Explore research experiments and register to participate.</p>
+</header>
+
+<main>
+    <section>
+        <h2>Available Experiments</h2>
+        <p class="muted">Select an experiment to view its details and available slots.</p>
+        <div id="experiments" class="grid" aria-live="polite">
+            Loading experiments...
+        </div>
+    </section>
+
+    <section id="details-section">
+        <h2>Experiment Details</h2>
+        <div id="details" aria-live="polite">
+            Select an experiment above to see its details.
+        </div>
+        <h3>Available Slots</h3>
+        <div id="slots" aria-live="polite">No experiment selected.</div>
+    </section>
+
+    <section id="registration-section">
+        <h2>Student Registration</h2>
+        <form id="registration-form">
+            <label for="fullName">Full name</label>
+            <input id="fullName" name="fullName" required
+                   minlength="2" autocomplete="name">
+
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" required
+                   autocomplete="email">
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password"
+                   required minlength="8" autocomplete="new-password">
+
+            <button id="register-button" type="submit">Register</button>
+        </form>
+        <p id="message" role="status" aria-live="polite"></p>
+    </section>
+</main>
+
+<footer>Research Experiment Booking System · Task 9</footer>
+
+<script>
+    const experimentsElement = document.getElementById("experiments");
+    const detailsElement = document.getElementById("details");
+    const slotsElement = document.getElementById("slots");
+    const messageElement = document.getElementById("message");
+
+    async function loadExperiments() {
+        experimentsElement.textContent = "Loading experiments...";
+
+        try {
+            const response = await fetch("/api/experiments");
+
+            if (!response.ok) {
+                throw new Error("Could not load experiments.");
+            }
+
+            const experiments = await response.json();
+            experimentsElement.replaceChildren();
+
+            if (!experiments.length) {
+                experimentsElement.textContent = "No active experiments found.";
+                return;
+            }
+
+            experiments.forEach(experiment => {
+                const card = document.createElement("article");
+                card.className = "experiment-card";
+
+                const title = document.createElement("h3");
+                title.textContent = experiment.title;
+
+                const lab = document.createElement("p");
+                lab.textContent = "Laboratory: " +
+                    (experiment.laboratoryName || "Not specified");
+
+                const description = document.createElement("p");
+                description.textContent =
+                    experiment.description || "No description available.";
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = "View details";
+                button.addEventListener("click", () => {
+                    loadExperimentDetails(experiment.experimentId);
+                });
+
+                card.append(title, lab, description, button);
+                experimentsElement.appendChild(card);
+            });
+        } catch (error) {
+            experimentsElement.textContent = error.message;
+        }
+    }
+
+    async function loadExperimentDetails(experimentId) {
+        detailsElement.textContent = "Loading details...";
+        slotsElement.textContent = "Loading slots...";
+
+        try {
+            const [detailResponse, slotResponse] = await Promise.all([
+                fetch("/api/experiments/" + experimentId),
+                fetch("/api/experiments/" + experimentId + "/slots")
+            ]);
+
+            if (!detailResponse.ok || !slotResponse.ok) {
+                throw new Error("Unable to load experiment details or slots.");
+            }
+
+            const experiment = await detailResponse.json();
+            const slots = await slotResponse.json();
+
+            detailsElement.replaceChildren();
+
+            const title = document.createElement("h3");
+            title.textContent = experiment.title;
+
+            const description = document.createElement("p");
+            description.textContent =
+                experiment.description || "No description available.";
+
+            const lab = document.createElement("p");
+            lab.textContent = "Laboratory: " +
+                (experiment.laboratoryName || "Not specified");
+
+            detailsElement.append(title, description, lab);
+
+            slotsElement.replaceChildren();
+
+            if (!slots.length) {
+                slotsElement.textContent = "No slots are currently listed.";
+                return;
+            }
+
+            slots.forEach(slot => {
+                const item = document.createElement("p");
+                item.textContent =
+                    "Slot " + slot.slotId +
+                    " | Start: " + slot.startTime +
+                    " | End: " + slot.endTime +
+                    " | Capacity: " + slot.capacity;
+                slotsElement.appendChild(item);
+            });
+        } catch (error) {
+            detailsElement.textContent = error.message;
+            slotsElement.textContent = "Slots could not be loaded.";
+        }
+    }
+
+    document.getElementById("registration-form")
+        .addEventListener("submit", async event => {
+            event.preventDefault();
+            messageElement.className = "";
+            messageElement.textContent = "Submitting registration...";
+
+            const data = {
+                fullName: document.getElementById("fullName").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                password: document.getElementById("password").value
+            };
+
+            try {
+                const response = await fetch("/api/users/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.error || "Registration failed. Check your details."
+                    );
+                }
+
+                messageElement.className = "success";
+                messageElement.textContent =
+                    "Registration successful! User ID: " + result.userId;
+                event.target.reset();
+            } catch (error) {
+                messageElement.className = "error";
+                messageElement.textContent = error.message;
+            }
+        });
+
+    loadExperiments();
+</script>
+</body>
+</html>
