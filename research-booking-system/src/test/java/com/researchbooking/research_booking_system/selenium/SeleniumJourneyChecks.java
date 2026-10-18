@@ -79,7 +79,7 @@ public class SeleniumJourneyChecks {
         WebElement heading = driver.findElement(By.tagName("h1"));
 
         assertEquals(
-                "Research Experiment Booking System",
+                "INTENTIONALLY BROKEN - Research Experiment Booking System",
                 heading.getText()
         );
 
@@ -242,3 +242,4 @@ public class SeleniumJourneyChecks {
         }
     }
 }
+
