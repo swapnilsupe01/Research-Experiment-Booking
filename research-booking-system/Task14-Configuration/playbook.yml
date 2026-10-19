@@ -1,0 +1,57 @@
+---
+- name: Configure Research Experiment Booking environment
+  hosts: config_targets
+  become: true
+
+  tasks:
+    - name: Install cron package
+      ansible.builtin.apt:
+        name: cron
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Create research application user
+      ansible.builtin.user:
+        name: researchapp
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+        state: present
+
+    - name: Create application directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: researchapp
+        group: researchapp
+        mode: "0755"
+      loop:
+        - /opt/research-booking/app
+        - /opt/research-booking/config
+        - /var/log/research-booking
+
+    - name: Create system configuration directory
+      ansible.builtin.file:
+        path: /etc/research-booking
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create application configuration file
+      ansible.builtin.copy:
+        dest: /etc/research-booking/application.conf
+        content: |
+          application_name=Research Experiment Booking System
+          environment=configuration-management-demo
+          application_port=8081
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Ensure cron service is running and enabled
+      ansible.builtin.service:
+        name: cron
+        state: started
+        enabled: true

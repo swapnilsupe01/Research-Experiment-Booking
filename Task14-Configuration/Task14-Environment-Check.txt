@@ -1,0 +1,211 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261019210523
+Username: DESKTOP-83NK960\DELL
+RunAs User: DESKTOP-83NK960\DELL
+Configuration Name: 
+Machine: DESKTOP-83NK960 (Microsoft Windows NT 10.0.22621.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 22016
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\DevTools\Research-Experiment-Booking\Task14-Configuration\Task14-Environment-Check.txt
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== TASK 14: ENVIRONMENT CHECK ==========" -ForegroundColor Cyan
+
+========== TASK 14: ENVIRONMENT CHECK ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Date and time: $(Get-Date)"
+Date and time: 10/19/2026 21:05:24
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Computer: $env:COMPUTERNAME"
+Computer: DESKTOP-83NK960
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "User: $env:USERNAME"
+User: DELL
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 1. WINDOWS INFORMATION ==========" -ForegroundColor Cyan
+
+========== 1. WINDOWS INFORMATION ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-ComputerInfo |
+    Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+
+WindowsProductName WindowsVersion OsArchitecture
+------------------ -------------- --------------
+Windows 10 Pro     2009           64-bit
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 2. PROJECT DIRECTORY ==========" -ForegroundColor Cyan
+
+========== 2. PROJECT DIRECTORY ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Project exists: $(Test-Path $project)"
+Project exists: True
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Deployment directory exists: $(Test-Path $deploy)"
+Deployment directory exists: True
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Current directory: $((Get-Location).Path)"
+Current directory: C:\DevTools\Research-Experiment-Booking\research-booking-system
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 3. JAVA VERSION ==========" -ForegroundColor Cyan
+
+========== 3. JAVA VERSION ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Get-Command java -ErrorAction SilentlyContinue) {
+    java -version
+} else {
+    Write-Host "Java command not found."
+}
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 4. MAVEN / PROJECT WRAPPER ==========" -ForegroundColor Cyan
+
+========== 4. MAVEN / PROJECT WRAPPER ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Test-Path (Join-Path $project "mvnw.cmd")) {
+    Push-Location $project
+    .\mvnw.cmd -version
+    Pop-Location
+} elseif (Get-Command mvn -ErrorAction SilentlyContinue) {
+    mvn -version
+} else {
+    Write-Host "Maven and Maven wrapper not found."
+}
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 5. GIT VERSION ==========" -ForegroundColor Cyan
+
+========== 5. GIT VERSION ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Get-Command git -ErrorAction SilentlyContinue) {
+    git --version
+    if (Test-Path (Join-Path $project ".git")) {
+        git -C $project status --short --branch
+    }
+} else {
+    Write-Host "Git command not found."
+}
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 6. WSL DISTRIBUTIONS ==========" -ForegroundColor Cyan
+
+========== 6. WSL DISTRIBUTIONS ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> wsl --list --verbose
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 7. WINDOWS SERVICES ==========" -ForegroundColor Cyan
+
+========== 7. WINDOWS SERVICES ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-Service -Name MySQL80, Jenkins, W3SVC -ErrorAction SilentlyContinue |
+    Select-Object Name, Status, StartType |
+    Format-Table -AutoSize
+
+Name     Status StartType
+----     ------ ---------
+Jenkins Running Automatic
+MySQL80 Stopped    Manual
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 8. DOCKER VERSION AND STATUS ==========" -ForegroundColor Cyan
+
+========== 8. DOCKER VERSION AND STATUS ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Get-Command docker -ErrorAction SilentlyContinue) {
+    docker --version
+    docker info --format 'Docker server: {{.ServerVersion}}' 2>&1
+    docker ps -a
+} else {
+    Write-Host "Docker command not found."
+}
+
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 9. NGINX INFORMATION ==========" -ForegroundColor Cyan
+
+========== 9. NGINX INFORMATION ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Get-Command nginx -ErrorAction SilentlyContinue) {
+    nginx -v 2>&1
+} else {
+    Write-Host "Nginx is not available as a command in PATH."
+    Write-Host "It may still be running from a separate installation."
+}
+Nginx is not available as a command in PATH.
+It may still be running from a separate installation.
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 10. PROJECT FILES ==========" -ForegroundColor Cyan
+
+========== 10. PROJECT FILES ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Test-Path $project) {
+    Get-ChildItem $project -Force |
+        Select-Object Mode, Name, Length |
+        Format-Table -AutoSize
+}
+
+Mode   Name                         Length
+----   ----                         ------
+d----- .mvn
+d----- entity
+d----- src
+d----- target
+-a---- .dockerignore                54
+-a---- .gitattributes               38
+-a---- .gitignore                   394
+-a---- docker-command-log-final.txt 13131
+-a---- docker-command-log.txt       5627
+-a---- Dockerfile                   156
+-a---- HELP.md                      2459
+-a---- mvnw                         11790
+-a---- mvnw.cmd                     8292
+-a---- pom.xml                      3127
+-a---- startup-error.log            53416
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 11. IMPORTANT PORTS ==========" -ForegroundColor Cyan
+
+========== 11. IMPORTANT PORTS ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> $ports = 8080, 8081, 8082, 8083, 9091, 3306
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> foreach ($port in $ports) {
+    $listeners = Get-NetTCPConnection -State Listen -LocalPort $port `
+        -ErrorAction SilentlyContinue
+    if ($listeners) {
+        Write-Host "Port $port : LISTENING"
+        $listeners |
+            Select-Object LocalAddress, LocalPort, OwningProcess
+    } else {
+        Write-Host "Port $port : No listener detected"
+    }
+}
+Port 8080 : LISTENING
+
+Port 8081 : LISTENING
+LocalAddress LocalPort OwningProcess
+------------ --------- -------------
+::                8080          5400
+::                8081          1092
+Port 8082 : No listener detected
+Port 8083 : No listener detected
+Port 9091 : LISTENING
+::1               9091         11060
+::                9091         15612
+127.0.0.1         9091         11060
+Port 3306 : No listener detected
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== 12. DEPLOYMENT FILES ==========" -ForegroundColor Cyan
+
+========== 12. DEPLOYMENT FILES ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if (Test-Path $deploy) {
+    Get-ChildItem $deploy -Force |
+        Select-Object Mode, Name, Length |
+        Format-Table -AutoSize
+} else {
+    Write-Host "Deployment directory not found."
+}
+
+Mode   Name                                         Length
+----   ----                                         ------
+-a---- app.stderr.log                                    0
+-a---- app.stdout.log                                 6723
+-a---- research-booking-system-0.0.1-SNAPSHOT.jar 59630816
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "`n========== CHECK COMPLETE ==========" -ForegroundColor Green
+
+========== CHECK COMPLETE ==========
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Write-Host "Evidence log: $log"
+Evidence log: C:\DevTools\Research-Experiment-Booking\Task14-Configuration\Task14-Environment-Check.txt
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Stop-Transcript
+**********************
+Windows PowerShell transcript end
+End time: 20261019210547
+**********************
