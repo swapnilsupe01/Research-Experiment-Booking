@@ -1,53 +1,52 @@
- 
 # Research Experiment Booking System
 
-A web-based application developed using Spring Boot and MySQL to manage research experiments, laboratory time slots, booking requests, booking approvals, cancellations, and booking history.
+A web-based application developed using Spring Boot and MySQL to manage research experiments, laboratory time slots, booking requests, approvals, cancellations, and booking history.
 
-The system provides REST APIs for students and other authorized users to interact with research experiments and manage laboratory bookings.
+The project includes REST APIs, a web UI, automated Selenium tests, Jenkins CI/CD integration, Nginx reverse proxy support, and Docker-based deployment.
 
 ## Project Overview
 
-Research laboratories require an organized way to manage experiment schedules, laboratory availability, and student booking requests. Manual scheduling can result in conflicts, inefficient resource utilization, and difficulty tracking booking status.
+Research laboratories need an organized way to manage experiment schedules, laboratory availability, and student booking requests. Manual scheduling can cause conflicts and make it difficult to track bookings.
 
-The Research Experiment Booking System addresses these challenges by providing a centralized application for viewing experiments, requesting bookings, confirming or rejecting requests, cancelling bookings, and maintaining a history of booking status changes.
+The Research Experiment Booking System provides a centralized application for viewing experiments, registering students, requesting bookings, managing booking statuses, and recording booking history.
 
 ## Objectives
 
-- Provide a centralized system for managing research experiments.
-- Display experiment details and available laboratory time slots.
-- Allow users to submit booking requests.
-- Support booking confirmation, rejection, and cancellation workflows.
+- Centralize research experiment and laboratory slot information.
+- Display experiment details and available time slots.
+- Allow students to register and submit booking requests.
+- Support booking confirmation, rejection, and cancellation.
 - Maintain a history of booking status changes.
 - Store application data in a MySQL relational database.
-- Provide REST APIs for application operations.
+- Automate build and testing through Jenkins.
+- Support deployment through Docker and Nginx.
 
 ## Features
 
 ### Experiment Management
-- Retrieve the list of research experiments.
-- View individual experiment details.
+- Retrieve active experiments.
+- View experiment details.
 - Retrieve experiment time slots.
-- View upcoming experiment slots.
+- View upcoming slots.
 
 ### Booking Management
-- Submit a booking request for an experiment slot.
-- Retrieve booking details.
-- View bookings associated with a user.
+- Submit booking requests.
+- Retrieve booking details and user bookings.
 - Confirm or reject pending booking requests.
-- Cancel pending or confirmed bookings, subject to application rules.
+- Cancel eligible bookings.
+- Validate future slots and booking capacity.
 
 ### Booking History
-- Record booking status transitions.
-- Store the previous and new booking statuses.
-- Record the user responsible for a change.
-- Store timestamps and remarks for status changes.
+- Record previous and new booking statuses.
+- Record the user associated with a status change.
+- Maintain timestamps and remarks.
 
 ### User Management and Security
-- Register users through the registration API.
-- Authenticate protected API requests using HTTP Basic authentication.
-- Restrict unauthenticated access to protected endpoints through Spring Security.
+- Register students through the registration API.
+- Authenticate protected requests using Spring Security HTTP Basic authentication.
+- Require authentication for protected endpoints.
 
-> Note: Role-based authorization for individual operations should be verified separately. Authentication alone does not establish that every action is restricted to the appropriate role.
+**Security note:** Authentication and role-based authorization are different. Teacher-only operations must be protected by backend role checks before the application can be considered fully role-secured.
 
 ## Technology Stack
 
@@ -62,108 +61,120 @@ The Research Experiment Booking System addresses these challenges by providing a
 | Security | Spring Security |
 | API style | REST API |
 | Application server | Embedded Apache Tomcat |
-| Development environment | Windows and PowerShell |
+| Reverse proxy | Nginx |
+| Containerization | Docker |
+| CI/CD | Jenkins |
+| Automated UI testing | Selenium |
 | Version control | Git |
 | Repository hosting | GitHub |
+| Development environment | Windows, PowerShell |
 
 ## System Architecture
 
-The application follows a layered architecture.
+The application follows a layered architecture:
 
-1. **Controller layer:** Receives HTTP requests and returns API responses.
-2. **Service layer:** Implements booking, experiment, and user-management logic.
-3. **Repository layer:** Uses Spring Data JPA to interact with the database.
-4. **Entity layer:** Represents application data as Java objects.
-5. **Database layer:** Stores users, experiments, slots, bookings, cancellations, and booking history.
+1. **Controller layer:** Handles HTTP requests and responses.
+2. **Service layer:** Implements application and booking business logic.
+3. **Repository layer:** Accesses data through Spring Data JPA.
+4. **Entity layer:** Represents users, experiments, slots, and bookings.
+5. **Database layer:** Stores application records in MySQL.
 
-```text
-Client / REST API Consumer
-           |
-           v
-     Spring Security
-           |
-           v
-    Controller Layer
-           |
-           v
-      Service Layer
-           |
-           v
-    Repository Layer
-           |
-           v
-       Hibernate / JPA
-           |
-           v
-       MySQL Database
+The application can be accessed directly through Spring Boot, through Nginx, or through the Docker CD deployment, depending on which services are running.
+
+## Application URLs and Deployment
+
+Use the URL that corresponds to the deployment you want to access.
+
+| Deployment | URL | Description |
+|---|---|---|
+| Direct Spring Boot | `http://localhost:8081/ui` | Opens the UI served by the local Spring Boot application. |
+| Nginx reverse proxy | `http://localhost:8082/ui` | Opens the UI through Nginx, which forwards requests to the Spring Boot application. |
+| Docker CD deployment | `http://localhost:9091/ui` | Opens the UI served by the deployed Docker container. |
+| Jenkins | `http://localhost:8080` | Opens Jenkins to view pipeline builds, test results, and deployment logs. |
+
+**Important:** These URLs work only when their corresponding services are running. The Docker deployment on port `9091` is separate from the direct application on port `8081`.
+
+### Direct Spring Boot Access
+
+Start the application locally:
+
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-## Project Folder Structure
-
-The main source structure is organized as follows. Individual files may vary as the application develops.
+When startup succeeds and the application is listening on port `8081`, open:
 
 ```text
-research-booking-system/
-├── .github/
-│   └── ISSUE_TEMPLATE/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/
-│   │   │       └── researchbooking/
-│   │   │           └── research_booking_system/
-│   │   │               ├── config/
-│   │   │               ├── controller/
-│   │   │               ├── entity/
-│   │   │               ├── repository/
-│   │   │               ├── service/
-│   │   │               ├── HomeController.java
-│   │   │               └── ResearchBookingSystemApplication.java
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-│       └── java/
-├── .gitignore
-├── mvnw
-├── mvnw.cmd
-├── pom.xml
-└── README.md
+http://localhost:8081/ui
 ```
+
+### Nginx Reverse Proxy Access
+
+Nginx is configured to receive requests on port `8082` and forward them to the Spring Boot application on port `8081`.
+
+Open:
+
+```text
+http://localhost:8082/ui
+```
+
+The Spring Boot application must be running on the configured upstream port for the proxied UI to work.
+
+### Docker Deployment Access
+
+The Jenkins CD deployment uses the Docker image and container configuration established by the deployment pipeline.
+
+The deployed container is named `research-booking-cd` and is exposed on host port `9091`.
+
+Open:
+
+```text
+http://localhost:9091/ui
+```
+
+The deployment previously used the image tag:
+
+```text
+localhost:5000/research-booking-system:1.0.20
+```
+
+The image tag can change with subsequent builds. Use the tag recorded in the relevant Jenkins build log rather than assuming this tag is always the latest.
 
 ## Prerequisites
 
-Install or configure the following before running the application:
+Install or configure:
 
-- Java Development Kit compatible with the project's configured Java version.
+- A compatible Java Development Kit.
 - MySQL Server or XAMPP with MySQL enabled.
 - Git.
-- A terminal such as PowerShell.
-- Maven Wrapper included in the repository.
+- PowerShell or another terminal.
+- Docker Desktop when building or running containers locally.
+- Jenkins for CI/CD.
+- Nginx if using the reverse proxy.
+- The Maven Wrapper included in the repository.
 
 ## Local Installation and Setup
 
 ### 1. Clone the repository
 
-Replace the repository URL below if your GitHub username or repository name differs.
-
-```bash
+```powershell
 git clone https://github.com/swapnilsupe01/Research-Experiment-Booking.git
 cd Research-Experiment-Booking/research-booking-system
 ```
 
-If the GitHub repository itself contains the application root directly, use the directory created by `git clone` instead of the nested path above.
+If the application root is directly inside the cloned repository, use the actual directory created by Git instead of assuming a nested folder exists.
 
 ### 2. Configure MySQL
 
-Create a database named:
+Create the database if it does not already exist:
 
 ```sql
 CREATE DATABASE research_booking_system;
 ```
 
-Configure the database connection in `src/main/resources/application.properties`.
+Configure `src/main/resources/application.properties` for your environment.
 
-Example configuration for the current local setup:
+Example:
 
 ```properties
 spring.application.name=research-booking-system
@@ -181,33 +192,31 @@ spring.jpa.open-in-view=false
 server.port=8081
 ```
 
-**Important:** The application uses `ddl-auto=validate`, so the required database tables and schema must exist before startup. Configure the correct database port, username, password, and schema for your environment. Do not commit production credentials to GitHub.
+Adjust the database port and credentials to match your MySQL installation.
 
-### 3. Build and test the application
+The `ddl-auto=validate` setting checks the existing database schema. It does not automatically create missing tables. The required schema must exist before startup.
 
-On Windows PowerShell, run:
+Do not commit production credentials to GitHub.
+
+### 3. Build and test
 
 ```powershell
 .\mvnw.cmd clean test
 ```
 
-To build the application package:
+### 4. Package the application
 
 ```powershell
 .\mvnw.cmd package
 ```
 
-### 4. Start the application
+### 5. Start the application
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-When startup succeeds, the local application runs on:
-
-```text
-http://localhost:8081
-```
+After successful startup, open `http://localhost:8081/ui`.
 
 ## REST API Endpoints
 
@@ -215,19 +224,19 @@ The following endpoints are implemented in the current application.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/api/users/register` | Register a user |
-| GET | `/api/experiments` | Retrieve experiments |
+| POST | `/api/users/register` | Register a student |
+| GET | `/api/experiments` | Retrieve active experiments |
 | GET | `/api/experiments/{experimentId}` | Retrieve experiment details |
-| GET | `/api/experiments/{experimentId}/slots` | Retrieve experiment slots |
+| GET | `/api/experiments/{experimentId}/slots` | Retrieve slots for an experiment |
 | GET | `/api/experiments/slots/upcoming` | Retrieve upcoming slots |
-| POST | `/api/bookings` | Create a booking request |
+| POST | `/api/bookings` | Submit a booking request |
 | GET | `/api/bookings/user/{userId}` | Retrieve bookings for a user |
 | GET | `/api/bookings/{bookingId}` | Retrieve a booking |
-| PUT | `/api/bookings/{bookingId}/status` | Update booking status |
-| PUT | `/api/bookings/{bookingId}/cancel` | Cancel a booking |
+| PUT | `/api/bookings/{bookingId}/status` | Confirm or reject a pending booking |
+| PUT | `/api/bookings/{bookingId}/cancel` | Cancel an eligible booking |
 | GET | `/api/bookings/{bookingId}/history` | Retrieve booking status history |
 
-Protected endpoints require authentication according to the current Spring Security configuration.
+Protected endpoints require authentication according to the current Spring Security configuration. Authentication does not automatically enforce teacher-specific permissions.
 
 ## Booking Workflow
 
@@ -243,108 +252,149 @@ Select Available Slot
 Submit Booking Request
        |
        v
-     PENDING
+    PENDING
        |
-       v
-Confirm or Reject
+       +----------> CONFIRMED
+       |                 |
+       |                 v
+       |             CANCELLED
        |
-       +------> CONFIRMED
-       |             |
-       |             v
-       |          CANCELLED
-       |
-       +------> REJECTED
+       +----------> REJECTED
 ```
 
-The exact permitted transitions depend on the service-layer business rules. Booking history records the status changes performed by the application.
+The service validates whether the slot is in the future and checks its confirmed-booking capacity. Booking history records status transitions performed by the application.
 
-## Testing
+## Jenkins CI/CD Integration
 
-Run the automated tests using:
+Jenkins automates the build, test, and deployment workflow.
 
-```powershell
-.\mvnw.cmd test
-```
-
-The application has been tested locally for the following operations:
-
-- Application startup.
-- Experiment and time-slot retrieval.
-- User registration and authenticated requests.
-- Booking creation.
-- Booking confirmation.
-- Booking cancellation.
-- Booking status history retrieval.
-
-The final recorded Maven test run completed successfully with one automated test, zero failures, zero errors, and zero skipped tests.
-
-## Git and GitHub Workflow
-
-The project uses Git for version control and GitHub for repository hosting.
-
-### Branch Naming Convention
-
-| Branch type | Naming convention | Example |
-|---|---|---|
-| Main branch | `main` | `main` |
-| Feature | `feature/description` | `feature/booking-history` |
-| Bug fix | `fix/description` | `fix/slot-validation` |
-| Documentation | `docs/description` | `docs/update-readme` |
-| Tests | `test/description` | `test/booking-workflow` |
-
-### Commit Message Convention
-
-Use meaningful commit messages that describe the change.
-
-Examples:
+Jenkins URL:
 
 ```text
-chore: initialize Spring Boot project
-docs: add project setup instructions
-feat: implement experiment retrieval API
-feat: add booking cancellation workflow
-test: verify booking service behavior
-fix: correct booking status validation
+http://localhost:8080
 ```
 
-Create a feature branch before starting a new change:
+The project uses the GitHub repository:
 
-```bash
-git switch -c feature/booking-history
+```text
+https://github.com/swapnilsupe01/Research-Experiment-Booking.git
 ```
 
-Commit your changes and push the branch:
+The configured SCM polling schedule is:
 
-```bash
-git add .
-git commit -m "feat: improve booking history tracking"
-git push -u origin feature/booking-history
+```text
+H/5 * * * *
 ```
 
-Use pull requests to review changes before merging them into `main`. Repository branch protection should be configured in GitHub if required by the project policy.
+This schedules repository polling approximately every five minutes, with Jenkins distributing the exact minute using its hash-based scheduling.
 
-## Issue Tracking
+### Jenkins SCM Polling Test
 
-GitHub Issues can be used to track development work, bugs, enhancements, and testing tasks.
+The purpose of this test is to verify that Jenkins detects changes in the GitHub repository and starts the configured pipeline.
 
-Suggested initial issues:
+#### Step 1: Make a small test change
 
-1. Document the local installation and database setup.
-2. Verify booking slot availability and capacity validation.
-3. Improve role-based authorization for booking status changes.
-4. Add automated tests for booking creation and cancellation.
-5. Document the REST API request and response examples.
+Edit a harmless README line, for example:
 
-Issue templates can be maintained under `.github/ISSUE_TEMPLATE/`.
+```text
+Documentation updated to verify Jenkins SCM polling.
+```
+
+#### Step 2: Commit and push the change
+
+```powershell
+git add README.md
+git commit -m "docs: verify Jenkins SCM polling"
+git push origin main
+```
+
+Run these commands from the repository's Git working directory.
+
+#### Step 3: Check Jenkins
+
+1. Open `http://localhost:8080`.
+2. Open the `Research-Experiment-Booking` Jenkins job.
+3. Check the build history after the polling interval.
+4. Open the new build and inspect **Console Output**.
+5. Verify that Jenkins detected the repository change and started the pipeline.
+
+If the build does not start, check the SCM polling configuration, repository URL, branch configuration, Jenkins credentials, and console logs.
+
+#### Step 4: Verify the pipeline result
+
+Confirm the following, where configured in the pipeline:
+
+- The repository change was detected.
+- The source code was checked out.
+- Maven build and test stages completed.
+- Selenium test reports were published.
+- Deployment proceeded only after required tests passed.
+- The deployment verification stage completed successfully.
+
+A successful manual build alone does not prove SCM polling works. The test must demonstrate that a pushed repository change is detected and triggers a build.
+
+## Selenium UI Testing
+
+The Selenium suite checks important UI workflows, including:
+
+- Experiment cards displayed on the dashboard.
+- Experiment details and slot information loaded.
+- Required registration fields validated.
+- Student registration completed successfully.
+
+Run the Selenium suite locally with:
+
+```powershell
+mvn "-Dtest=SeleniumJourneyChecks" test
+```
+
+The default Selenium base URL is `http://localhost:8083/ui`, as configured in the test class. Ensure the application under test is available at that URL before running the suite.
+
+The test reports are generated under:
+
+```text
+target/surefire-reports/
+```
+
+Failure screenshots, when generated, are saved under:
+
+```text
+target/selenium-screenshots/
+```
+
+The Jenkins pipeline should publish the JUnit XML reports and stop deployment when required tests fail.
+
+## Git Workflow
+
+Suggested branch naming conventions:
+
+| Type | Example |
+|---|---|
+| Feature | `feature/booking-history` |
+| Bug fix | `fix/slot-validation` |
+| Documentation | `docs/update-readme` |
+| Tests | `test/booking-workflow` |
+
+Example:
+
+```powershell
+git switch -c docs/update-readme
+git add README.md
+git commit -m "docs: update deployment and Jenkins instructions"
+git push -u origin docs/update-readme
+```
+
+Use the repository's normal review and merge process before merging changes into `main`.
 
 ## Future Enhancements
 
-- Role-based authorization for student and supervisor operations.
-- Improved validation and error responses.
-- Automated integration tests for REST endpoints.
-- API documentation using OpenAPI/Swagger.
-- Improved handling of concurrent booking requests.
-- A web-based user interface for experiment and booking management.
+- Complete role-based authorization for student and teacher operations.
+- Add teacher experiment and slot management screens.
+- Improve booking validation and error handling.
+- Expand automated API and UI tests.
+- Add OpenAPI/Swagger documentation.
+- Improve handling of concurrent booking requests.
+- Automate configuration management for deployment prerequisites.
 
 ## License
 
@@ -354,6 +404,4 @@ No license has been specified yet. Add an appropriate `LICENSE` file if the proj
 
 Research Experiment Booking System — academic software project.
 
-For project information, setup instructions, or development tasks, refer to this repository's documentation and GitHub Issues.
-
-Jenkins SCM polling test
+Refer to the repository's documentation, Jenkins build history, and GitHub Issues for project setup and development tasks.
