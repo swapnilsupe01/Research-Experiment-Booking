@@ -386,6 +386,23 @@ git push -u origin docs/update-readme
 
 Use the repository's normal review and merge process before merging changes into `main`.
 
+Ansible Configuration Management (Task 14).
+1. Task 14 Overview — Configuration management using Ansible on Ubuntu (WSL).
+2. Tools Used — Ubuntu/WSL, Ansible, localhost, sudo, and systemd.
+3. Directory Structure — Task14-Configuration/ containing:
+   - playbook.yml — Ansible automation.
+   - inventory.ini — Target host configuration.
+   - execution-log.txt — Successful execution log.
+4. Ubuntu Setup Steps — Commands to navigate to the project directory and verify Ansible installation.
+5. Ansible Connectivity Test — Verify the localhost connection using ansible -i inventory.ini localhost -m ping.
+6. Playbook Execution — Run the playbook using ansible-playbook -i inventory.ini playbook.yml --ask-become-pass.
+7. Execution Logging — Save output using tee execution-log.txt.
+8. Configuration Verification — Display /etc/research-booking/application.conf and verify its contents.
+9. Service Verification — Confirm that the cron service is active using systemctl is-active cron.
+10. User and Directory Verification — Check the researchapp user and the application, configuration, and log directories.
+11. Execution Results — Document ok=7, changed=0, unreachable=0, and failed=0.
+12. College Submission Checklist — Include the three required files and screenshots of the successful execution.
+
 ## Future Enhancements
 
 - Complete role-based authorization for student and teacher operations.
