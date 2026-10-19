@@ -1,0 +1,228 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261018233431
+Username: DESKTOP-83NK960\DELL
+RunAs User: DESKTOP-83NK960\DELL
+Configuration Name: 
+Machine: DESKTOP-83NK960 (Microsoft Windows NT 10.0.22621.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 23448
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\docker-command-log-final.txt
+
+PS> docker --version
+Docker version 28.5.1, build e180ab8
+
+PS> docker info --format "{{.ServerVersion}}"
+28.5.1
+
+PS> Get-Content Dockerfile
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY target/research-booking-system-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+PS> docker build -t research-booking-system:1.0 .
+docker : #0 building with "desktop-linux" instance using docker driver
+At line:1 char:1
++ docker build -t research-booking-system:1.0 .
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (#0 building wit...g docker driver:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 195B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/eclipse-temurin:21-jre
+#2 DONE 1.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 94B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 99B done
+#4 DONE 0.0s
+
+#5 [1/3] FROM 
+docker.io/library/eclipse-temurin:21-jre@sha256:227118764cccd3c3294617061aaa93a08309c63a395eefa83e6b35032992ea99
+#5 resolve 
+docker.io/library/eclipse-temurin:21-jre@sha256:227118764cccd3c3294617061aaa93a08309c63a395eefa83e6b35032992ea99 0.0s 
+done
+#5 DONE 0.0s
+
+#6 [2/3] WORKDIR /app
+#6 CACHED
+
+#7 [3/3] COPY target/research-booking-system-0.0.1-SNAPSHOT.jar app.jar
+#7 CACHED
+
+#8 exporting to image
+#8 exporting layers done
+#8 exporting manifest sha256:f6c8956da439836bc40c040a498f9dc3a3c4e4f66628928d7e218186c8feb5ac done
+#8 exporting config sha256:bd346ae15b25b4f9e8f384f6734114104262b906325a44dcf2a262e81560aebc done
+#8 exporting attestation manifest sha256:2e819acee84bb1dd395cb4f531984aa49bd1fc40d6c4d555fcb9254c2517463b
+#8 exporting attestation manifest sha256:2e819acee84bb1dd395cb4f531984aa49bd1fc40d6c4d555fcb9254c2517463b 0.0s done
+#8 exporting manifest list sha256:65352899b7f5c8166a7c890f9d448d971df546a59adf692539fc9874d92c5c25 0.0s done
+#8 naming to docker.io/library/research-booking-system:1.0 done
+#8 unpacking to docker.io/library/research-booking-system:1.0 0.0s done
+#8 DONE 0.2s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/1v74vb3442x14ngnhmi45kb2c
+
+PS> docker tag research-booking-system:1.0 research-booking-system:latest
+
+PS> docker images research-booking-system
+REPOSITORY                TAG       IMAGE ID       CREATED         SIZE
+research-booking-system   1.0       65352899b7f5   9 minutes ago   570MB
+research-booking-system   latest    65352899b7f5   9 minutes ago   570MB
+
+PS> docker image inspect research-booking-system:1.0 --format "ID: {{.Id}} | Size: {{.Size}} | Arch: {{.Architecture}}"
+ID: sha256:65352899b7f5c8166a7c890f9d448d971df546a59adf692539fc9874d92c5c25 | Size: 169096716 | Arch: amd64
+
+PS> docker history research-booking-system:1.0
+IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT
+65352899b7f5   9 minutes ago   ENTRYPOINT ["java" "-jar" "app.jar"]            0B        buildkit.dockerfile.v0
+<missing>      9 minutes ago   EXPOSE [8080/tcp]                               0B        buildkit.dockerfile.v0
+<missing>      9 minutes ago   COPY target/research-booking-system-0.0.1-SNΓÇª   59.6MB    buildkit.dockerfile.v0
+<missing>      9 minutes ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
+<missing>      42 hours ago    ENTRYPOINT ["/__cacert_entrypoint.sh"]          0B        buildkit.dockerfile.v0
+<missing>      42 hours ago    COPY --chmod=755 entrypoint.sh /__cacert_entΓÇª   12.3kB    buildkit.dockerfile.v0
+<missing>      42 hours ago    RUN /bin/sh -c set -eux;     echo "VerifyingΓÇª   12.3kB    buildkit.dockerfile.v0
+<missing>      42 hours ago    RUN /bin/sh -c set -eux;     ARCH="$(dpkg --ΓÇª   166MB     buildkit.dockerfile.v0
+<missing>      42 hours ago    ENV JAVA_VERSION=jdk-21.0.12.1+1                0B        buildkit.dockerfile.v0
+<missing>      42 hours ago    RUN /bin/sh -c set -eux;     apt-get update;ΓÇª   58.2MB    buildkit.dockerfile.v0
+<missing>      42 hours ago    ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALΓÇª   0B        buildkit.dockerfile.v0
+<missing>      42 hours ago    ENV PATH=/opt/java/openjdk/bin:/usr/local/sbΓÇª   0B        buildkit.dockerfile.v0
+<missing>      42 hours ago    ENV JAVA_HOME=/opt/java/openjdk                 0B        buildkit.dockerfile.v0
+<missing>      11 days ago     umoci raw add-layer --image /home/buildd/rocΓÇª   12.3kB    Add rock control metadata
+<missing>      11 days ago     umoci config --image /home/buildd/rockcraft-ΓÇª   0B        Set annotations
+<missing>      11 days ago     umoci config --image /home/buildd/rockcraft-ΓÇª   0B        Set labels
+<missing>      11 days ago     umoci config --image /home/buildd/rockcraft-ΓÇª   0B        Set default PATH for bare-based rock
+<missing>      11 days ago     umoci config --image /home/buildd/rockcraft-ΓÇª   0B        Set default commands
+<missing>      11 days ago     umoci config --image /home/buildd/rockcraft-ΓÇª   0B        Set entrypoint
+<missing>      11 days ago     umoci raw add-layer --image /home/buildd/rocΓÇª   117MB
+
+PS> docker run -d --name research-booking -p 9090:8080 -e SERVER_PORT=8080 -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/research_booking_system" research-booking-system:1.0
+23810687741a9e4c9dea454315b55f81dd8e33b7afe82822858f3f38bbfa13d6
+
+PS> docker ps
+CONTAINER ID   IMAGE                                COMMAND                  CREATED          STATUS                    PORTS                                         NAMES
+23810687741a   research-booking-system:1.0          "java -jar app.jar"      30 seconds ago   Up 30 seconds             0.0.0.0:9090->8080/tcp, [::]:9090->8080/tcp   research-booking
+02846ee8fef3   swapnilsupe01/ai-resume-ats:latest   "/bin/sh -c 'uvicornΓÇª"   2 weeks ago      Up 12 minutes (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   ai-resume-ats-app
+
+PS> docker logs --tail 15 research-booking
+	Database version: 5.5.5
+	Default catalog/schema: research_booking_system/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-18T18:04:41.989Z  INFO 1 --- [research-booking-system] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-18T18:04:42.087Z  INFO 1 --- [research-booking-system] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-18T18:04:42.187Z  INFO 1 --- [research-booking-system] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-18T18:04:42.775Z  INFO 1 --- [research-booking-system] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-10-18T18:04:43.136Z  INFO 1 --- [research-booking-system] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page template: index
+2026-10-18T18:04:43.703Z  INFO 1 --- [research-booking-system] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-10-18T18:04:43.725Z  INFO 1 --- [research-booking-system] [           main] c.r.r.ResearchBookingSystemApplication   : Started ResearchBookingSystemApplication in 7.15 seconds (process running for 7.883)
+
+PS> curl.exe -i http://localhost:9090/api/experiments
+curl.exe :   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+At line:1 char:1
++ curl.exe -i http://localhost:9090/api/experiments
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ...  Time  Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100   271  100   271    0     0    401      0 --:--:-- --:--:-- --:--:--   401
+HTTP/1.1 200
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Type: application/json
+Content-Length: 271
+Date: Sun, 18 Oct 2026 18:05:06 GMT
+
+100   271  100   271    0     0    401      0 --:--:-- --:--:-- --:--:--   401
+[{"active":true,"createdAt":"2026-10-17T01:48:25","description":"Sample experiment for testing the research booking system.","durationMinutes":60,"experimentId":1,"laboratoryName":"Computer Engineering Lab","supervisorId":1,"title":"Computer Vision Research Experiment"}]
+
+PS> curl.exe -s -o NUL -w "UI status: %{http_code}`n" http://localhost:9090/ui
+UI status: 200
+
+PS> docker stats --no-stream research-booking
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O     PIDS
+23810687741a   research-booking   0.51%     330.1MiB / 9.664GiB   3.34%     35.2kB / 33.7kB   0B / 32.8kB   45
+
+PS> docker inspect research-booking --format "State: {{.State.Status}} | IP: {{.NetworkSettings.IPAddress}} | Ports: {{.NetworkSettings.Ports}}"
+State: running | IP: 172.17.0.2 | Ports: map[8080/tcp:[{0.0.0.0 9090} {:: 9090}]]
+
+PS> docker top research-booking
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                1526                1505                90                  18:04               ?                   00:00:29            java -jar app.jar
+yes
+
+PS> docker stop research-booking
+research-booking
+
+PS> docker ps -a --filter name=research-booking
+CONTAINER ID   IMAGE                         COMMAND               CREATED         STATUS                                PORTS     NAMES
+23810687741a   research-booking-system:1.0   "java -jar app.jar"   2 minutes ago   Exited (143) Less than a second ago             research-booking
+
+PS> docker start research-booking
+research-booking
+
+PS> docker ps --filter name=research-booking
+CONTAINER ID   IMAGE                         COMMAND               CREATED         STATUS                  PORTS                                         NAMES
+23810687741a   research-booking-system:1.0   "java -jar app.jar"   2 minutes ago   Up Less than a second   0.0.0.0:9090->8080/tcp, [::]:9090->8080/tcp   research-booking
+
+PS> docker restart research-booking
+research-booking
+
+PS> docker ps --filter name=research-booking
+CONTAINER ID   IMAGE                         COMMAND               CREATED         STATUS          PORTS                                         NAMES
+23810687741a   research-booking-system:1.0   "java -jar app.jar"   3 minutes ago   Up 26 seconds   0.0.0.0:9090->8080/tcp, [::]:9090->8080/tcp   research-booking
+
+PS> curl.exe -s -o NUL -w "After restart, API status: %{http_code}`n" http://localhost:9090/api/experiments
+After restart, API status: 200
+
+PS> docker stop research-booking
+research-booking
+
+PS> docker rm research-booking
+research-booking
+
+PS> docker ps -a --filter name=research-booking
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+PS> docker images research-booking-system
+REPOSITORY                TAG       IMAGE ID       CREATED          SIZE
+research-booking-system   1.0       65352899b7f5   12 minutes ago   570MB
+research-booking-system   latest    65352899b7f5   12 minutes ago   570MB
+
+PS> docker rmi research-booking-system:latest
+Untagged: research-booking-system:latest
+
+PS> docker images research-booking-system
+REPOSITORY                TAG       IMAGE ID       CREATED          SIZE
+research-booking-system   1.0       65352899b7f5   12 minutes ago   570MB
+**********************
+Windows PowerShell transcript end
+End time: 20261018233742
+**********************

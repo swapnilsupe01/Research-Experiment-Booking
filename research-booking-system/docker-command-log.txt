@@ -1,0 +1,105 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261018230248
+Username: DESKTOP-83NK960\DELL
+RunAs User: DESKTOP-83NK960\DELL
+Configuration Name: 
+Machine: DESKTOP-83NK960 (Microsoft Windows NT 10.0.22621.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 10132
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\docker-command-log.txt
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker --version
+Docker version 28.5.1, build e180ab8
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker info --format "{{.ServerVersion}}"
+
+error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/info": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> mvn clean package -DskipTests
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-CimInstance Win32_Process -Filter "Name='java.exe'" |
+  Where-Object { $_.CommandLine -match 'research-booking-system' } |
+  Select-Object ProcessId, CommandLine
+
+ProcessId CommandLine
+--------- -----------
+    24052 "C:\Program Files\Common Files\Oracle\Java\javapath\java.exe"  -jar "C:\Deploy\ResearchBooking\research-booking-system-0.0.1-SNAPSHOT.jar" --server.port=8081
+    19260 "C:\Program Files\Java\jdk-21\bin\java.exe" -jar C:\Deploy\ResearchBooking\research-booking-system-0.0.1-SNAPSHOT.jar --server.port=8081
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-CimInstance Win32_Process -Filter "Name='java.exe'" |
+  Where-Object { $_.CommandLine -match 'research-booking-system' } |
+  ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> mvn clean package -DskipTests
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> dir target\*.jar
+
+
+    Directory: C:\DevTools\Research-Experiment-Booking\research-booking-system\target
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        18-10-2026     22:36       59630809 research-booking-system-0.0.1-SNAPSHOT.jar
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> $c = Get-NetTCPConnection -LocalPort 8083 -State Listen -ErrorAction SilentlyContinue
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> if ($c) { Get-CimInstance Win32_Process -Filter "ProcessId=$($c.OwningProcess)" | Select ProcessId, Name, CommandLine; Stop-Process -Id $c.OwningProcess -Force }
+
+Stop-Process : Cannot stop process "java (16216)" because of the following error: Access is denied
+At line:1 char:120
++ ... cessId, Name, CommandLine; Stop-Process -Id $c.OwningProcess -Force }
++                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (System.Diagnostics.Process (java):Process) [Stop-Process], 
+ProcessCommandException
+    + FullyQualifiedErrorId : CouldNotStopProcess,Microsoft.PowerShell.Commands.StopProcessCommand
+ProcessId Name     CommandLine
+--------- ----     -----------
+    16216 java.exe
+Stop-Process : Cannot stop process "java (16216)" because of the following error: Access is denied
+At line:1 char:120
++ ... cessId, Name, CommandLine; Stop-Process -Id $c.OwningProcess -Force }
++                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (System.Diagnostics.Process (java):Process) [Stop-Process], ProcessCommandException
+    + FullyQualifiedErrorId : CouldNotStopProcess,Microsoft.PowerShell.Commands.StopProcessCommand
+
+
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> @'
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY target/research-booking-system-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+'@ | Set-Content -Path Dockerfile -Encoding ascii
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> @'
+*
+!target/research-booking-system-0.0.1-SNAPSHOT.jar
+'@ | Set-Content -Path .dockerignore -Encoding ascii
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker --version
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker build -t research-booking-system:1.0 .
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker tag research-booking-system:1.0 research-booking-system:latest
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker images research-booking-system
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> docker info --format "{{.ServerVersion}}"
+
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-Process "Docker Desktop" -ErrorAction SilentlyContinue
+PS C:\DevTools\Research-Experiment-Booking\research-booking-system> Get-Service com.docker.service | Select Name, Status, StartType
+
+Name                Status StartType
+----                ------ ---------
+com.docker.service Stopped    Manual
+
+
