@@ -87,26 +87,33 @@ Use the URL that corresponds to the deployment you want to access.
 
 | Deployment | URL | Description |
 |---|---|---|
-| Direct Spring Boot | `http://localhost:8081/ui` | Opens the UI served by the local Spring Boot application. |
+| Docker App (Recommended) | `http://localhost:8081/` | Opens the auth login page served by the Dockerized Spring Boot application. |
+| Direct Spring Boot | `http://localhost:8081/login` | Opens the UI served by the local Spring Boot application directly. |
 | Nginx reverse proxy | `http://localhost:8082/ui` | Opens the UI through Nginx, which forwards requests to the Spring Boot application. |
-| Docker CD deployment | `http://localhost:9091/ui` | Opens the UI served by the deployed Docker container. |
+| Docker CD deployment | `http://localhost:9091/ui` | Opens the UI served by the deployed CD Docker container (`research-booking-cd`). |
 | Jenkins | `http://localhost:8080` | Opens Jenkins to view pipeline builds, test results, and deployment logs. |
 
-**Important:** These URLs work only when their corresponding services are running. The Docker deployment on port `9091` is separate from the direct application on port `8081`.
+**Important:** These URLs work only when their corresponding services are running.
+
+### Docker App Access (Port 8081)
+
+The application can be run directly inside Docker using Docker Compose:
+
+- **Sign In Page:** `http://localhost:8081/` or `http://localhost:8081/login`
+- **Sign Up Page:** `http://localhost:8081/signup`
+- **Student Dashboard:** `http://localhost:8081/dashboard/student` (after login)
+- **Teacher Dashboard:** `http://localhost:8081/dashboard/teacher` (after login)
 
 ### Direct Spring Boot Access
 
-Start the application locally:
+Start the application locally without Docker:
 
 ```powershell
+cd research-booking-system
 .\mvnw.cmd spring-boot:run
 ```
 
-When startup succeeds and the application is listening on port `8081`, open:
-
-```text
-http://localhost:8081/ui
-```
+When startup succeeds and the application is listening on port `8081`, open `http://localhost:8081/login`.
 
 ### Nginx Reverse Proxy Access
 
@@ -120,7 +127,7 @@ http://localhost:8082/ui
 
 The Spring Boot application must be running on the configured upstream port for the proxied UI to work.
 
-### Docker Deployment Access
+### Docker CD Deployment Access (Port 9091)
 
 The Jenkins CD deployment uses the Docker image and container configuration established by the deployment pipeline.
 
@@ -131,14 +138,6 @@ Open:
 ```text
 http://localhost:9091/ui
 ```
-
-The deployment previously used the image tag:
-
-```text
-localhost:5000/research-booking-system:1.0.20
-```
-
-The image tag can change with subsequent builds. Use the tag recorded in the relevant Jenkins build log rather than assuming this tag is always the latest.
 
 ## Prerequisites
 
@@ -216,7 +215,169 @@ Do not commit production credentials to GitHub.
 .\mvnw.cmd spring-boot:run
 ```
 
-After successful startup, open `http://localhost:8081/ui`.
+After successful startup, open `http://localhost:8081/login`.
+
+---
+
+## Running with Docker (Recommended)
+
+The project uses a **two-step** Docker setup:
+- **MySQL** runs locally via **XAMPP** on port `3307` (host machine)
+- **Spring Boot app** runs inside a **Docker container** on port `8081`
+
+The Docker container connects to your host's MySQL through `host.docker.internal`.
+
+---
+
+### Prerequisites
+
+Before running with Docker, make sure you have:
+
+| Requirement | How to verify |
+|---|---|
+| Docker Desktop installed & running | `docker --version` |
+| XAMPP installed with MySQL enabled | Open XAMPP Control Panel |
+| Java 21 JDK installed | `java -version` |
+| Maven installed | `mvn -version` |
+
+---
+
+### Step 1 — Start XAMPP MySQL
+
+1. Open **XAMPP Control Panel**
+2. Click **Start** next to **MySQL**
+3. Confirm MySQL shows **green / Running** on port **3307**
+4. Ensure the database exists:
+
+```sql
+-- Open phpMyAdmin at http://localhost/phpmyadmin or use MySQL CLI
+CREATE DATABASE IF NOT EXISTS research_booking_system;
+```
+
+> ⚠️ **MySQL must be running BEFORE starting Docker.** The Spring Boot container connects to your host MySQL through port 3307.
+
+---
+
+### Step 2 — Build the JAR
+
+The Dockerfile copies a pre-built JAR. Build it first from inside the `research-booking-system` folder:
+
+```powershell
+# Run from: C:\DevTools\Research-Experiment-Booking\research-booking-system
+mvn clean package -DskipTests
+```
+
+This creates:
+```
+research-booking-system/target/research-booking-system-0.0.1-SNAPSHOT.jar
+```
+
+---
+
+### Step 3 — Build & Start the Docker Container
+
+Run from the **project root** (`C:\DevTools\Research-Experiment-Booking`):
+
+```powershell
+# Build the Docker image and start the container in background
+docker compose up -d --build
+```
+
+Expected output:
+```
+[+] Building ... (image built)
+[+] Running 1/1
+ ✔ Container research-booking-app  Started
+```
+
+---
+
+### Step 4 — Verify the Container is Running
+
+```powershell
+# Check container status (should show "Up")
+docker ps --filter "name=research-booking-app"
+
+# Stream live application logs (watch for startup success message)
+docker logs -f research-booking-app
+```
+
+Look for this line in the logs to confirm successful startup:
+```
+Started ResearchBookingSystemApplication in X.XXX seconds (process running for X.XXX)
+```
+
+Press `Ctrl+C` to stop streaming logs (container keeps running).
+
+---
+
+### Step 5 — Access the Application
+
+Open your browser and navigate to:
+
+| Page | URL |
+|---|---|
+| 🔐 Login | [http://localhost:8081/login](http://localhost:8081/login) |
+| 📝 Sign Up | [http://localhost:8081/signup](http://localhost:8081/signup) |
+| 🎓 Student Dashboard | [http://localhost:8081/dashboard/student](http://localhost:8081/dashboard/student) |
+| 👨‍🏫 Teacher Dashboard | [http://localhost:8081/dashboard/teacher](http://localhost:8081/dashboard/teacher) |
+
+#### Demo Login Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| 👨‍🏫 Teacher | `teacher@university.edu` | `TeacherPass123!` |
+| 🎓 Student | Register via `/signup` | (your chosen password) |
+
+---
+
+### Everyday Docker Commands
+
+| Task | Command |
+|---|---|
+| **Start** the container | `docker compose up -d` |
+| **Stop** the container | `docker compose down` |
+| **Restart** the container | `docker compose restart app` |
+| **View live logs** | `docker logs -f research-booking-app` |
+| **Rebuild** after code changes | `docker compose up -d --build` |
+| **Check status** | `docker ps --filter "name=research-booking-app"` |
+| **Remove container** (clean start) | `docker rm -f research-booking-app` |
+
+---
+
+### Rebuilding After Code Changes
+
+Whenever you change Java source code, repeat these steps:
+
+```powershell
+# 1. Stop the running container
+docker compose down
+
+# 2. Rebuild the JAR (from research-booking-system folder)
+cd research-booking-system
+mvn clean package -DskipTests
+cd ..
+
+# 3. Rebuild Docker image and start fresh
+docker compose up -d --build
+```
+
+---
+
+### Troubleshooting
+
+| Problem | Likely Cause | Fix |
+|---|---|---|
+| Container exits immediately | MySQL not running | Start XAMPP MySQL first |
+| `name "/research-booking-app" is already in use` | Old container exists | Run `docker rm -f research-booking-app` then retry |
+| `Unable to determine Dialect` error in logs | DB connection failed | Verify MySQL is on port 3307 and `research_booking_system` DB exists |
+| Login fails for teacher | Account not in DB | Check DB has teacher record with `ACTIVE` status and role `TEACHER` |
+| Port 8081 already in use | Another process on 8081 | Run `netstat -ano \| findstr :8081` to find and stop it |
+| Page not loading | Container not started | Run `docker ps` — if no container, run `docker compose up -d` |
+
+---
+
+
 
 ## REST API Endpoints
 
