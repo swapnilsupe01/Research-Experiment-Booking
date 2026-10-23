@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Research Experiment Booking System</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 44px 38px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header .logo-badge {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+        }
+
+        .auth-header h1 {
+            color: var(--text-main);
+            font-size: 24px;
+            margin: 0 0 6px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 22px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .portal-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+
+        .portal-tab {
+            flex: 1;
+            padding: 11px 14px;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .portal-tab:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .portal-tab.active {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 26px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 4px;
+            transition: color 0.2s;
+        }
+
+        .auth-footer a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        .teacher-notice {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #93c5fd;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-badge">🔬</div>
+            <h1>Research Experiment Booking</h1>
+            <p id="portal-subtitle">Student sign in to explore and book experiments</p>
+        </div>
+
+        <!-- Portal Tabs -->
+        <div class="portal-selector" role="tablist" aria-label="Select Portal">
+            <button type="button" id="tab-student" class="portal-tab active" onclick="switchPortal('student')" role="tab" aria-selected="true">
+                <span>🎓</span> Student Login
+            </button>
+            <button type="button" id="tab-teacher" class="portal-tab" onclick="switchPortal('teacher')" role="tab" aria-selected="false">
+                <span>👨‍🏫</span> Teacher Login
+            </button>
+        </div>
+
+        <!-- Feedback Alerts -->
+        <div th:if="${param.error != null and param.error[0] == 'role_mismatch_teacher'}" class="alert alert-error" id="role-mismatch-error">
+            Access Denied: The account provided does not have Teacher privileges. Please switch to the Student Portal.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'role_mismatch_student'}" class="alert alert-error" id="role-mismatch-student-error">
+            Access Denied: This is a Teacher account. Please switch to the Teacher Portal tab.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'disabled'}" class="alert alert-error" id="disabled-error">
+            Your account is inactive. Please contact an administrator.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'invalid'}" class="alert alert-error" id="login-error">
+            Invalid email or password. Please try again.
+        </div>
+        <div th:if="${param.error != null and param.error[0] != 'disabled' and param.error[0] != 'invalid' and param.error[0] != 'role_mismatch_teacher' and param.error[0] != 'role_mismatch_student'}" class="alert alert-error" id="general-login-error">
+            Authentication failed. Please verify your credentials and try again.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success" id="logout-message">
+            You have been logged out successfully.
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success" id="registered-message">
+            Account created successfully! Please sign in below.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <input type="hidden" id="portal-input" name="portal" value="student">
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       placeholder="name@example.com" required autofocus
+                       autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Enter your password" required
+                       autocomplete="current-password">
+            </div>
+
+            <button type="submit" id="login-button" class="btn-submit">Sign In</button>
+        </form>
+
+        <div class="auth-footer" id="student-footer">
+            Don't have an account?
+            <a th:href="@{/signup}" id="signup-link">Sign Up</a>
+        </div>
+
+        <div class="auth-footer" id="teacher-footer" style="display: none;">
+            <div class="teacher-notice">
+                ℹ️ <strong>Faculty Notice:</strong> Teacher accounts are provisioned administratively by laboratory staff.
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(59, 130, 246, 0.35); text-align: left; font-size: 13px;">
+                    <div style="margin-bottom: 6px;"><strong>Demonstration Faculty Account:</strong></div>
+                    <div>Email: <code style="background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px; color: #f1f5f9;">teacher@university.edu</code></div>
+                    <div style="margin-top: 3px;">Password: <code style="background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px; color: #f1f5f9;">TeacherPass123!</code></div>
+                    <button type="button" onclick="fillTeacherDemo()" style="margin-top: 10px; width: 100%; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; padding: 7px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                        ✨ Auto-fill Faculty Credentials
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fillTeacherDemo() {
+            document.getElementById('email').value = 'teacher@university.edu';
+            document.getElementById('password').value = 'TeacherPass123!';
+        }
+
+        function switchPortal(portal) {
+            const studentTab = document.getElementById('tab-student');
+            const teacherTab = document.getElementById('tab-teacher');
+            const portalInput = document.getElementById('portal-input');
+            const portalSubtitle = document.getElementById('portal-subtitle');
+            const studentFooter = document.getElementById('student-footer');
+            const teacherFooter = document.getElementById('teacher-footer');
+
+            if (portal === 'teacher') {
+                teacherTab.classList.add('active');
+                teacherTab.setAttribute('aria-selected', 'true');
+                studentTab.classList.remove('active');
+                studentTab.setAttribute('aria-selected', 'false');
+                portalInput.value = 'teacher';
+                if (portalSubtitle) portalSubtitle.textContent = 'Faculty & supervisor sign in to manage experiments';
+                if (studentFooter) studentFooter.style.display = 'none';
+                if (teacherFooter) teacherFooter.style.display = 'block';
+            } else {
+                studentTab.classList.add('active');
+                studentTab.setAttribute('aria-selected', 'true');
+                teacherTab.classList.remove('active');
+                teacherTab.setAttribute('aria-selected', 'false');
+                portalInput.value = 'student';
+                if (portalSubtitle) portalSubtitle.textContent = 'Student sign in to explore and book experiments';
+                if (studentFooter) studentFooter.style.display = 'block';
+                if (teacherFooter) teacherFooter.style.display = 'none';
+            }
+        }
+
+        // Auto-switch tab if url contains ?portal=teacher or hash #teacher
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('portal') === 'teacher' || window.location.hash === '#teacher') {
+                switchPortal('teacher');
+            }
+        });
+    </script>
+</body>
+</html>
