@@ -51,7 +51,39 @@ public class SeleniumJourneyChecks {
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         screenshotExtension.driver = driver;
-        driver.get(BASE_URL + "/ui");
+        driver.get(BASE_URL + "/login");
+    }
+
+    /**
+     * Registers a brand-new student account via /signup and then logs in
+     * through /login, returning when the browser has landed on
+     * /dashboard/student.
+     */
+    private void createAndLoginStudent() {
+        String uniqueEmail = "selenium."
+                + UUID.randomUUID().toString().replace("-", "")
+                + "@example.com";
+
+        driver.get(BASE_URL + "/signup");
+        wait.until(d -> !d.findElements(By.id("fullName")).isEmpty());
+
+        driver.findElement(By.id("fullName")).sendKeys("Selenium Test Student");
+        driver.findElement(By.id("email")).sendKeys(uniqueEmail);
+        driver.findElement(By.id("password")).sendKeys("TestPass123!");
+        driver.findElement(By.id("confirmPassword")).sendKeys("TestPass123!");
+        driver.findElement(By.id("register-button")).click();
+
+        // Wait for redirect to /login?registered=true
+        wait.until(d -> d.getCurrentUrl().contains("/login"));
+
+        // Log in with the newly registered account
+        wait.until(d -> !d.findElements(By.id("email")).isEmpty());
+        driver.findElement(By.id("email")).sendKeys(uniqueEmail);
+        driver.findElement(By.id("password")).sendKeys("TestPass123!");
+        driver.findElement(By.id("login-button")).click();
+
+        // Wait for the student dashboard
+        wait.until(d -> d.getCurrentUrl().contains("/dashboard/student"));
     }
 
     @AfterEach
@@ -71,6 +103,8 @@ public class SeleniumJourneyChecks {
 
     @Test
     void dashboardShouldDisplayExperiments() {
+        createAndLoginStudent();
+
         wait.until(d ->
                 !d.findElements(By.cssSelector("#experiments article.experiment-card"))
                         .isEmpty()
@@ -93,6 +127,8 @@ public class SeleniumJourneyChecks {
 
     @Test
     void experimentDetailsAndSlotsShouldLoad() {
+        createAndLoginStudent();
+
         wait.until(d ->
                 !d.findElements(
                         By.cssSelector("#experiments article.experiment-card")
@@ -132,6 +168,9 @@ public class SeleniumJourneyChecks {
 
     @Test
     void registrationFormShouldValidateRequiredFields() {
+        driver.get(BASE_URL + "/signup");
+        wait.until(d -> !d.findElements(By.id("registration-form")).isEmpty());
+
         WebElement form = driver.findElement(By.id("registration-form"));
 
         Boolean valid = (Boolean) ((JavascriptExecutor) driver)
@@ -152,6 +191,9 @@ public class SeleniumJourneyChecks {
 
     @Test
     void studentShouldRegisterSuccessfully() {
+        driver.get(BASE_URL + "/signup");
+        wait.until(d -> !d.findElements(By.id("fullName")).isEmpty());
+
         String uniqueEmail = "selenium."
                 + UUID.randomUUID().toString().replace("-", "")
                 + "@example.com";
@@ -163,6 +205,9 @@ public class SeleniumJourneyChecks {
                 .sendKeys(uniqueEmail);
 
         driver.findElement(By.id("password"))
+                .sendKeys("TestPass123!");
+
+        driver.findElement(By.id("confirmPassword"))
                 .sendKeys("TestPass123!");
 
         driver.findElement(By.id("register-button")).click();
