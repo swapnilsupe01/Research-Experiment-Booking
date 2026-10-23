@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -19,11 +18,52 @@
         header {
             background: #173b70;
             color: white;
-            padding: 24px 6%;
+            padding: 20px 6%;
         }
 
-        header h1 { margin: 0 0 8px; font-size: 26px; }
-        header p { margin: 0; color: #dce8fa; }
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        header h1 { margin: 0 0 6px; font-size: 26px; }
+        header p { margin: 0; color: #dce8fa; font-size: 14px; }
+
+        .portal-nav {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .nav-tab {
+            background: transparent;
+            color: #dce8fa;
+            border: 0;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #173b70;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
 
         main { max-width: 1100px; margin: 28px auto; padding: 0 20px; }
 
@@ -36,6 +76,7 @@
         }
 
         h2 { margin-top: 0; color: #173b70; }
+        h3 { color: #1e293b; }
 
         .grid {
             display: grid;
@@ -47,6 +88,9 @@
             border: 1px solid #dce4f0;
             border-radius: 10px;
             padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .experiment-card h3 { margin-top: 0; }
@@ -58,11 +102,35 @@
             border-radius: 6px;
             padding: 10px 15px;
             cursor: pointer;
+            font-size: 14px;
         }
 
         button:hover { background: #173b70; }
 
-        input {
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .btn-success {
+            background: #167647;
+            color: white;
+        }
+        .btn-success:hover { background: #0f5432; }
+
+        .btn-danger {
+            background: #b42318;
+            color: white;
+        }
+        .btn-danger:hover { background: #911b12; }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        input, textarea, select {
             display: block;
             width: 100%;
             max-width: 460px;
@@ -70,14 +138,234 @@
             margin: 7px 0 15px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
         }
 
-        label { font-weight: bold; }
+        textarea {
+            max-width: 100%;
+            resize: vertical;
+        }
+
+        label { font-weight: bold; font-size: 14px; }
 
         .muted { color: #64748b; }
         #message { white-space: pre-wrap; margin-top: 12px; }
-        .error { color: #b42318; }
-        .success { color: #167647; }
+        .error { color: #b42318; font-weight: 500; }
+        .success { color: #167647; font-weight: 500; }
+
+        /* Teacher Alert Banner */
+        .teacher-alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #edfcf2;
+            color: #167647;
+            border: 1px solid #c3f2d2;
+        }
+
+        .alert-error {
+            background: #fef3f2;
+            color: #b42318;
+            border: 1px solid #fecdca;
+        }
+
+        .btn-close-alert {
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font-size: 18px;
+            padding: 0 4px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .btn-close-alert:hover { background: transparent; opacity: 0.7; }
+
+        /* Teacher Dashboard Styles */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: #edfcf2;
+            color: #167647;
+            border: 1px solid #c3f2d2;
+        }
+
+        .badge-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
+
+        .teacher-exp-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 16px;
+            background: #fafcff;
+        }
+
+        .teacher-exp-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .teacher-exp-card-header h4 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            color: #173b70;
+        }
+
+        .teacher-exp-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 14px;
+            color: #475569;
+            margin: 10px 0;
+        }
+
+        .teacher-exp-desc {
+            font-size: 14px;
+            color: #334155;
+            margin: 8px 0 14px;
+            white-space: pre-wrap;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 540px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-large {
+            max-width: 780px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h3 { margin: 0; color: #173b70; }
+
+        .modal-close {
+            background: transparent;
+            border: 0;
+            color: #64748b;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 6px;
+        }
+        .modal-close:hover { color: #0f172a; background: transparent; }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .slot-form-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .slot-form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .slot-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 14px;
+        }
+
+        .slot-table th, .slot-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .slot-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .slot-table tr:hover {
+            background: #f8fafc;
+        }
 
         footer {
             text-align: center;
@@ -88,52 +376,192 @@
 </head>
 <body>
 <header>
-    <h1>Research Experiment Booking System</h1>
-    <p>Explore research experiments and register to participate.</p>
+    <div class="header-content">
+        <div>
+            <h1>Research Experiment Booking System</h1>
+            <p>Explore research experiments and register to participate.</p>
+        </div>
+        <nav class="portal-nav" aria-label="Portal Navigation">
+            <button id="nav-student-tab" type="button" class="nav-tab active" onclick="switchPortal('student')">Student Portal</button>
+            <button id="nav-teacher-tab" type="button" class="nav-tab" onclick="switchPortal('teacher')">Teacher Portal</button>
+        </nav>
+    </div>
 </header>
 
 <main>
-    <section>
-        <h2>Available Experiments</h2>
-        <p class="muted">Select an experiment to view its details and available slots.</p>
-        <div id="experiments" class="grid" aria-live="polite">
-            Loading experiments...
+    <!-- ==================== STUDENT PORTAL VIEW ==================== -->
+    <div id="student-portal-view">
+        <section>
+            <h2>Available Experiments</h2>
+            <p class="muted">Select an experiment to view its details and available slots.</p>
+            <div id="experiments" class="grid" aria-live="polite">
+                Loading experiments...
+            </div>
+        </section>
+
+        <section id="details-section">
+            <h2>Experiment Details</h2>
+            <div id="details" aria-live="polite">
+                Select an experiment above to see its details.
+            </div>
+            <h3>Available Slots</h3>
+            <div id="slots" aria-live="polite">No experiment selected.</div>
+        </section>
+
+        <section id="registration-section">
+            <h2>Student Registration</h2>
+            <form id="registration-form">
+                <label for="fullName">Full name</label>
+                <input id="fullName" name="fullName" required
+                       minlength="2" autocomplete="name">
+
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" required
+                       autocomplete="email">
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password"
+                       required minlength="8" autocomplete="new-password">
+
+                <button id="register-button" type="submit">Register</button>
+            </form>
+            <p id="message" role="status" aria-live="polite"></p>
+        </section>
+    </div>
+
+    <!-- ==================== TEACHER PORTAL VIEW ==================== -->
+    <div id="teacher-portal-view" style="display: none;">
+        <!-- Global Feedback Message -->
+        <div id="teacher-alert" class="teacher-alert" style="display: none;" role="alert">
+            <span id="teacher-alert-text"></span>
+            <button type="button" class="btn-close-alert" onclick="clearTeacherAlert()">&times;</button>
         </div>
-    </section>
 
-    <section id="details-section">
-        <h2>Experiment Details</h2>
-        <div id="details" aria-live="polite">
-            Select an experiment above to see its details.
-        </div>
-        <h3>Available Slots</h3>
-        <div id="slots" aria-live="polite">No experiment selected.</div>
-    </section>
+        <!-- Teacher Login Card -->
+        <section id="teacher-login-section">
+            <h2>Teacher Login</h2>
+            <p class="muted">Sign in with your active teacher credentials to manage experiments and time slots.</p>
+            <form id="teacher-login-form">
+                <label for="teacher-email">Teacher Email Address</label>
+                <input id="teacher-email" type="email" required autocomplete="email" placeholder="teacher@example.com">
 
-    <section id="registration-section">
-        <h2>Student Registration</h2>
-        <form id="registration-form">
-            <label for="fullName">Full name</label>
-            <input id="fullName" name="fullName" required
-                   minlength="2" autocomplete="name">
+                <label for="teacher-password">Password</label>
+                <input id="teacher-password" type="password" required autocomplete="current-password" placeholder="Enter your password">
 
-            <label for="email">Email address</label>
-            <input id="email" name="email" type="email" required
-                   autocomplete="email">
+                <button id="teacher-login-btn" type="submit">Sign In</button>
+            </form>
+            <p id="teacher-login-error" class="error" role="alert" style="display: none;"></p>
+        </section>
 
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password"
-                   required minlength="8" autocomplete="new-password">
+        <!-- Teacher Dashboard -->
+        <section id="teacher-dashboard-section" style="display: none;">
+            <div class="dashboard-header">
+                <div>
+                    <h2>Teacher Dashboard</h2>
+                    <p id="teacher-welcome-badge" class="muted">Signed in as teacher</p>
+                </div>
+                <div class="dashboard-actions">
+                    <button id="btn-open-create-exp" type="button" class="btn-success" onclick="openCreateExperimentModal()">+ Create Experiment</button>
+                    <button id="teacher-logout-btn" type="button" class="btn-secondary" onclick="teacherLogout()">Sign Out</button>
+                </div>
+            </div>
 
-            <button id="register-button" type="submit">Register</button>
-        </form>
-        <p id="message" role="status" aria-live="polite"></p>
-    </section>
+            <h3>My Supervised Experiments</h3>
+            <div id="teacher-experiments-container" aria-live="polite">
+                Loading supervised experiments...
+            </div>
+        </section>
+    </div>
 </main>
+
+<!-- ==================== EXPERIMENT CREATE / EDIT MODAL ==================== -->
+<div id="exp-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="exp-modal-title">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="exp-modal-title">Create Experiment</h3>
+            <button type="button" class="modal-close" onclick="closeExperimentModal()">&times;</button>
+        </div>
+        <form id="exp-form">
+            <input type="hidden" id="exp-id">
+
+            <label for="exp-title">Experiment Title *</label>
+            <input type="text" id="exp-title" required maxlength="150" placeholder="e.g. Distributed Computing Lab 1">
+
+            <label for="exp-laboratory">Laboratory Name *</label>
+            <input type="text" id="exp-laboratory" required maxlength="150" placeholder="e.g. Advanced Networks Lab 204">
+
+            <label for="exp-duration">Duration (Minutes) *</label>
+            <input type="number" id="exp-duration" required min="1" placeholder="e.g. 90">
+
+            <label for="exp-desc">Description</label>
+            <textarea id="exp-desc" rows="4" placeholder="Overview of experiment requirements, guidelines, and equipment..."></textarea>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeExperimentModal()">Cancel</button>
+                <button type="submit" id="btn-save-exp" class="btn-primary">Save Experiment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== SLOT MANAGEMENT MODAL ==================== -->
+<div id="slot-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="slot-modal-title">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <div>
+                <h3 id="slot-modal-title">Experiment Slots</h3>
+                <p id="slot-modal-subtitle" class="muted" style="margin: 4px 0 0;"></p>
+            </div>
+            <button type="button" class="modal-close" onclick="closeSlotModal()">&times;</button>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+            <button id="btn-toggle-slot-form" type="button" class="btn-success" onclick="toggleSlotForm()">+ Add New Slot</button>
+        </div>
+
+        <!-- Add/Edit Slot Form Box -->
+        <div id="slot-form-wrapper" style="display: none;" class="slot-form-box">
+            <h4 id="slot-form-title" style="margin-top: 0; color: #173b70;">Add New Slot</h4>
+            <form id="slot-form">
+                <input type="hidden" id="slot-id">
+                <div class="slot-form-row">
+                    <div>
+                        <label for="slot-start-time">Start Time *</label>
+                        <input type="datetime-local" id="slot-start-time" required>
+                    </div>
+                    <div>
+                        <label for="slot-end-time">End Time *</label>
+                        <input type="datetime-local" id="slot-end-time" required>
+                    </div>
+                    <div>
+                        <label for="slot-capacity">Capacity *</label>
+                        <input type="number" id="slot-capacity" required min="1" placeholder="e.g. 5">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+                    <button type="button" class="btn-secondary" onclick="hideSlotForm()">Cancel</button>
+                    <button type="submit" id="btn-save-slot" class="btn-primary">Save Slot</button>
+                </div>
+            </form>
+        </div>
+
+        <h4>Configured Slots</h4>
+        <div id="teacher-slots-container" aria-live="polite">
+            Loading slots...
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeSlotModal()">Close</button>
+        </div>
+    </div>
+</div>
 
 <footer>Research Experiment Booking System · Task 13 - Jenkins Docker CD</footer>
 
 <script>
+    /* ==========================================================================
+       STUDENT PORTAL LOGIC (Preserved Exactly for Selenium Compatibility)
+       ========================================================================== */
     const experimentsElement = document.getElementById("experiments");
     const detailsElement = document.getElementById("details");
     const slotsElement = document.getElementById("slots");
@@ -278,6 +706,628 @@
             }
         });
 
+    /* ==========================================================================
+       PORTAL SWITCHING & NAVIGATION
+       ========================================================================== */
+    const studentView = document.getElementById("student-portal-view");
+    const teacherView = document.getElementById("teacher-portal-view");
+    const navStudentTab = document.getElementById("nav-student-tab");
+    const navTeacherTab = document.getElementById("nav-teacher-tab");
+
+    function switchPortal(portal) {
+        clearTeacherAlert();
+        if (portal === "teacher") {
+            navStudentTab.classList.remove("active");
+            navTeacherTab.classList.add("active");
+            studentView.style.display = "none";
+            teacherView.style.display = "block";
+            initTeacherView();
+        } else {
+            navTeacherTab.classList.remove("active");
+            navStudentTab.classList.add("active");
+            teacherView.style.display = "none";
+            studentView.style.display = "block";
+            loadExperiments();
+        }
+    }
+
+    /* ==========================================================================
+       TEACHER AUTHENTICATION (HTTP Basic via sessionStorage)
+       ========================================================================== */
+    const AUTH_KEY = "rb_teacher_auth";
+    const EMAIL_KEY = "rb_teacher_email";
+
+    function getStoredAuth() {
+        return sessionStorage.getItem(AUTH_KEY);
+    }
+
+    function getStoredEmail() {
+        return sessionStorage.getItem(EMAIL_KEY);
+    }
+
+    function setStoredAuth(header, email) {
+        sessionStorage.setItem(AUTH_KEY, header);
+        sessionStorage.setItem(EMAIL_KEY, email);
+    }
+
+    function clearStoredAuth() {
+        sessionStorage.removeItem(AUTH_KEY);
+        sessionStorage.removeItem(EMAIL_KEY);
+    }
+
+    const teacherLoginSection = document.getElementById("teacher-login-section");
+    const teacherDashboardSection = document.getElementById("teacher-dashboard-section");
+    const teacherLoginForm = document.getElementById("teacher-login-form");
+    const teacherLoginError = document.getElementById("teacher-login-error");
+    const teacherWelcomeBadge = document.getElementById("teacher-welcome-badge");
+
+    function initTeacherView() {
+        const auth = getStoredAuth();
+        if (auth) {
+            teacherLoginSection.style.display = "none";
+            teacherDashboardSection.style.display = "block";
+            const email = getStoredEmail() || "Teacher";
+            teacherWelcomeBadge.textContent = "Signed in as: " + email;
+            loadTeacherExperiments();
+        } else {
+            teacherDashboardSection.style.display = "none";
+            teacherLoginSection.style.display = "block";
+            teacherLoginForm.reset();
+            teacherLoginError.style.display = "none";
+            teacherLoginError.textContent = "";
+        }
+    }
+
+    teacherLoginForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        teacherLoginError.style.display = "none";
+        teacherLoginError.textContent = "";
+
+        const email = document.getElementById("teacher-email").value.trim();
+        const password = document.getElementById("teacher-password").value;
+
+        if (!email || !password) {
+            teacherLoginError.textContent = "Email and password are required.";
+            teacherLoginError.style.display = "block";
+            return;
+        }
+
+        const authHeader = "Basic " + btoa(email + ":" + password);
+
+        try {
+            const response = await fetch("/api/experiments/supervisor/me", {
+                headers: { "Authorization": authHeader }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error("Invalid credentials or an active teacher account is required.");
+                }
+                throw new Error("Login failed with status code " + response.status + ".");
+            }
+
+            setStoredAuth(authHeader, email);
+            teacherLoginForm.reset();
+            initTeacherView();
+            showTeacherAlert("Signed in successfully.", "success");
+        } catch (error) {
+            clearStoredAuth();
+            teacherLoginError.textContent = error.message;
+            teacherLoginError.style.display = "block";
+        }
+    });
+
+    function teacherLogout() {
+        clearStoredAuth();
+        closeExperimentModal();
+        closeSlotModal();
+        initTeacherView();
+        showTeacherAlert("You have been signed out.", "success");
+    }
+
+    async function teacherFetch(url, options = {}) {
+        const auth = getStoredAuth();
+        if (!auth) {
+            teacherLogout();
+            throw new Error("Authentication required. Please sign in.");
+        }
+
+        const headers = {
+            "Authorization": auth,
+            ...(options.headers || {})
+        };
+
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401) {
+            teacherLogout();
+            showTeacherAlert("Session expired or invalid credentials. Please sign in again.", "error");
+            throw new Error("Session expired. Please sign in again.");
+        }
+
+        return response;
+    }
+
+    /* ==========================================================================
+       TEACHER ALERT / NOTIFICATIONS
+       ========================================================================== */
+    const alertBox = document.getElementById("teacher-alert");
+    const alertText = document.getElementById("teacher-alert-text");
+    let alertTimeout = null;
+
+    function showTeacherAlert(message, type = "success") {
+        if (alertTimeout) clearTimeout(alertTimeout);
+        alertText.textContent = message;
+        alertBox.className = "teacher-alert " + (type === "error" ? "alert-error" : "alert-success");
+        alertBox.style.display = "flex";
+        alertTimeout = setTimeout(() => {
+            clearTeacherAlert();
+        }, 6000);
+    }
+
+    function clearTeacherAlert() {
+        if (alertTimeout) clearTimeout(alertTimeout);
+        alertBox.style.display = "none";
+        alertText.textContent = "";
+    }
+
+    /* ==========================================================================
+       TEACHER EXPERIMENTS MANAGEMENT
+       ========================================================================== */
+    const teacherExpContainer = document.getElementById("teacher-experiments-container");
+    const expModal = document.getElementById("exp-modal");
+    const expForm = document.getElementById("exp-form");
+    const expModalTitle = document.getElementById("exp-modal-title");
+
+    let teacherExperiments = [];
+
+    async function loadTeacherExperiments() {
+        teacherExpContainer.textContent = "Loading supervised experiments...";
+        try {
+            const response = await teacherFetch("/api/experiments/supervisor/me");
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error("Active teacher permissions required.");
+                }
+                throw new Error("Could not load experiments (status: " + response.status + ").");
+            }
+
+            teacherExperiments = await response.json();
+            renderTeacherExperiments(teacherExperiments);
+        } catch (error) {
+            teacherExpContainer.replaceChildren();
+            const errP = document.createElement("p");
+            errP.className = "error";
+            errP.textContent = error.message;
+            teacherExpContainer.appendChild(errP);
+        }
+    }
+
+    function renderTeacherExperiments(experiments) {
+        teacherExpContainer.replaceChildren();
+
+        if (!experiments || !experiments.length) {
+            const p = document.createElement("p");
+            p.className = "muted";
+            p.textContent = "No experiments found. Click '+ Create Experiment' above to create one.";
+            teacherExpContainer.appendChild(p);
+            return;
+        }
+
+        experiments.forEach(exp => {
+            const card = document.createElement("div");
+            card.className = "teacher-exp-card";
+
+            // Header Row
+            const header = document.createElement("div");
+            header.className = "teacher-exp-card-header";
+
+            const title = document.createElement("h4");
+            title.textContent = exp.title;
+
+            const badge = document.createElement("span");
+            badge.className = "badge " + (exp.active ? "badge-active" : "badge-inactive");
+            badge.textContent = exp.active ? "Active" : "Inactive";
+
+            header.append(title, badge);
+
+            // Details Row
+            const details = document.createElement("div");
+            details.className = "teacher-exp-details";
+
+            const lab = document.createElement("span");
+            lab.textContent = "Laboratory: " + (exp.laboratoryName || "None");
+
+            const dur = document.createElement("span");
+            dur.textContent = "Duration: " + (exp.durationMinutes ? exp.durationMinutes + " mins" : "Not specified");
+
+            details.append(lab, dur);
+
+            // Description
+            const desc = document.createElement("div");
+            desc.className = "teacher-exp-desc";
+            desc.textContent = exp.description || "No description provided.";
+
+            // Actions Row
+            const actions = document.createElement("div");
+            actions.className = "card-actions";
+
+            const slotsBtn = document.createElement("button");
+            slotsBtn.type = "button";
+            slotsBtn.className = "btn-secondary btn-sm";
+            slotsBtn.textContent = "Manage Slots";
+            slotsBtn.addEventListener("click", () => {
+                openSlotModal(exp.experimentId, exp.title);
+            });
+            actions.appendChild(slotsBtn);
+
+            if (exp.active) {
+                const editBtn = document.createElement("button");
+                editBtn.type = "button";
+                editBtn.className = "btn-secondary btn-sm";
+                editBtn.textContent = "Edit";
+                editBtn.addEventListener("click", () => {
+                    openEditExperimentModal(exp);
+                });
+
+                const deactivateBtn = document.createElement("button");
+                deactivateBtn.type = "button";
+                deactivateBtn.className = "btn-danger btn-sm";
+                deactivateBtn.textContent = "Deactivate";
+                deactivateBtn.addEventListener("click", () => {
+                    deactivateExperiment(exp.experimentId, exp.title);
+                });
+
+                actions.append(editBtn, deactivateBtn);
+            }
+
+            card.append(header, details, desc, actions);
+            teacherExpContainer.appendChild(card);
+        });
+    }
+
+    function openCreateExperimentModal() {
+        clearTeacherAlert();
+        expForm.reset();
+        document.getElementById("exp-id").value = "";
+        expModalTitle.textContent = "Create New Experiment";
+        expModal.style.display = "flex";
+    }
+
+    function openEditExperimentModal(exp) {
+        clearTeacherAlert();
+        expForm.reset();
+        document.getElementById("exp-id").value = exp.experimentId;
+        document.getElementById("exp-title").value = exp.title || "";
+        document.getElementById("exp-laboratory").value = exp.laboratoryName || "";
+        document.getElementById("exp-duration").value = exp.durationMinutes || "";
+        document.getElementById("exp-desc").value = exp.description || "";
+        expModalTitle.textContent = "Edit Experiment #" + exp.experimentId;
+        expModal.style.display = "flex";
+    }
+
+    function closeExperimentModal() {
+        expModal.style.display = "none";
+        expForm.reset();
+    }
+
+    expForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        clearTeacherAlert();
+
+        const id = document.getElementById("exp-id").value;
+        const payload = {
+            title: document.getElementById("exp-title").value.trim(),
+            laboratoryName: document.getElementById("exp-laboratory").value.trim(),
+            durationMinutes: parseInt(document.getElementById("exp-duration").value, 10),
+            description: document.getElementById("exp-desc").value.trim()
+        };
+
+        const isEdit = !!id;
+        const url = isEdit ? "/api/experiments/" + id : "/api/experiments";
+        const method = isEdit ? "PUT" : "POST";
+
+        try {
+            const response = await teacherFetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                let errorMsg = "Failed to save experiment.";
+                try {
+                    const errObj = await response.json();
+                    errorMsg = errObj.message || errObj.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
+            }
+
+            closeExperimentModal();
+            showTeacherAlert(isEdit ? "Experiment updated successfully." : "Experiment created successfully.", "success");
+            loadTeacherExperiments();
+        } catch (error) {
+            showTeacherAlert(error.message, "error");
+        }
+    });
+
+    async function deactivateExperiment(id, title) {
+        clearTeacherAlert();
+        const confirmed = window.confirm("Are you sure you want to deactivate experiment '" + title + "'?\nStudents will no longer see this experiment.");
+        if (!confirmed) return;
+
+        try {
+            const response = await teacherFetch("/api/experiments/" + id, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                let errorMsg = "Failed to deactivate experiment.";
+                try {
+                    const errObj = await response.json();
+                    errorMsg = errObj.message || errObj.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
+            }
+
+            showTeacherAlert("Experiment '" + title + "' deactivated.", "success");
+            loadTeacherExperiments();
+        } catch (error) {
+            showTeacherAlert(error.message, "error");
+        }
+    }
+
+    /* ==========================================================================
+       TEACHER SLOT MANAGEMENT
+       ========================================================================== */
+    const slotModal = document.getElementById("slot-modal");
+    const slotModalTitle = document.getElementById("slot-modal-title");
+    const slotModalSubtitle = document.getElementById("slot-modal-subtitle");
+    const slotFormWrapper = document.getElementById("slot-form-wrapper");
+    const slotFormTitle = document.getElementById("slot-form-title");
+    const slotForm = document.getElementById("slot-form");
+    const teacherSlotsContainer = document.getElementById("teacher-slots-container");
+
+    let currentExpId = null;
+
+    function openSlotModal(experimentId, title) {
+        clearTeacherAlert();
+        currentExpId = experimentId;
+        slotModalTitle.textContent = "Manage Slots: " + title;
+        slotModalSubtitle.textContent = "Experiment ID: " + experimentId;
+        hideSlotForm();
+        slotModal.style.display = "flex";
+        loadTeacherSlots(experimentId);
+    }
+
+    function closeSlotModal() {
+        slotModal.style.display = "none";
+        hideSlotForm();
+        currentExpId = null;
+    }
+
+    function toggleSlotForm() {
+        if (slotFormWrapper.style.display === "none") {
+            showAddSlotForm();
+        } else {
+            hideSlotForm();
+        }
+    }
+
+    function showAddSlotForm() {
+        slotForm.reset();
+        document.getElementById("slot-id").value = "";
+        slotFormTitle.textContent = "Add New Time Slot";
+        slotFormWrapper.style.display = "block";
+    }
+
+    function showEditSlotForm(slot) {
+        slotForm.reset();
+        document.getElementById("slot-id").value = slot.slotId;
+        // Format ISO local datetime string to YYYY-MM-DDTHH:mm for datetime-local picker
+        if (slot.startTime) {
+            document.getElementById("slot-start-time").value = slot.startTime.substring(0, 16);
+        }
+        if (slot.endTime) {
+            document.getElementById("slot-end-time").value = slot.endTime.substring(0, 16);
+        }
+        document.getElementById("slot-capacity").value = slot.capacity || "";
+        slotFormTitle.textContent = "Edit Slot #" + slot.slotId;
+        slotFormWrapper.style.display = "block";
+        slotFormWrapper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function hideSlotForm() {
+        slotFormWrapper.style.display = "none";
+        slotForm.reset();
+    }
+
+    async function loadTeacherSlots(experimentId) {
+        teacherSlotsContainer.textContent = "Loading slots...";
+        try {
+            const response = await teacherFetch("/api/experiments/supervisor/" + experimentId + "/slots");
+            if (!response.ok) {
+                let errorMsg = "Could not load slots.";
+                try {
+                    const errObj = await response.json();
+                    errorMsg = errObj.message || errObj.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
+            }
+
+            const slots = await response.json();
+            renderTeacherSlots(slots);
+        } catch (error) {
+            teacherSlotsContainer.replaceChildren();
+            const p = document.createElement("p");
+            p.className = "error";
+            p.textContent = error.message;
+            teacherSlotsContainer.appendChild(p);
+        }
+    }
+
+    function renderTeacherSlots(slots) {
+        teacherSlotsContainer.replaceChildren();
+
+        if (!slots || !slots.length) {
+            const p = document.createElement("p");
+            p.className = "muted";
+            p.textContent = "No time slots configured for this experiment yet.";
+            teacherSlotsContainer.appendChild(p);
+            return;
+        }
+
+        const table = document.createElement("table");
+        table.className = "slot-table";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+
+        const thId = document.createElement("th");
+        thId.textContent = "Slot ID";
+        const thStart = document.createElement("th");
+        thStart.textContent = "Start Time";
+        const thEnd = document.createElement("th");
+        thEnd.textContent = "End Time";
+        const thCap = document.createElement("th");
+        thCap.textContent = "Capacity";
+        const thActions = document.createElement("th");
+        thActions.textContent = "Actions";
+
+        headerRow.append(thId, thStart, thEnd, thCap, thActions);
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        slots.forEach(slot => {
+            const tr = document.createElement("tr");
+
+            const tdId = document.createElement("td");
+            tdId.textContent = "#" + slot.slotId;
+
+            const tdStart = document.createElement("td");
+            tdStart.textContent = slot.startTime ? slot.startTime.replace("T", " ") : "Not set";
+
+            const tdEnd = document.createElement("td");
+            tdEnd.textContent = slot.endTime ? slot.endTime.replace("T", " ") : "Not set";
+
+            const tdCap = document.createElement("td");
+            tdCap.textContent = slot.capacity;
+
+            const tdActions = document.createElement("td");
+            const btnGroup = document.createElement("div");
+            btnGroup.style.display = "flex";
+            btnGroup.style.gap = "6px";
+
+            const editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "btn-secondary btn-sm";
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", () => {
+                showEditSlotForm(slot);
+            });
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "btn-danger btn-sm";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", () => {
+                deleteSlot(slot.slotId);
+            });
+
+            btnGroup.append(editBtn, delBtn);
+            tdActions.appendChild(btnGroup);
+
+            tr.append(tdId, tdStart, tdEnd, tdCap, tdActions);
+            tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        teacherSlotsContainer.appendChild(table);
+    }
+
+    slotForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        clearTeacherAlert();
+
+        const slotId = document.getElementById("slot-id").value;
+        const startRaw = document.getElementById("slot-start-time").value;
+        const endRaw = document.getElementById("slot-end-time").value;
+        const capacity = parseInt(document.getElementById("slot-capacity").value, 10);
+
+        if (!startRaw || !endRaw) {
+            showTeacherAlert("Both start time and end time are required.", "error");
+            return;
+        }
+
+        // Format to ISO string if missing seconds (e.g. 2026-10-21T10:00:00)
+        const startTime = startRaw.length === 16 ? startRaw + ":00" : startRaw;
+        const endTime = endRaw.length === 16 ? endRaw + ":00" : endRaw;
+
+        const payload = {
+            startTime: startTime,
+            endTime: endTime,
+            capacity: capacity
+        };
+
+        const isEdit = !!slotId;
+        const url = isEdit
+            ? "/api/experiments/slots/" + slotId
+            : "/api/experiments/" + currentExpId + "/slots";
+        const method = isEdit ? "PUT" : "POST";
+
+        try {
+            const response = await teacherFetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                let errorMsg = "Failed to save slot.";
+                try {
+                    const errObj = await response.json();
+                    errorMsg = errObj.message || errObj.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
+            }
+
+            hideSlotForm();
+            showTeacherAlert(isEdit ? "Slot updated successfully." : "Slot created successfully.", "success");
+            loadTeacherSlots(currentExpId);
+        } catch (error) {
+            showTeacherAlert(error.message, "error");
+        }
+    });
+
+    async function deleteSlot(slotId) {
+        clearTeacherAlert();
+        const confirmed = window.confirm("Are you sure you want to delete slot #" + slotId + "?\nNote: Slots with active or existing bookings cannot be deleted.");
+        if (!confirmed) return;
+
+        try {
+            const response = await teacherFetch("/api/experiments/slots/" + slotId, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                let errorMsg = "Failed to delete slot.";
+                try {
+                    const errObj = await response.json();
+                    errorMsg = errObj.message || errObj.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
+            }
+
+            showTeacherAlert("Slot #" + slotId + " deleted successfully.", "success");
+            loadTeacherSlots(currentExpId);
+        } catch (error) {
+            showTeacherAlert(error.message, "error");
+        }
+    }
+
+    // Initial student load
     loadExperiments();
 </script>
 </body>
