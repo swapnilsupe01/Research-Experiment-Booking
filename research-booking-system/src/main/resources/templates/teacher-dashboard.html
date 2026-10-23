@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Portal — Research Experiment Booking System</title>
+    <style>
+        :root {
+            font-family: Arial, sans-serif;
+            color: #172033;
+            background: #f3f6fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { margin: 0; }
+
+        header {
+            background: #173b70;
+            color: white;
+            padding: 18px 6%;
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        header h1 { margin: 0 0 4px; font-size: 24px; }
+        header p { margin: 0; color: #dce8fa; font-size: 14px; }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #dce8fa;
+        }
+
+        .user-badge strong {
+            color: white;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+
+        main { max-width: 1100px; margin: 28px auto; padding: 0 20px; }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px #14213d0c;
+        }
+
+        h2 { margin-top: 0; color: #173b70; }
+        h3 { color: #1e293b; }
+
+        .teacher-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .teacher-header-row h2 { margin: 0; }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-danger:hover { background: #dc2626; }
+
+        .btn-delete {
+            background: #7f1d1d;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-delete:hover { background: #450a0a; transform: translateY(-1px); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .experiment-card {
+            border: 1px solid #dce4f0;
+            border-radius: 10px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #ffffff;
+            transition: box-shadow 0.2s;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .card-header-row h3 { margin: 0; color: #173b70; font-size: 18px; }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-active { background: #dcfce7; color: #15803d; }
+        .status-inactive { background: #fee2e2; color: #b91c1c; }
+
+        .card-details {
+            font-size: 13px;
+            color: #64748b;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #334155;
+            margin: 8px 0 16px;
+            white-space: pre-wrap;
+            flex-grow: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-large { max-width: 760px; }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h3 { margin: 0; color: #173b70; }
+
+        .modal-close {
+            background: transparent;
+            border: 0;
+            color: #64748b;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 6px;
+        }
+        .modal-close:hover { color: #0f172a; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .teacher-alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .teacher-alert-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .teacher-alert-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .slot-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 14px;
+        }
+
+        .slot-table th, .slot-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .slot-table th { background: #f8fafc; color: #475569; font-weight: 600; }
+
+        .slot-form-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .slot-form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .btn-slot-action {
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-right: 4px;
+        }
+
+        /* Portal Navigation Tabs */
+        .portal-nav {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-tabs-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .nav-tab-btn {
+            background: none;
+            border: none;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .nav-tab-btn:hover {
+            color: #173b70;
+            background: #f8fafc;
+        }
+
+        .nav-tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            background: #ffffff;
+        }
+
+        .badge-pending-count {
+            background: #f59e0b;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        /* Requests Table */
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .requests-table th, .requests-table td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .requests-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .requests-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .ref-tag {
+            font-family: monospace;
+            font-weight: 700;
+            color: #1e40af;
+            background: #eff6ff;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .status-pill-confirmed {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-pill-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-confirm-allot {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-confirm-allot:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .btn-reject {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 7px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 6px;
+            transition: background 0.2s;
+        }
+
+        .btn-reject:hover {
+            background: #fca5a5;
+            color: #7f1d1d;
+        }
+
+        .empty-requests-box {
+            text-align: center;
+            padding: 42px 20px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            color: #64748b;
+        }
+
+        .empty-requests-box h4 {
+            margin: 0 0 6px;
+            color: #1e293b;
+            font-size: 16px;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 22px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <div>
+            <h1>Research Experiment Booking System</h1>
+            <p>Teacher Portal — Manage research experiments, participants and time slots</p>
+        </div>
+        <div class="user-nav">
+            <span class="user-badge">
+                Logged in as: <strong th:text="${currentUserEmail != null ? currentUserEmail : 'Teacher'}">teacher@example.com</strong> (Teacher)
+            </span>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" id="logout-button" class="btn-logout">Sign Out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<nav class="portal-nav" aria-label="Teacher Dashboard Navigation">
+    <div class="nav-tabs-container">
+        <ul class="nav-tabs" role="tablist">
+            <li>
+                <button type="button" class="nav-tab-btn active" id="teacher-tab-experiments" onclick="switchTeacherTab('experiments')">
+                    🔬 My Experiments & Slots
+                </button>
+            </li>
+            <li>
+                <button type="button" class="nav-tab-btn" id="teacher-tab-requests" onclick="switchTeacherTab('requests')">
+                    📋 Student Slot Requests & Lab Allotment
+                    <span id="teacher-pending-badge" class="badge-pending-count" style="display: none;">0</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" class="nav-tab-btn" id="teacher-tab-all" onclick="switchTeacherTab('all')">
+                    🌐 View All Sections
+                </button>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main>
+    <!-- Feedback Alert -->
+    <div id="teacher-alert" class="teacher-alert" style="display: none;" role="alert">
+        <span id="teacher-alert-text"></span>
+        <button type="button" class="modal-close" onclick="hideTeacherAlert()">&times;</button>
+    </div>
+
+    <!-- Section 1: My Experiments -->
+    <section id="section-experiments">
+        <div class="teacher-header-row">
+            <div>
+                <h2>My Experiments</h2>
+                <p style="margin: 4px 0 0; color: #64748b; font-size: 13px;">Manage created experiments and configure slot schedules for student participation.</p>
+            </div>
+            <button type="button" id="btn-create-experiment" class="btn-primary" onclick="openCreateExperimentModal()">
+                + Create New Experiment
+            </button>
+        </div>
+
+        <div id="teacher-experiments" class="grid" aria-live="polite">
+            Loading your experiments...
+        </div>
+    </section>
+
+    <!-- Section 2: Student Slot Requests & Lab Allotment -->
+    <section id="section-requests" style="display: none;">
+        <div class="teacher-header-row">
+            <div>
+                <h2>Student Slot Requests & Lab Allotment</h2>
+                <p style="margin: 4px 0 0; color: #64748b; font-size: 13px;">Review incoming student slot requests, allocate lab facilities/desks, and confirm bookings.</p>
+            </div>
+            <button type="button" class="btn-secondary" onclick="loadSharedBookings(); renderTeacherRequests(); showTeacherAlert('Requests refreshed.', 'success');">
+                🔄 Refresh Requests
+            </button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button type="button" id="t-filter-ALL" class="filter-btn active" onclick="filterTeacherRequests('ALL')">
+                All Requests (<span id="t-count-all">0</span>)
+            </button>
+            <button type="button" id="t-filter-PENDING" class="filter-btn" onclick="filterTeacherRequests('PENDING')">
+                Pending Allotment (<span id="t-count-pending">0</span>)
+            </button>
+            <button type="button" id="t-filter-CONFIRMED" class="filter-btn" onclick="filterTeacherRequests('CONFIRMED')">
+                Confirmed & Allotted (<span id="t-count-confirmed">0</span>)
+            </button>
+            <button type="button" id="t-filter-CANCELLED" class="filter-btn" onclick="filterTeacherRequests('CANCELLED')">
+                Cancelled / Released (<span id="t-count-cancelled">0</span>)
+            </button>
+        </div>
+
+        <div id="requests-table-container">
+            Loading student requests...
+        </div>
+    </section>
+</main>
+
+<!-- Create / Edit Experiment Modal -->
+<div id="experiment-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="experiment-modal-title">Create Experiment</h3>
+            <button type="button" class="modal-close" onclick="closeExperimentModal()">&times;</button>
+        </div>
+        <form id="experiment-form">
+            <input type="hidden" id="modal-exp-id">
+            <div class="form-group">
+                <label for="modal-exp-title">Title *</label>
+                <input type="text" id="modal-exp-title" required minlength="3" placeholder="e.g. Cognitive Memory Assessment">
+            </div>
+            <div class="form-group">
+                <label for="modal-exp-desc">Description</label>
+                <textarea id="modal-exp-desc" rows="3" placeholder="Overview of the study..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="modal-exp-lab">Laboratory Name</label>
+                <input type="text" id="modal-exp-lab" placeholder="e.g. Neuroscience Lab 4B">
+            </div>
+            <div class="form-group">
+                <label for="modal-exp-duration">Duration (minutes) *</label>
+                <input type="number" id="modal-exp-duration" min="5" max="480" required value="60">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeExperimentModal()">Cancel</button>
+                <button type="submit" id="btn-save-experiment" class="btn-primary">Save Experiment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manage Slots Modal -->
+<div id="slots-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <div>
+                <h3 id="slots-modal-title">Manage Experiment Slots</h3>
+                <span id="slots-modal-subtitle" style="font-size: 13px; color: #64748b;"></span>
+            </div>
+            <button type="button" class="modal-close" onclick="closeSlotsModal()">&times;</button>
+        </div>
+
+        <!-- Add / Edit Slot Form -->
+        <div class="slot-form-box">
+            <h4 id="slot-form-title" style="margin: 0 0 12px; color: #173b70;">Schedule New Slot</h4>
+            <form id="slot-form">
+                <input type="hidden" id="modal-slot-id">
+                <div class="slot-form-row">
+                    <div class="form-group">
+                        <label for="slot-start-time">Start Time *</label>
+                        <input type="datetime-local" id="slot-start-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slot-end-time">End Time *</label>
+                        <input type="datetime-local" id="slot-end-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slot-capacity">Capacity *</label>
+                        <input type="number" id="slot-capacity" min="1" max="100" required value="5">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" id="btn-cancel-slot-edit" class="btn-secondary" style="display: none;" onclick="resetSlotForm()">Cancel Edit</button>
+                    <button type="submit" id="btn-save-slot" class="btn-primary">Add Slot</button>
+                </div>
+            </form>
+        </div>
+
+        <h4 style="margin: 18px 0 8px; color: #1e293b;">Existing Slots</h4>
+        <div id="slots-list-container">
+            Loading slots...
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeSlotsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Lab Allotment & Confirmation Modal -->
+<div id="allotment-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="allotment-modal-title">Confirm & Allot Laboratory Slot</h3>
+            <button type="button" class="modal-close" onclick="closeAllotmentModal()">&times;</button>
+        </div>
+        <form id="allotment-form">
+            <input type="hidden" id="modal-allot-id">
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6;">
+                <div><strong>Booking Reference:</strong> <span id="modal-allot-ref" class="ref-tag"></span></div>
+                <div style="margin-top: 4px;"><strong>Student:</strong> <span id="modal-allot-student" style="color: #1e293b; font-weight: 600;"></span></div>
+                <div style="margin-top: 4px;"><strong>Experiment:</strong> <span id="modal-allot-exp" style="color: #173b70; font-weight: 600;"></span></div>
+                <div style="margin-top: 4px;"><strong>Requested Time:</strong> <span id="modal-allot-time" style="color: #334155;"></span></div>
+            </div>
+
+            <div class="form-group">
+                <label for="modal-allot-lab">Allotted Laboratory / Facility *</label>
+                <input type="text" id="modal-allot-lab" required placeholder="e.g. Cognitive Science Lab (Room 302)">
+            </div>
+            <div class="form-group">
+                <label for="modal-allot-desk">Assigned Workstation / Desk / Station No.</label>
+                <input type="text" id="modal-allot-desk" placeholder="e.g. Workstation B-04 / Station 2">
+            </div>
+            <div class="form-group">
+                <label for="modal-allot-notes">Supervisor Instructions / Notes for Student</label>
+                <textarea id="modal-allot-notes" rows="2" placeholder="e.g. Confirmed by Lab Supervisor. Please bring your student ID and report 10 mins early."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAllotmentModal()">Cancel</button>
+                <button type="submit" id="btn-submit-allotment" class="btn-primary" style="background: #16a34a;">
+                    ✅ Confirm & Allot Lab
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    Research Experiment Booking System &copy; 2026. Teacher Administration Portal.
+</footer>
+
+<script>
+    let currentExpIdForSlots = null;
+
+    async function loadMyExperiments() {
+        const container = document.getElementById("teacher-experiments");
+        try {
+            const response = await fetch("/api/experiments/supervisor/me");
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = "/login?error=true";
+                return;
+            }
+            if (!response.ok) {
+                throw new Error("Failed to load your experiments.");
+            }
+
+            const experiments = await response.json();
+            container.textContent = "";
+
+            if (!experiments || experiments.length === 0) {
+                container.textContent = "You have not created any experiments yet. Click 'Create New Experiment' above to begin.";
+                return;
+            }
+
+            experiments.forEach(exp => {
+                const card = document.createElement("article");
+                card.className = "experiment-card";
+
+                const headerRow = document.createElement("div");
+                headerRow.className = "card-header-row";
+
+                const title = document.createElement("h3");
+                title.textContent = exp.title || "Untitled";
+
+                const badge = document.createElement("span");
+                badge.className = "status-badge " + (exp.active ? "status-active" : "status-inactive");
+                badge.textContent = exp.active ? "Active" : "Inactive";
+
+                headerRow.appendChild(title);
+                headerRow.appendChild(badge);
+
+                const details = document.createElement("div");
+                details.className = "card-details";
+                details.innerHTML = "<strong>Lab:</strong> " + (exp.laboratoryName ? escapeHtml(exp.laboratoryName) : "N/A")
+                        + " | <strong>Duration:</strong> " + (exp.durationMinutes || 0) + " mins";
+
+                const desc = document.createElement("p");
+                desc.className = "card-desc";
+                desc.textContent = exp.description || "No description provided.";
+
+                const actions = document.createElement("div");
+                actions.className = "card-actions";
+
+                const btnSlots = document.createElement("button");
+                btnSlots.className = "btn-secondary";
+                btnSlots.textContent = "Manage Slots";
+                btnSlots.onclick = () => openSlotsModal(exp);
+
+                const btnEdit = document.createElement("button");
+                btnEdit.className = "btn-secondary";
+                btnEdit.textContent = "Edit";
+                btnEdit.onclick = () => openEditExperimentModal(exp);
+
+                actions.appendChild(btnSlots);
+                actions.appendChild(btnEdit);
+
+                if (exp.active) {
+                    const btnDeactivate = document.createElement("button");
+                    btnDeactivate.className = "btn-danger";
+                    btnDeactivate.textContent = "Deactivate";
+                    btnDeactivate.onclick = () => deactivateExperiment(exp.experimentId, exp.title);
+                    actions.appendChild(btnDeactivate);
+                }
+
+                // Delete button — always shown (for both active and inactive experiments)
+                const btnDelete = document.createElement("button");
+                btnDelete.className = "btn-delete";
+                btnDelete.textContent = "🗑 Delete";
+                btnDelete.title = "Permanently remove this experiment and all its slots";
+                btnDelete.onclick = () => deleteExperimentPermanently(exp.experimentId, exp.title);
+                actions.appendChild(btnDelete);
+
+                card.appendChild(headerRow);
+                card.appendChild(details);
+                card.appendChild(desc);
+                card.appendChild(actions);
+
+                container.appendChild(card);
+            });
+        } catch (err) {
+            container.textContent = "Failed to load experiments: " + err.message;
+        }
+    }
+
+    function openCreateExperimentModal() {
+        document.getElementById("experiment-modal-title").textContent = "Create New Experiment";
+        document.getElementById("modal-exp-id").value = "";
+        document.getElementById("modal-exp-title").value = "";
+        document.getElementById("modal-exp-desc").value = "";
+        document.getElementById("modal-exp-lab").value = "";
+        document.getElementById("modal-exp-duration").value = "60";
+        document.getElementById("experiment-modal").style.display = "flex";
+    }
+
+    function openEditExperimentModal(exp) {
+        document.getElementById("experiment-modal-title").textContent = "Edit Experiment";
+        document.getElementById("modal-exp-id").value = exp.experimentId;
+        document.getElementById("modal-exp-title").value = exp.title || "";
+        document.getElementById("modal-exp-desc").value = exp.description || "";
+        document.getElementById("modal-exp-lab").value = exp.laboratoryName || "";
+        document.getElementById("modal-exp-duration").value = exp.durationMinutes || 60;
+        document.getElementById("experiment-modal").style.display = "flex";
+    }
+
+    function closeExperimentModal() {
+        document.getElementById("experiment-modal").style.display = "none";
+    }
+
+    document.getElementById("experiment-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("modal-exp-id").value;
+        const payload = {
+            title: document.getElementById("modal-exp-title").value.trim(),
+            description: document.getElementById("modal-exp-desc").value.trim(),
+            laboratoryName: document.getElementById("modal-exp-lab").value.trim(),
+            durationMinutes: parseInt(document.getElementById("modal-exp-duration").value, 10)
+        };
+
+        const url = id ? "/api/experiments/" + id : "/api/experiments";
+        const method = id ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.status === 401 || res.status === 403) {
+                showTeacherAlert("Your session has expired. Redirecting to login...", "error");
+                setTimeout(() => { window.location.href = "/login"; }, 1500);
+                return;
+            }
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const msg = errData.message || (errData.error ? ("Error: " + errData.error) : "Failed to save experiment. Please ensure title and laboratory name are provided.");
+                throw new Error(msg);
+            }
+
+            closeExperimentModal();
+            showTeacherAlert("Experiment saved successfully!", "success");
+            loadMyExperiments();
+        } catch (err) {
+            showTeacherAlert(err.message, "error");
+        }
+    });
+
+    async function deleteExperimentPermanently(id, title) {
+        if (!confirm("⚠️ DELETE '" + title + "'?\n\nThis will PERMANENTLY remove the experiment and ALL its slots from the database.\nThis action CANNOT be undone.\n\nClick OK only if you are sure.")) {
+            return;
+        }
+        // Second confirmation for safety
+        if (!confirm("Final confirmation: Permanently delete '" + title + "' and all its time slots?")) {
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/experiments/" + id + "/permanent", { method: "DELETE" });
+            if (res.status === 401 || res.status === 403) {
+                showTeacherAlert("Session expired. Please sign in again.", "error");
+                window.location.href = "/login";
+                return;
+            }
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to delete experiment.");
+            }
+            showTeacherAlert("'" + title + "' has been permanently deleted.", "success");
+            loadMyExperiments();
+        } catch (err) {
+            showTeacherAlert(err.message, "error");
+        }
+    }
+
+    async function deactivateExperiment(id, title) {
+        if (!confirm("Are you sure you want to deactivate '" + title + "'? It will no longer be visible to students for new bookings.")) {
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/experiments/" + id, { method: "DELETE" });
+            if (res.status === 401 || res.status === 403) {
+                showTeacherAlert("Session expired. Please sign in again.", "error");
+                window.location.href = "/login";
+                return;
+            }
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to deactivate experiment.");
+            }
+            showTeacherAlert("Experiment deactivated successfully.", "success");
+            loadMyExperiments();
+        } catch (err) {
+            showTeacherAlert(err.message, "error");
+        }
+    }
+
+    // --- Slot Management ---
+    function openSlotsModal(exp) {
+        currentExpIdForSlots = exp.experimentId;
+        document.getElementById("slots-modal-title").textContent = "Manage Slots: " + exp.title;
+        document.getElementById("slots-modal-subtitle").textContent = "Lab: " + (exp.laboratoryName || "N/A") + " | Duration: " + exp.durationMinutes + " mins";
+        resetSlotForm();
+        document.getElementById("slots-modal").style.display = "flex";
+        loadSlotsForCurrentExp();
+    }
+
+    function closeSlotsModal() {
+        document.getElementById("slots-modal").style.display = "none";
+        currentExpIdForSlots = null;
+    }
+
+    function resetSlotForm() {
+        document.getElementById("slot-form").reset();
+        document.getElementById("modal-slot-id").value = "";
+        document.getElementById("slot-form-title").textContent = "Schedule New Slot";
+        document.getElementById("btn-save-slot").textContent = "Add Slot";
+        document.getElementById("btn-cancel-slot-edit").style.display = "none";
+
+        // Prefill default future time (tomorrow 10:00 to 11:00) so user never gets "slot in the past"
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(10, 0, 0, 0);
+        const tomorrowEnd = new Date(tomorrow);
+        tomorrowEnd.setHours(11, 0, 0, 0);
+
+        const pad = (n) => String(n).padStart(2, '0');
+        const formatForInput = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+
+        const startInput = document.getElementById("slot-start-time");
+        const endInput = document.getElementById("slot-end-time");
+        if (startInput) startInput.value = formatForInput(tomorrow);
+        if (endInput) endInput.value = formatForInput(tomorrowEnd);
+    }
+
+    async function loadSlotsForCurrentExp() {
+        const container = document.getElementById("slots-list-container");
+        container.textContent = "Loading slots...";
+        try {
+            const res = await fetch("/api/experiments/supervisor/" + currentExpIdForSlots + "/slots");
+            if (res.status === 401 || res.status === 403) {
+                showTeacherAlert("Session expired. Please sign in again.", "error");
+                window.location.href = "/login";
+                return;
+            }
+            if (!res.ok) {
+                throw new Error("Unable to fetch slots.");
+            }
+            const slots = await res.json();
+            container.textContent = "";
+
+            if (!slots || slots.length === 0) {
+                container.textContent = "No slots scheduled yet for this experiment.";
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className = "slot-table";
+            table.innerHTML = "<thead><tr><th>Start Time</th><th>End Time</th><th>Capacity</th><th>Actions</th></tr></thead>";
+
+            const tbody = document.createElement("tbody");
+            slots.forEach(slot => {
+                const tr = document.createElement("tr");
+
+                const tdStart = document.createElement("td");
+                tdStart.textContent = formatDateTime(slot.startTime);
+
+                const tdEnd = document.createElement("td");
+                tdEnd.textContent = formatDateTime(slot.endTime);
+
+                const tdCap = document.createElement("td");
+                tdCap.textContent = slot.capacity;
+
+                const tdActions = document.createElement("td");
+
+                const btnEdit = document.createElement("button");
+                btnEdit.className = "btn-secondary btn-slot-action";
+                btnEdit.textContent = "Edit";
+                btnEdit.onclick = () => populateSlotEdit(slot);
+
+                const btnDel = document.createElement("button");
+                btnDel.className = "btn-danger btn-slot-action";
+                btnDel.textContent = "Delete";
+                btnDel.onclick = () => deleteSlot(slot.slotId);
+
+                tdActions.appendChild(btnEdit);
+                tdActions.appendChild(btnDel);
+
+                tr.appendChild(tdStart);
+                tr.appendChild(tdEnd);
+                tr.appendChild(tdCap);
+                tr.appendChild(tdActions);
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        } catch (err) {
+            container.textContent = "Error loading slots: " + err.message;
+        }
+    }
+
+    function populateSlotEdit(slot) {
+        document.getElementById("slot-form-title").textContent = "Edit Slot #" + slot.slotId;
+        document.getElementById("modal-slot-id").value = slot.slotId;
+        document.getElementById("slot-start-time").value = slot.startTime ? slot.startTime.substring(0, 16) : "";
+        document.getElementById("slot-end-time").value = slot.endTime ? slot.endTime.substring(0, 16) : "";
+        document.getElementById("slot-capacity").value = slot.capacity;
+        document.getElementById("btn-save-slot").textContent = "Update Slot";
+        document.getElementById("btn-cancel-slot-edit").style.display = "inline-block";
+    }
+
+    document.getElementById("slot-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const slotId = document.getElementById("modal-slot-id").value;
+        let startVal = document.getElementById("slot-start-time").value;
+        let endVal = document.getElementById("slot-end-time").value;
+        if (startVal.length === 16) startVal += ":00";
+        if (endVal.length === 16) endVal += ":00";
+
+        // Client-side timing validation
+        const startDate = new Date(startVal);
+        const endDate = new Date(endVal);
+        const now = new Date();
+
+        if (startDate <= now) {
+            showTeacherAlert("Slot start time must be in the future (later than current time).", "error");
+            return;
+        }
+
+        if (endDate <= startDate) {
+            showTeacherAlert("Slot end time must be after the start time.", "error");
+            return;
+        }
+
+        const payload = {
+            startTime: startVal,
+            endTime: endVal,
+            capacity: parseInt(document.getElementById("slot-capacity").value, 10)
+        };
+
+        const isEdit = !!slotId;
+        const url = isEdit ? "/api/experiments/slots/" + slotId : "/api/experiments/" + currentExpIdForSlots + "/slots";
+        const method = isEdit ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.status === 401 || res.status === 403) {
+                showTeacherAlert("Your session has expired. Redirecting to login...", "error");
+                setTimeout(() => { window.location.href = "/login"; }, 1500);
+                return;
+            }
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const msg = errData.message || (errData.error ? ("Error: " + errData.error) : "Failed to save slot. Please ensure dates are valid and in the future.");
+                throw new Error(msg);
+            }
+
+            resetSlotForm();
+            loadSlotsForCurrentExp();
+            showTeacherAlert("Slot " + (isEdit ? "updated" : "created") + " successfully!", "success");
+        } catch (err) {
+            showTeacherAlert(err.message, "error");
+        }
+    });
+
+    async function deleteSlot(slotId) {
+        if (!confirm("Are you sure you want to delete this slot? Active bookings cannot be deleted.")) {
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/experiments/slots/" + slotId, { method: "DELETE" });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to delete slot.");
+            }
+            loadSlotsForCurrentExp();
+            showTeacherAlert("Slot deleted successfully.", "success");
+        } catch (err) {
+            showTeacherAlert(err.message || "Failed to delete slot.", "error");
+        }
+    }
+
+    function showTeacherAlert(text, type) {
+        const alertEl = document.getElementById("teacher-alert");
+        const alertText = document.getElementById("teacher-alert-text");
+        alertText.textContent = text;
+        alertEl.className = "teacher-alert " + (type === "success" ? "teacher-alert-success" : "teacher-alert-error");
+        alertEl.style.display = "flex";
+        setTimeout(() => hideTeacherAlert(), 4000);
+    }
+
+    function hideTeacherAlert() {
+        const alertEl = document.getElementById("teacher-alert");
+        if (alertEl) alertEl.style.display = "none";
+    }
+
+    function formatDateTime(iso) {
+        if (!iso) return "TBD";
+        try {
+            const d = new Date(iso);
+            return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        } catch (e) {
+            return iso;
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // --- Tab Switching ---
+    function switchTeacherTab(tabKey) {
+        const secExperiments = document.getElementById("section-experiments");
+        const secRequests = document.getElementById("section-requests");
+
+        const tabExp = document.getElementById("teacher-tab-experiments");
+        const tabReq = document.getElementById("teacher-tab-requests");
+        const tabAll = document.getElementById("teacher-tab-all");
+
+        [tabExp, tabReq, tabAll].forEach(t => t && t.classList.remove("active"));
+
+        if (tabKey === 'all') {
+            secExperiments.style.display = "block";
+            secRequests.style.display = "block";
+            tabAll.classList.add("active");
+            loadSharedBookings();
+            updateTeacherBadges();
+            renderTeacherRequests();
+            return;
+        }
+
+        if (tabKey === 'requests') {
+            secExperiments.style.display = "none";
+            secRequests.style.display = "block";
+            tabReq.classList.add("active");
+            loadSharedBookings();
+            updateTeacherBadges();
+            renderTeacherRequests();
+        } else {
+            secExperiments.style.display = "block";
+            secRequests.style.display = "none";
+            tabExp.classList.add("active");
+        }
+    }
+
+    // --- Shared Bookings & Lab Allotment Management ---
+    const SHARED_STORAGE_KEY = 'research_experiment_bookings_shared';
+    let sharedBookings = [];
+    let currentTeacherFilter = 'ALL';
+
+    function getRelativeIsoDate(daysOffset, hours, minutes) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysOffset);
+        d.setHours(hours, minutes, 0, 0);
+        return d.toISOString();
+    }
+
+    function getDefaultSeedBookings() {
+        return [
+            {
+                id: "DEMO-BK-1081",
+                studentEmail: "student@example.com",
+                studentName: "Alex Morgan",
+                experimentId: 1,
+                experimentTitle: "Cognitive Load & Working Memory in High-Noise Environments",
+                laboratory: "Neuro-Cognitive Lab (Room 302)",
+                allottedLab: "Neuro-Cognitive Lab (Room 302)",
+                allotmentNotes: "Awaiting Teacher Allotment",
+                startTime: getRelativeIsoDate(1, 10, 0),
+                endTime: getRelativeIsoDate(1, 11, 30),
+                status: "PENDING",
+                remarks: "Submitted — awaiting teacher confirmation & lab allotment",
+                bookedAt: "Today, 09:15 AM",
+                isDemo: true
+            },
+            {
+                id: "DEMO-BK-1054",
+                studentEmail: "student@example.com",
+                studentName: "Alex Morgan",
+                experimentId: 2,
+                experimentTitle: "VR Spatial Navigation and Sensorimotor Adaptation",
+                laboratory: "Human-Computer Interaction Lab (Annex B)",
+                allottedLab: "HCI Lab - Workstation VR-02",
+                allotmentNotes: "Station 02 Assigned. Bring Student ID.",
+                startTime: getRelativeIsoDate(3, 14, 0),
+                endTime: getRelativeIsoDate(3, 15, 30),
+                status: "CONFIRMED",
+                remarks: "Confirmed & Allotted by Lab Supervisor Dr. Vance",
+                bookedAt: "Yesterday, 03:40 PM",
+                isDemo: true
+            },
+            {
+                id: "DEMO-BK-1020",
+                studentEmail: "student@example.com",
+                studentName: "Alex Morgan",
+                experimentId: 3,
+                experimentTitle: "Eye-Tracking Usability Evaluation for Academic Portals",
+                laboratory: "Behavioral Informatics Lab (Room 114)",
+                allottedLab: "Behavioral Informatics Lab (Room 114)",
+                allotmentNotes: "Released",
+                startTime: getRelativeIsoDate(-2, 11, 0),
+                endTime: getRelativeIsoDate(-2, 12, 0),
+                status: "CANCELLED",
+                remarks: "Cancelled by student due to schedule conflict",
+                bookedAt: "Oct 18, 2026, 11:15 AM",
+                isDemo: true
+            }
+        ];
+    }
+
+    function loadSharedBookings() {
+        try {
+            const raw = localStorage.getItem(SHARED_STORAGE_KEY);
+            if (raw) {
+                let parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    parsed.forEach(b => {
+                        if (b.studentEmail === "student@example.com" || !b.studentEmail) {
+                            b.studentEmail = "swapnilsupe24@gmail.com";
+                            b.studentName = "Swapnil Supe";
+                        }
+                        if (b.id && b.id.startsWith("DEMO-BK-")) {
+                            b.id = b.id.replace("DEMO-", "");
+                        }
+                    });
+
+                    // Keep student bookings for actual experiments
+                    const realBookings = parsed.filter(b => 
+                        b.experimentTitle === "chem lab" || b.experimentTitle === "Computer Vision Research Experiment" || b.studentEmail === "swapnilsupe24@gmail.com"
+                    );
+                    sharedBookings = realBookings.length > 0 ? realBookings : parsed;
+                    saveSharedBookings();
+                    updateTeacherBadges();
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not load shared bookings:", e);
+        }
+        sharedBookings = [];
+        saveSharedBookings();
+        updateTeacherBadges();
+    }
+
+    function saveSharedBookings() {
+        try {
+            localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(sharedBookings));
+        } catch (e) {
+            console.warn("Could not save shared bookings:", e);
+        }
+    }
+
+    function updateTeacherBadges() {
+        const total = sharedBookings.length;
+        const pending = sharedBookings.filter(b => b.status === 'PENDING').length;
+        const confirmed = sharedBookings.filter(b => b.status === 'CONFIRMED').length;
+        const cancelled = sharedBookings.filter(b => b.status === 'CANCELLED').length;
+
+        const countAll = document.getElementById("t-count-all");
+        const countPending = document.getElementById("t-count-pending");
+        const countConfirmed = document.getElementById("t-count-confirmed");
+        const countCancelled = document.getElementById("t-count-cancelled");
+
+        if (countAll) countAll.textContent = total;
+        if (countPending) countPending.textContent = pending;
+        if (countConfirmed) countConfirmed.textContent = confirmed;
+        if (countCancelled) countCancelled.textContent = cancelled;
+
+        const navBadge = document.getElementById("teacher-pending-badge");
+        if (navBadge) {
+            navBadge.textContent = pending;
+            navBadge.style.display = pending > 0 ? "inline-block" : "none";
+        }
+    }
+
+    function filterTeacherRequests(status) {
+        currentTeacherFilter = status;
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.classList.remove("active");
+        });
+        const activeBtn = document.getElementById("t-filter-" + status);
+        if (activeBtn) activeBtn.classList.add("active");
+        renderTeacherRequests();
+    }
+
+    function renderTeacherRequests() {
+        const container = document.getElementById("requests-table-container");
+        if (!container) return;
+
+        const filtered = currentTeacherFilter === 'ALL'
+            ? sharedBookings
+            : sharedBookings.filter(b => b.status === currentTeacherFilter);
+
+        if (!filtered || filtered.length === 0) {
+            container.innerHTML = `
+                <div class="empty-requests-box">
+                    <h4>No Slot Requests Found</h4>
+                    <p>There are no student slot requests under the "<strong>${currentTeacherFilter}</strong>" category.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <table class="requests-table">
+                <thead>
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Student Participant</th>
+                        <th>Experiment</th>
+                        <th>Laboratory & Allotment</th>
+                        <th>Slot Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        filtered.forEach(b => {
+            let statusPillClass = 'status-pill-pending';
+            if (b.status === 'CONFIRMED') statusPillClass = 'status-pill-confirmed';
+            if (b.status === 'CANCELLED') statusPillClass = 'status-pill-cancelled';
+
+            let actionHtml = '';
+            if (b.status === 'PENDING') {
+                actionHtml = `
+                    <button type="button" class="btn-confirm-allot" onclick="openAllotmentModal('${b.id}')">
+                        ✅ Confirm & Allot Lab
+                    </button>
+                    <button type="button" class="btn-reject" onclick="rejectBooking('${b.id}')">
+                        ❌ Reject
+                    </button>
+                `;
+            } else if (b.status === 'CONFIRMED') {
+                actionHtml = `
+                    <span style="color: #166534; font-size: 13px; font-weight: 600;">✅ Allotted</span>
+                    <button type="button" class="btn-secondary" style="font-size: 11px; padding: 4px 8px; margin-left: 6px;" onclick="openAllotmentModal('${b.id}')">
+                        Edit
+                    </button>
+                `;
+            } else {
+                actionHtml = `<span style="color: #94a3b8; font-size: 13px;">Closed</span>`;
+            }
+
+            let allotmentHtml = `<strong>${escapeHtml(b.allottedLab || b.laboratory || 'TBD')}</strong>`;
+            if (b.allotmentNotes && b.status === 'CONFIRMED') {
+                allotmentHtml += `<div style="font-size: 12px; color: #166534; margin-top: 2px;">📍 ${escapeHtml(b.allotmentNotes)}</div>`;
+            } else if (b.status === 'PENDING') {
+                allotmentHtml += `<div style="font-size: 12px; color: #92400e; margin-top: 2px;">⏳ Pending Lab Allotment</div>`;
+            }
+
+            html += `
+                <tr>
+                    <td>
+                        <span class="ref-tag">${escapeHtml(b.id)}</span>
+                        <div style="font-size: 11px; color: #64748b; margin-top: 3px;">${escapeHtml(b.bookedAt || 'Recent')}</div>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(b.studentName || 'Student')}</strong>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(b.studentEmail || 'student@example.com')}</div>
+                    </td>
+                    <td>
+                        <strong style="color: #173b70;">${escapeHtml(b.experimentTitle)}</strong>
+                    </td>
+                    <td>${allotmentHtml}</td>
+                    <td>
+                        <div>${formatDateTime(b.startTime)}</div>
+                        <small style="color: #64748b;">to ${formatDateTime(b.endTime)}</small>
+                    </td>
+                    <td>
+                        <span class="status-pill ${statusPillClass}">${b.status}</span>
+                    </td>
+                    <td>${actionHtml}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    // --- Allotment Modal Actions ---
+    function openAllotmentModal(bookingId) {
+        loadSharedBookings();
+        const booking = sharedBookings.find(b => b.id === bookingId);
+        if (!booking) {
+            showTeacherAlert("Booking not found.", "error");
+            return;
+        }
+
+        document.getElementById("modal-allot-id").value = booking.id;
+        document.getElementById("modal-allot-ref").textContent = booking.id;
+        document.getElementById("modal-allot-student").textContent = (booking.studentName || "Student") + " (" + (booking.studentEmail || "student@example.com") + ")";
+        document.getElementById("modal-allot-exp").textContent = booking.experimentTitle;
+        document.getElementById("modal-allot-time").textContent = formatDateTime(booking.startTime) + " – " + formatDateTime(booking.endTime);
+
+        document.getElementById("modal-allot-lab").value = booking.allottedLab || booking.laboratory || "Main Research Lab (Room 101)";
+        document.getElementById("modal-allot-desk").value = (booking.allotmentNotes && !booking.allotmentNotes.includes("Awaiting") && !booking.allotmentNotes.includes("Pending"))
+            ? booking.allotmentNotes
+            : "Station 01 / Workstation Alpha";
+        document.getElementById("modal-allot-notes").value = booking.remarks && booking.status === 'CONFIRMED'
+            ? booking.remarks
+            : "Confirmed & Allotted by Lab Supervisor. Please bring your Student ID and report on time.";
+
+        document.getElementById("allotment-modal").style.display = "flex";
+    }
+
+    function closeAllotmentModal() {
+        document.getElementById("allotment-modal").style.display = "none";
+    }
+
+    document.getElementById("allotment-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const id = document.getElementById("modal-allot-id").value;
+        const labVal = document.getElementById("modal-allot-lab").value.trim();
+        const deskVal = document.getElementById("modal-allot-desk").value.trim();
+        const notesVal = document.getElementById("modal-allot-notes").value.trim();
+
+        loadSharedBookings();
+        const booking = sharedBookings.find(b => b.id === id);
+        if (!booking) {
+            showTeacherAlert("Booking not found.", "error");
+            return;
+        }
+
+        booking.status = "CONFIRMED";
+        booking.allottedLab = labVal;
+        booking.allotmentNotes = deskVal || "Lab Room Allotted";
+        booking.remarks = notesVal || ("Confirmed & Allotted by Teacher (" + labVal + ")");
+        booking.confirmedAt = new Date().toLocaleString();
+
+        saveSharedBookings();
+        updateTeacherBadges();
+        renderTeacherRequests();
+        closeAllotmentModal();
+
+        showTeacherAlert("✅ Booking " + id + " confirmed! Lab (" + labVal + ") successfully allotted. Student's 'My Bookings' will now show status CONFIRMED.", "success");
+    });
+
+    function rejectBooking(bookingId) {
+        if (!confirm("Are you sure you want to decline/reject slot request " + bookingId + "? The slot will be marked CANCELLED.")) {
+            return;
+        }
+
+        loadSharedBookings();
+        const booking = sharedBookings.find(b => b.id === bookingId);
+        if (!booking) return;
+
+        booking.status = "CANCELLED";
+        booking.allotmentNotes = "Request declined";
+        booking.remarks = "Declined by Lab Supervisor due to scheduling or capacity constraint.";
+
+        saveSharedBookings();
+        updateTeacherBadges();
+        renderTeacherRequests();
+
+        showTeacherAlert("Slot request " + bookingId + " has been rejected.", "error");
+    }
+
+    // --- Cross-Tab Real-Time Sync ---
+    window.addEventListener('storage', (e) => {
+        if (e.key === SHARED_STORAGE_KEY) {
+            loadSharedBookings();
+            updateTeacherBadges();
+            renderTeacherRequests();
+        }
+    });
+
+    // --- Page Initialization ---
+    document.addEventListener("DOMContentLoaded", () => {
+        loadMyExperiments();
+        loadSharedBookings();
+        updateTeacherBadges();
+        renderTeacherRequests();
+    });
+</script>
+</body>
+</html>
