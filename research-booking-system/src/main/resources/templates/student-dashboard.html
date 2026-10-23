@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal — Research Experiment Booking System</title>
+    <style>
+        :root {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #172033;
+            background: #f3f6fb;
+            --primary: #173b70;
+            --primary-hover: #122d56;
+            --accent: #245bb5;
+            --accent-hover: #19468e;
+            --card-border: #e2e8f0;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #f3f6fb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 18px 6%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .header-content {
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        header h1 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            letter-spacing: -0.3px;
+        }
+
+        header p {
+            margin: 0;
+            color: #dce8fa;
+            font-size: 14px;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #dce8fa;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .user-badge strong {
+            color: white;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Navigation Menu / Tabs */
+        .dashboard-nav-bar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-container {
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px;
+            gap: 6px;
+        }
+
+        .nav-tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab-btn:hover {
+            color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .nav-tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: #f0f7ff;
+        }
+
+        .tab-counter {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .nav-tab-btn.active .tab-counter {
+            background: #dbeafe;
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 1160px;
+            margin: 28px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Notifications & Alerts */
+        .toast-banner {
+            display: none;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            font-size: 14px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .toast-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .toast-warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .demo-mode-alert {
+            background: #f0f7ff;
+            border: 1px solid #bae6fd;
+            border-left: 4px solid #0284c7;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #0369a1;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .demo-mode-alert .badge-demo {
+            background: #0284c7;
+            color: white;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Content Sections */
+        section {
+            background: white;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(20, 33, 61, 0.05);
+            border: 1px solid #edf2f7;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #1e293b;
+            font-size: 16px;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: -6px;
+            margin-bottom: 18px;
+        }
+
+        /* Experiment Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .experiment-card {
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #ffffff;
+            transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+        }
+
+        .experiment-card:hover {
+            box-shadow: 0 8px 24px rgba(23, 59, 112, 0.1);
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+
+        .experiment-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .experiment-card p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.45;
+        }
+
+        button.btn-view-details {
+            background: var(--accent);
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: background 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button.btn-view-details:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 4px 12px rgba(36, 91, 181, 0.3);
+        }
+
+        /* Experiment Details & Slots */
+        #details {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        #details h3 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .slot-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .slot-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 14px 18px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 12px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .slot-item:hover {
+            border-color: #cbd5e1;
+            background: #ffffff;
+        }
+
+        .slot-time-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .slot-capacity {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .btn-book-slot {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-book-slot:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .status-confirmed {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Bookings Table & Responsive Cards */
+        .bookings-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table.bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+            background: white;
+        }
+
+        table.bookings-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table.bookings-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        table.bookings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.bookings-table tr:hover td {
+            background: #fbfcfe;
+        }
+
+        .ref-code {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--accent);
+            background: #eff6ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn-cancel-booking {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-cancel-booking:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        /* Metrics Grid for Status Overview */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .metric-card.card-total::before { background: var(--accent); }
+        .metric-card.card-pending::before { background: #f59e0b; }
+        .metric-card.card-confirmed::before { background: #10b981; }
+        .metric-card.card-cancelled::before { background: #ef4444; }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Status Explanations */
+        .status-guide {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .status-guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .status-guide-item p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 6px;
+            color: #1e293b;
+        }
+
+        .empty-state p {
+            margin: 0 0 16px;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 24px;
+            font-size: 13px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .slot-item { flex-direction: column; align-items: flex-start; }
+            .btn-book-slot { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>Research Experiment Booking System</h1>
+            <p>Explore research experiments and book study participation slots</p>
+        </div>
+        <div class="user-nav">
+            <span class="user-badge">
+                Logged in as: <strong id="current-user-email" th:text="${currentUserEmail != null ? currentUserEmail : 'Student'}">student@example.com</strong> (Student)
+            </span>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" id="logout-button" class="btn-logout">Sign Out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- Dashboard Section Navigation Tabs -->
+<div class="dashboard-nav-bar">
+    <div class="nav-container" role="tablist">
+        <button type="button" id="tab-experiments" class="nav-tab-btn active" onclick="showSection('experiments')">
+            🔬 Available Experiments
+        </button>
+        <button type="button" id="tab-details" class="nav-tab-btn" onclick="showSection('details')">
+            📅 Experiment Details & Slots
+        </button>
+        <button type="button" id="tab-bookings" class="nav-tab-btn" onclick="showSection('bookings')">
+            📋 My Bookings <span id="badge-bookings-count" class="tab-counter">0</span>
+        </button>
+        <button type="button" id="tab-status" class="nav-tab-btn" onclick="showSection('status')">
+            📊 Booking Status
+        </button>
+        <button type="button" id="tab-all" class="nav-tab-btn" onclick="showSection('all')">
+            🌐 View All Sections
+        </button>
+    </div>
+</div>
+
+<main>
+    <!-- Dynamic Feedback Toast / Alert -->
+    <div id="toast-message" class="toast-banner"></div>
+
+    <!-- 1. Available Experiments Section -->
+    <section id="experiments-section">
+        <h2>Available Experiments</h2>
+        <p class="muted">Select an experiment to view details and available time slots.</p>
+        <div id="experiments" class="grid" aria-live="polite">
+            Loading experiments...
+        </div>
+    </section>
+
+    <!-- 2. Experiment Details & Available Slots Section -->
+    <section id="details-section">
+        <h2>Experiment Details</h2>
+        <div id="details" aria-live="polite">
+            Select an experiment above to view its details.
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin: 18px 0 10px;">
+            <h3 style="margin: 0;">Available Slots</h3>
+            <button type="button" id="btn-refresh-slots" onclick="refreshCurrentSlots()" style="display:none; background:#f1f5f9; border:1px solid #cbd5e1; color:#475569; padding:6px 14px; border-radius:6px; font-size:13px; cursor:pointer; font-weight:600; transition:background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">↻ Refresh Slots</button>
+        </div>
+        <div id="slots" aria-live="polite">No experiment selected.</div>
+    </section>
+
+    <!-- 3. My Bookings Section -->
+    <section id="bookings-section">
+        <h2>My Bookings</h2>
+        <p class="muted">Review your upcoming, confirmed, and past experiment reservations.</p>
+
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+            <button type="button" class="filter-btn active" onclick="filterBookings('ALL')">All (<span id="count-all">0</span>)</button>
+            <button type="button" class="filter-btn" onclick="filterBookings('PENDING')">Pending (<span id="count-pending">0</span>)</button>
+            <button type="button" class="filter-btn" onclick="filterBookings('CONFIRMED')">Confirmed (<span id="count-confirmed">0</span>)</button>
+            <button type="button" class="filter-btn" onclick="filterBookings('CANCELLED')">Cancelled (<span id="count-cancelled">0</span>)</button>
+        </div>
+
+        <div id="bookings-table-wrapper" class="bookings-table-container">
+            <!-- Rendered dynamically by JavaScript -->
+        </div>
+    </section>
+
+    <!-- 4. Booking Status Overview Section -->
+    <section id="status-section">
+        <h2>Booking Status Overview</h2>
+        <p class="muted">Current breakdown of all demo and active bookings.</p>
+
+        <div class="metrics-grid">
+            <div class="metric-card card-total">
+                <span class="metric-label">Total Reservations</span>
+                <span class="metric-value" id="metric-total">0</span>
+            </div>
+            <div class="metric-card card-pending">
+                <span class="metric-label">Pending Confirmation</span>
+                <span class="metric-value" id="metric-pending" style="color: #d97706;">0</span>
+            </div>
+            <div class="metric-card card-confirmed">
+                <span class="metric-label">Confirmed Slots</span>
+                <span class="metric-value" id="metric-confirmed" style="color: #059669;">0</span>
+            </div>
+            <div class="metric-card card-cancelled">
+                <span class="metric-label">Cancelled Sessions</span>
+                <span class="metric-value" id="metric-cancelled" style="color: #dc2626;">0</span>
+            </div>
+        </div>
+
+        <h3>Status Lifecycle & Guidelines</h3>
+        <div class="status-guide">
+            <div class="status-guide-item">
+                <span class="status-badge status-pending">PENDING</span>
+                <div>
+                    <strong>Awaiting Laboratory Approval</strong>
+                    <p>The booking request has been submitted by the student and is queued for supervisor confirmation. Students can cancel pending requests at any time before acceptance.</p>
+                </div>
+            </div>
+            <div class="status-guide-item">
+                <span class="status-badge status-confirmed">CONFIRMED</span>
+                <div>
+                    <strong>Confirmed Laboratory Appointment</strong>
+                    <p>The time slot has been accepted by the laboratory supervisor. Capacity has been allocated for the student. Cancellation is permitted in demo mode or subject to departmental notice policies.</p>
+                </div>
+            </div>
+            <div class="status-guide-item">
+                <span class="status-badge status-cancelled">CANCELLED</span>
+                <div>
+                    <strong>Session Cancelled</strong>
+                    <p>The booking was cancelled either by the student or by the laboratory researcher. The slot has been released back to general availability. Cancelled requests remain in the audit history for record-keeping and cannot be cancelled again.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    Research Experiment Booking System &copy; 2026. All rights reserved.
+</footer>
+
+<script>
+    // Global State
+    let currentSelectedExperiment = null;
+    let currentFilter = 'ALL';
+    const SHARED_STORAGE_KEY = 'research_experiment_bookings_shared';
+
+    function getRelativeIsoDate(daysOffset, hours, minutes) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysOffset);
+        d.setHours(hours, minutes, 0, 0);
+        return d.toISOString();
+    }
+
+    // Student Profile Helper
+    function getLoggedInStudent() {
+        const emailEl = document.getElementById("current-user-email");
+        let email = (emailEl && emailEl.textContent && emailEl.textContent.trim()) || "";
+        if (!email || email === "Student" || !email.includes("@")) {
+            email = "swapnilsupe24@gmail.com";
+        }
+        let name = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+        return { email, name };
+    }
+
+    let demoBookings = [];
+
+    function loadBookingsFromStorage() {
+        const student = getLoggedInStudent();
+        try {
+            const raw = localStorage.getItem(SHARED_STORAGE_KEY);
+            if (raw) {
+                let parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    // Migrate any bookings stored under generic dummy email to the active logged in student
+                    parsed.forEach(b => {
+                        if (!b.studentEmail || b.studentEmail === "student@example.com") {
+                            b.studentEmail = student.email;
+                            b.studentName = student.name;
+                        }
+                        if (b.id && b.id.startsWith("DEMO-BK-")) {
+                            b.id = b.id.replace("DEMO-", "");
+                        }
+                    });
+
+                    // Remove old mock experiments that don't belong to the system, keeping active experiment bookings
+                    const cleaned = parsed.filter(b => 
+                        b.studentEmail === student.email && 
+                        (b.experimentTitle === "chem lab" || b.experimentTitle === "Computer Vision Research Experiment" || b.experimentId != null)
+                    );
+
+                    demoBookings = cleaned.length > 0 ? cleaned : parsed;
+                    saveBookingsToStorage();
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not parse shared bookings from localStorage:", e);
+        }
+        demoBookings = [];
+        saveBookingsToStorage();
+    }
+
+    function saveBookingsToStorage() {
+        try {
+            localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(demoBookings));
+        } catch (e) {
+            console.warn("Could not save bookings to localStorage:", e);
+        }
+    }
+
+    // Tab & Section Management
+    function showSection(sectionKey) {
+        const sections = {
+            'experiments': document.getElementById('experiments-section'),
+            'details': document.getElementById('details-section'),
+            'bookings': document.getElementById('bookings-section'),
+            'status': document.getElementById('status-section')
+        };
+
+        const tabs = {
+            'experiments': document.getElementById('tab-experiments'),
+            'details': document.getElementById('tab-details'),
+            'bookings': document.getElementById('tab-bookings'),
+            'status': document.getElementById('tab-status'),
+            'all': document.getElementById('tab-all')
+        };
+
+        // Reset tab styles
+        Object.values(tabs).forEach(tab => tab && tab.classList.remove('active'));
+
+        if (sectionKey === 'all') {
+            Object.values(sections).forEach(sec => sec && (sec.style.display = 'block'));
+            tabs.all.classList.add('active');
+            loadBookingsFromStorage();
+            updateMetrics();
+            renderBookings();
+            return;
+        }
+
+        // Highlight selected tab
+        if (tabs[sectionKey]) {
+            tabs[sectionKey].classList.add('active');
+        }
+
+        if (sectionKey === 'experiments') {
+            sections.experiments.style.display = 'block';
+            sections.details.style.display = 'block';
+            sections.bookings.style.display = 'none';
+            sections.status.style.display = 'none';
+        } else if (sectionKey === 'details') {
+            sections.experiments.style.display = 'none';
+            sections.details.style.display = 'block';
+            sections.bookings.style.display = 'none';
+            sections.status.style.display = 'none';
+            sections.details.scrollIntoView({ behavior: 'smooth' });
+            // Auto-refresh slots when user navigates to this tab
+            if (currentSelectedExperiment) {
+                refreshCurrentSlots();
+            }
+        } else if (sectionKey === 'bookings') {
+            sections.experiments.style.display = 'none';
+            sections.details.style.display = 'none';
+            sections.bookings.style.display = 'block';
+            sections.status.style.display = 'none';
+            loadBookingsFromStorage();
+            updateMetrics();
+            renderBookings();
+        } else if (sectionKey === 'status') {
+            sections.experiments.style.display = 'none';
+            sections.details.style.display = 'none';
+            sections.bookings.style.display = 'none';
+            sections.status.style.display = 'block';
+            loadBookingsFromStorage();
+            updateMetrics();
+        }
+    }
+
+    // Feedback Toast
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast-message');
+        toast.className = 'toast-banner toast-' + type;
+        toast.innerHTML = message;
+        toast.style.display = 'block';
+
+        toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 7000);
+    }
+
+    // Experiments API Loading
+    async function loadExperiments() {
+        const experimentsContainer = document.getElementById("experiments");
+        try {
+            const response = await fetch("/api/experiments");
+            if (!response.ok) {
+                throw new Error("Unable to load experiments");
+            }
+
+            const experiments = await response.json();
+            experimentsContainer.textContent = "";
+
+            if (experiments.length === 0) {
+                experimentsContainer.textContent = "No active experiments currently available.";
+                return;
+            }
+
+            experiments.forEach(exp => {
+                const card = document.createElement("article");
+                card.className = "experiment-card";
+
+                const title = document.createElement("h3");
+                title.textContent = exp.title || "Untitled Experiment";
+
+                const desc = document.createElement("p");
+                desc.textContent = exp.description || "No description provided.";
+
+                const lab = document.createElement("p");
+                lab.innerHTML = "<strong>Lab:</strong> " + (exp.laboratoryName ? escapeHtml(exp.laboratoryName) : "TBD");
+
+                const duration = document.createElement("p");
+                duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " mins";
+
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "btn-view-details";
+                btn.textContent = "View Details & Slots";
+                btn.onclick = () => selectExperiment(exp);
+
+                card.appendChild(title);
+                card.appendChild(desc);
+                card.appendChild(lab);
+                card.appendChild(duration);
+                card.appendChild(btn);
+
+                experimentsContainer.appendChild(card);
+            });
+        } catch (err) {
+            experimentsContainer.textContent = "Failed to load experiments. Please refresh the page.";
+        }
+    }
+
+    // Experiment Details & Slots
+    async function selectExperiment(exp) {
+        currentSelectedExperiment = exp;
+        const detailsSection = document.getElementById("details-section");
+        const detailsContainer = document.getElementById("details");
+        const slotsContainer = document.getElementById("slots");
+        const refreshBtn = document.getElementById("btn-refresh-slots");
+
+        // Ensure details section is visible
+        detailsSection.style.display = "block";
+
+        detailsContainer.textContent = "";
+
+        const title = document.createElement("h3");
+        title.textContent = exp.title;
+
+        const lab = document.createElement("p");
+        lab.innerHTML = "<strong>Laboratory:</strong> " + escapeHtml(exp.laboratoryName || "N/A");
+
+        const duration = document.createElement("p");
+        duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " minutes";
+
+        const desc = document.createElement("p");
+        desc.textContent = exp.description || "";
+
+        detailsContainer.appendChild(title);
+        detailsContainer.appendChild(lab);
+        detailsContainer.appendChild(duration);
+        detailsContainer.appendChild(desc);
+
+        // Show the refresh button now that an experiment is selected
+        if (refreshBtn) refreshBtn.style.display = "inline-block";
+
+        await loadSlotsForExperiment(exp, slotsContainer);
+    }
+
+    // Refresh slots for the currently selected experiment (called by button or tab switch)
+    async function refreshCurrentSlots() {
+        if (!currentSelectedExperiment) return;
+        const slotsContainer = document.getElementById("slots");
+        slotsContainer.textContent = "Refreshing slots...";
+        await loadSlotsForExperiment(currentSelectedExperiment, slotsContainer);
+    }
+
+    // Core slot loading — fetches fresh data from the server every time
+    async function loadSlotsForExperiment(exp, slotsContainer) {
+        slotsContainer.textContent = "Loading slots...";
+
+        try {
+            const response = await fetch("/api/experiments/" + exp.experimentId + "/slots");
+            if (!response.ok) {
+                throw new Error("Unable to load slots");
+            }
+
+            const slots = await response.json();
+            slotsContainer.textContent = "";
+
+            if (!slots || slots.length === 0) {
+                slotsContainer.textContent = "No time slots currently scheduled for this experiment.";
+                return;
+            }
+
+            const list = document.createElement("ul");
+            list.className = "slot-list";
+
+            slots.forEach(slot => {
+                const item = document.createElement("li");
+                item.className = "slot-item";
+
+                const times = document.createElement("span");
+                times.className = "slot-time-info";
+                times.innerHTML = "🕒 " + formatDateTime(slot.startTime) + " – " + formatDateTime(slot.endTime);
+
+                const cap = document.createElement("span");
+                cap.className = "slot-capacity";
+                cap.textContent = "Capacity: " + slot.capacity;
+
+                const bookBtn = document.createElement("button");
+                bookBtn.type = "button";
+                bookBtn.className = "btn-book-slot";
+                bookBtn.innerHTML = "Book Slot";
+                bookBtn.onclick = () => bookSlot(slot, exp);
+
+                item.appendChild(times);
+                item.appendChild(cap);
+                item.appendChild(bookBtn);
+                list.appendChild(item);
+            });
+
+            slotsContainer.appendChild(list);
+        } catch (err) {
+            slotsContainer.textContent = "Failed to load slots for this experiment.";
+        }
+    }
+
+    // Slot Booking Action
+    function bookSlot(slot, exp) {
+        const referenceCode = "BK-" + Math.floor(1000 + Math.random() * 9000);
+        const student = getLoggedInStudent();
+
+        // Load latest in case other slots were booked
+        loadBookingsFromStorage();
+
+        const newBooking = {
+            id: referenceCode,
+            studentEmail: student.email,
+            studentName: student.name,
+            experimentId: exp.experimentId,
+            experimentTitle: exp.title,
+            laboratory: exp.laboratoryName || "Research Laboratory",
+            allottedLab: exp.laboratoryName || "Research Laboratory",
+            allotmentNotes: "Pending allotment by teacher",
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            status: "PENDING",
+            remarks: "Reservation submitted — awaiting teacher confirmation & lab allotment",
+            bookedAt: "Just now",
+            isDemo: false
+        };
+
+        demoBookings.unshift(newBooking);
+        saveBookingsToStorage();
+        updateMetrics();
+        renderBookings();
+
+        showToast(
+            `<strong>Slot Reservation Requested:</strong> Successfully requested slot for <em>${escapeHtml(exp.title)}</em>.<br>Reference: <strong>${referenceCode}</strong> | Student: <strong>${escapeHtml(student.email)}</strong>.<br>This request is now visible in the <strong>Teacher Portal</strong>. Once the teacher confirms and allots the lab, your status will update to <strong>CONFIRMED</strong>.`,
+            'success'
+        );
+
+        showSection('bookings');
+    }
+
+    // Booking Cancellation Action
+    function cancelBooking(bookingId) {
+        loadBookingsFromStorage();
+        const booking = demoBookings.find(b => b.id === bookingId);
+        if (!booking) return;
+
+        if (booking.status === 'CANCELLED') {
+            showToast("This booking has already been cancelled.", "warning");
+            return;
+        }
+
+        if (booking.status === 'CONFIRMED') {
+            const confirmed = window.confirm(`Are you sure you want to cancel confirmed booking ${bookingId} for "${booking.experimentTitle}"?`);
+            if (!confirmed) return;
+        }
+
+        booking.status = 'CANCELLED';
+        booking.remarks = 'Cancelled by student';
+        saveBookingsToStorage();
+
+        updateMetrics();
+        renderBookings();
+
+        showToast(
+            `<strong>Booking Cancelled:</strong> Reservation <strong>${bookingId}</strong> has been cancelled. Status updated to <strong>CANCELLED</strong>.`,
+            'info'
+        );
+    }
+
+    // Filter Bookings
+    function filterBookings(status) {
+        currentFilter = status;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.toUpperCase().includes(status)) {
+                btn.classList.add('active');
+            }
+        });
+        renderBookings();
+    }
+
+    // Render My Bookings Table / Cards
+    function renderBookings() {
+        const wrapper = document.getElementById('bookings-table-wrapper');
+        const filtered = currentFilter === 'ALL'
+            ? demoBookings
+            : demoBookings.filter(b => b.status === currentFilter);
+
+        if (filtered.length === 0) {
+            wrapper.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">📂</div>
+                    <h3>No Bookings Found</h3>
+                    <p>There are no bookings matching the "<strong>${currentFilter}</strong>" filter.</p>
+                    <button type="button" class="btn-view-details" style="margin: 0 auto;" onclick="showSection('experiments')">
+                        Browse Available Experiments
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <table class="bookings-table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Student</th>
+                        <th>Experiment</th>
+                        <th>Laboratory & Allotment</th>
+                        <th>Slot Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        filtered.forEach(b => {
+            let statusBadgeClass = 'status-pending';
+            if (b.status === 'CONFIRMED') statusBadgeClass = 'status-confirmed';
+            if (b.status === 'CANCELLED') statusBadgeClass = 'status-cancelled';
+
+            let actionHtml = `<span style="color: #94a3b8; font-size: 13px;">None</span>`;
+            if (b.status === 'PENDING') {
+                actionHtml = `<button type="button" class="btn-cancel-booking" onclick="cancelBooking('${b.id}')">Cancel Request</button>`;
+            } else if (b.status === 'CONFIRMED') {
+                actionHtml = `<button type="button" class="btn-cancel-booking" onclick="cancelBooking('${b.id}')">Cancel Booking</button>`;
+            }
+
+            let allotmentDisplay = `<strong>${escapeHtml(b.allottedLab || b.laboratory || 'General Lab')}</strong>`;
+            if (b.status === 'CONFIRMED') {
+                if (b.allotmentNotes) {
+                    allotmentDisplay += `<div style="font-size: 12px; color: #166534; font-weight: 600; margin-top: 3px;">🏛️ ${escapeHtml(b.allotmentNotes)}</div>`;
+                }
+                if (b.remarks) {
+                    allotmentDisplay += `<div style="font-size: 11px; color: #15803d; margin-top: 2px;">${escapeHtml(b.remarks)}</div>`;
+                }
+            } else if (b.status === 'PENDING') {
+                allotmentDisplay += `<div style="font-size: 12px; color: #92400e; margin-top: 3px;">⏳ Awaiting Teacher Allotment</div>`;
+            } else {
+                allotmentDisplay += `<div style="font-size: 12px; color: #991b1b; margin-top: 3px;">Slot Released</div>`;
+            }
+
+            html += `
+                <tr>
+                    <td>
+                        <span class="ref-code">${b.id}</span>
+                        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Slot Reservation</div>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(b.studentName || 'Student')}</strong>
+                        <div style="font-size: 11px; color: #64748b;">${escapeHtml(b.studentEmail || 'swapnilsupe24@gmail.com')}</div>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(b.experimentTitle)}</strong>
+                    </td>
+                    <td>${allotmentDisplay}</td>
+                    <td>
+                        <div>${formatDateTime(b.startTime)}</div>
+                        <small style="color: #64748b;">to ${formatDateTime(b.endTime)}</small>
+                    </td>
+                    <td>
+                        <span class="status-badge ${statusBadgeClass}">
+                            ${b.status}
+                        </span>
+                    </td>
+                    <td>${actionHtml}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        `;
+
+        wrapper.innerHTML = html;
+    }
+
+    // Update Metrics & Counters
+    function updateMetrics() {
+        const total = demoBookings.length;
+        const pending = demoBookings.filter(b => b.status === 'PENDING').length;
+        const confirmed = demoBookings.filter(b => b.status === 'CONFIRMED').length;
+        const cancelled = demoBookings.filter(b => b.status === 'CANCELLED').length;
+
+        // Metric cards
+        document.getElementById('metric-total').textContent = total;
+        document.getElementById('metric-pending').textContent = pending;
+        document.getElementById('metric-confirmed').textContent = confirmed;
+        document.getElementById('metric-cancelled').textContent = cancelled;
+
+        // Filter counters
+        document.getElementById('count-all').textContent = total;
+        document.getElementById('count-pending').textContent = pending;
+        document.getElementById('count-confirmed').textContent = confirmed;
+        document.getElementById('count-cancelled').textContent = cancelled;
+
+        // Tab badge
+        const tabBadge = document.getElementById('badge-bookings-count');
+        if (tabBadge) tabBadge.textContent = total;
+    }
+
+    // Utility Helpers
+    function formatDateTime(iso) {
+        if (!iso) return "TBD";
+        try {
+            const d = new Date(iso);
+            return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        } catch (e) {
+            return iso;
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Cross-Tab Real-Time Sync via Window Storage Event
+    window.addEventListener('storage', (event) => {
+        if (event.key === SHARED_STORAGE_KEY) {
+            loadBookingsFromStorage();
+            updateMetrics();
+            renderBookings();
+        }
+    });
+
+    // Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+        loadBookingsFromStorage();
+        loadExperiments();
+        updateMetrics();
+        renderBookings();
+    });
+</script>
+</body>
+</html>
