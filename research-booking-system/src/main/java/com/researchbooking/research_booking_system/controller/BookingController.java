@@ -36,6 +36,13 @@ public class BookingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
 
+    // Get all bookings (for teachers or management)
+    @GetMapping
+    public ResponseEntity<List<Map<String, Object>>> getAllBookings(
+            @RequestParam(required = false) String status) {
+        return ResponseEntity.ok(bookingService.getAllBookingsEnriched(status));
+    }
+
     // Get all bookings for a particular user
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Booking>> getBookingsForUser(
@@ -43,6 +50,15 @@ public class BookingController {
 
         return ResponseEntity.ok(
                 bookingService.getBookingsForUser(userId));
+    }
+
+    // Get enriched bookings for a particular user (with experiment and slot details)
+    @GetMapping("/user/{userId}/enriched")
+    public ResponseEntity<List<Map<String, Object>>> getBookingsForUserEnriched(
+            @PathVariable Long userId) {
+
+        return ResponseEntity.ok(
+                bookingService.getBookingsForUserEnriched(userId));
     }
 
     // Get a particular booking

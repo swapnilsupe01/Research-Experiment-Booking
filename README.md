@@ -99,6 +99,21 @@ Use the URL that corresponds to the deployment you want to access.
 
 The application can be run directly inside Docker using Docker Compose:
 
+```powershell
+# 1. Package the application JAR
+cd research-booking-system
+.\mvnw.cmd clean package -DskipTests
+cd ..
+
+# 2. Build the Docker image and start the container in background
+docker compose up -d --build
+
+# 3. Stream live application logs
+docker logs -f research-booking-app
+```
+
+*(See [Running with Docker (Recommended)](#running-with-docker-recommended) below for prerequisites, MySQL setup, and everyday Docker commands.)*
+
 - **Sign In Page:** `http://localhost:8081/` or `http://localhost:8081/login`
 - **Sign Up Page:** `http://localhost:8081/signup`
 - **Student Dashboard:** `http://localhost:8081/dashboard/student` (after login)
@@ -264,7 +279,9 @@ The Dockerfile copies a pre-built JAR. Build it first from inside the `research-
 
 ```powershell
 # Run from: C:\DevTools\Research-Experiment-Booking\research-booking-system
-mvn clean package -DskipTests
+.\mvnw.cmd clean package -DskipTests
+# Or if Maven is installed globally:
+# mvn clean package -DskipTests
 ```
 
 This creates:

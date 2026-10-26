@@ -44,4 +44,9 @@ public class UserService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("User not found."));
     }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 }
+

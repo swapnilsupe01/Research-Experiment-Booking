@@ -36,7 +36,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/", "/ui", "/login", "/signup", "/register",
+                    "/", "/ui", "/login", "/signup", "/register", "/landing", "/explore",
                     "/css/**", "/js/**", "/images/**", "/error"
                 ).permitAll()
                 .requestMatchers(
@@ -58,6 +58,14 @@ public class SecurityConfig {
                 .requestMatchers(
                     HttpMethod.DELETE,
                     "/api/experiments/**"
+                ).hasRole("TEACHER")
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/bookings/*/status"
+                ).hasRole("TEACHER")
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/bookings"
                 ).hasRole("TEACHER")
                 .requestMatchers(
                     "/dashboard/student/**"

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ExperimentRepository extends JpaRepository<Experiment, Long> {
     List<Experiment> findByActiveTrue();
+    List<Experiment> findBySupervisorId(Long supervisorId);
 }

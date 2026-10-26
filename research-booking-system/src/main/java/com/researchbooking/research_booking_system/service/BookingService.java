@@ -12,8 +12,16 @@ import com.researchbooking.research_booking_system.repository.ExperimentSlotRepo
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.researchbooking.research_booking_system.entity.Experiment;
+import com.researchbooking.research_booking_system.entity.User;
+import com.researchbooking.research_booking_system.repository.ExperimentRepository;
+import com.researchbooking.research_booking_system.repository.UserRepository;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BookingService {
@@ -22,16 +30,22 @@ public class BookingService {
     private final ExperimentSlotRepository slotRepository;
     private final BookingStatusHistoryRepository historyRepository;
     private final BookingCancellationRepository cancellationRepository;
+    private final ExperimentRepository experimentRepository;
+    private final UserRepository userRepository;
 
     public BookingService(
             BookingRepository bookingRepository,
             ExperimentSlotRepository slotRepository,
             BookingStatusHistoryRepository historyRepository,
-            BookingCancellationRepository cancellationRepository) {
+            BookingCancellationRepository cancellationRepository,
+            ExperimentRepository experimentRepository,
+            UserRepository userRepository) {
         this.bookingRepository = bookingRepository;
         this.slotRepository = slotRepository;
         this.historyRepository = historyRepository;
         this.cancellationRepository = cancellationRepository;
+        this.experimentRepository = experimentRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -168,4 +182,62 @@ public class BookingService {
         history.remarks = remarks;
         historyRepository.save(history);
     }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getBookingsForUserEnriched(Long userId) {
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Booking b : bookings) {
+            result.add(enrichBooking(b));
+        }
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getAllBookingsEnriched(String status) {
+        List<Booking> bookings = (status != null && !status.isBlank() && !status.equalsIgnoreCase("ALL"))
+                ? bookingRepository.findByStatus(status.toUpperCase())
+                : bookingRepository.findAll();
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Booking b : bookings) {
+            result.add(enrichBooking(b));
+        }
+        return result;
+    }
+
+    private Map<String, Object> enrichBooking(Booking b) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("bookingId", b.bookingId);
+        map.put("userId", b.userId);
+        map.put("slotId", b.slotId);
+        map.put("purpose", b.purpose);
+        map.put("status", b.status);
+        map.put("requestedAt", b.requestedAt);
+        map.put("updatedAt", b.updatedAt);
+
+        // Fetch User (Student) info
+        userRepository.findById(b.userId).ifPresent(u -> {
+            map.put("studentName", u.fullName);
+            map.put("studentEmail", u.email);
+        });
+
+        // Fetch Slot & Experiment info
+        slotRepository.findById(b.slotId).ifPresent(slot -> {
+            map.put("startTime", slot.startTime);
+            map.put("endTime", slot.endTime);
+            map.put("capacity", slot.capacity);
+
+            experimentRepository.findById(slot.experimentId).ifPresent(exp -> {
+                map.put("experimentId", exp.experimentId);
+                map.put("experimentTitle", exp.title);
+                map.put("laboratoryName", exp.laboratoryName);
+                map.put("durationMinutes", exp.durationMinutes);
+                map.put("supervisorId", exp.supervisorId);
+            });
+        });
+
+        return map;
+    }
 }
+
