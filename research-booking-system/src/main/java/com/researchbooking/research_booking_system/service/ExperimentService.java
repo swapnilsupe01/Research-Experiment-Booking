@@ -6,7 +6,9 @@ import com.researchbooking.research_booking_system.dto.SlotRequest;
 import com.researchbooking.research_booking_system.entity.Booking;
 import com.researchbooking.research_booking_system.entity.Experiment;
 import com.researchbooking.research_booking_system.entity.ExperimentSlot;
+import com.researchbooking.research_booking_system.repository.BookingCancellationRepository;
 import com.researchbooking.research_booking_system.repository.BookingRepository;
+import com.researchbooking.research_booking_system.repository.BookingStatusHistoryRepository;
 import com.researchbooking.research_booking_system.repository.ExperimentRepository;
 import com.researchbooking.research_booking_system.repository.ExperimentSlotRepository;
 import org.springframework.http.HttpStatus;
@@ -23,14 +25,20 @@ public class ExperimentService {
     private final ExperimentRepository experimentRepository;
     private final ExperimentSlotRepository slotRepository;
     private final BookingRepository bookingRepository;
+    private final BookingCancellationRepository cancellationRepository;
+    private final BookingStatusHistoryRepository statusHistoryRepository;
 
     public ExperimentService(
             ExperimentRepository experimentRepository,
             ExperimentSlotRepository slotRepository,
-            BookingRepository bookingRepository) {
+            BookingRepository bookingRepository,
+            BookingCancellationRepository cancellationRepository,
+            BookingStatusHistoryRepository statusHistoryRepository) {
         this.experimentRepository = experimentRepository;
         this.slotRepository = slotRepository;
         this.bookingRepository = bookingRepository;
+        this.cancellationRepository = cancellationRepository;
+        this.statusHistoryRepository = statusHistoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -123,11 +131,10 @@ public class ExperimentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to delete this experiment.");
         }
 
-        // Safety check: block deletion if any active bookings exist on any slot
+        // Block deletion only if there are ACTIVE (PENDING/CONFIRMED) bookings
         List<ExperimentSlot> slots = slotRepository.findByExperimentId(experimentId);
         for (ExperimentSlot slot : slots) {
-            List<com.researchbooking.research_booking_system.entity.Booking> bookings =
-                    bookingRepository.findBySlotId(slot.slotId);
+            List<Booking> bookings = bookingRepository.findBySlotId(slot.slotId);
             boolean hasActive = bookings.stream()
                     .anyMatch(b -> "CONFIRMED".equalsIgnoreCase(b.status) || "PENDING".equalsIgnoreCase(b.status));
             if (hasActive) {
@@ -137,7 +144,22 @@ public class ExperimentService {
             }
         }
 
-        // Delete all slots first (FK constraint), then the experiment
+        // Delete in FK-safe order:
+        // 1. booking_status_history  (references booking)
+        // 2. booking_cancellations   (references booking)
+        // 3. bookings                (references slot)
+        // 4. slots                   (references experiment)
+        // 5. experiment
+        for (ExperimentSlot slot : slots) {
+            List<Booking> bookings = bookingRepository.findBySlotId(slot.slotId);
+            for (Booking booking : bookings) {
+                statusHistoryRepository.deleteAll(
+                    statusHistoryRepository.findByBookingIdOrderByChangedAtDesc(booking.bookingId));
+                cancellationRepository.findByBookingId(booking.bookingId)
+                    .ifPresent(cancellationRepository::delete);
+            }
+            bookingRepository.deleteAll(bookings);
+        }
         slotRepository.deleteAll(slots);
         experimentRepository.delete(experiment);
     }

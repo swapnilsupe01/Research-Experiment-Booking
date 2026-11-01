@@ -5,7 +5,9 @@ import com.researchbooking.research_booking_system.dto.SlotRequest;
 import com.researchbooking.research_booking_system.entity.Booking;
 import com.researchbooking.research_booking_system.entity.Experiment;
 import com.researchbooking.research_booking_system.entity.ExperimentSlot;
+import com.researchbooking.research_booking_system.repository.BookingCancellationRepository;
 import com.researchbooking.research_booking_system.repository.BookingRepository;
+import com.researchbooking.research_booking_system.repository.BookingStatusHistoryRepository;
 import com.researchbooking.research_booking_system.repository.ExperimentRepository;
 import com.researchbooking.research_booking_system.repository.ExperimentSlotRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +110,25 @@ class ExperimentServiceTest {
                 }
         );
 
-        experimentService = new ExperimentService(repoProxy, slotRepoProxy, bookingRepoProxy);
+        BookingCancellationRepository cancellationRepoProxy = (BookingCancellationRepository) Proxy.newProxyInstance(
+                classLoader,
+                new Class<?>[]{BookingCancellationRepository.class},
+                (proxy, method, args) -> {
+                    if ("findByBookingId".equals(method.getName())) return Optional.empty();
+                    return null;
+                }
+        );
+
+        BookingStatusHistoryRepository statusHistoryRepoProxy = (BookingStatusHistoryRepository) Proxy.newProxyInstance(
+                classLoader,
+                new Class<?>[]{BookingStatusHistoryRepository.class},
+                (proxy, method, args) -> {
+                    if ("findByBookingIdOrderByChangedAtDesc".equals(method.getName())) return List.of();
+                    return null;
+                }
+        );
+
+        experimentService = new ExperimentService(repoProxy, slotRepoProxy, bookingRepoProxy, cancellationRepoProxy, statusHistoryRepoProxy);
     }
 
     @Test
