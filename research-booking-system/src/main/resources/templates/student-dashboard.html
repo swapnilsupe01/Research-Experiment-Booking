@@ -1,1327 +1,830 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta id="meta-user-id" th:content="${currentUserId}">
-    <meta id="meta-user-email" th:content="${currentUserEmail}">
-    <meta id="meta-user-name" th:content="${currentUserName}">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta id="meta-user-id" th:content="${currentUserId}"/>
+    <meta id="meta-user-email" th:content="${currentUserEmail}"/>
+    <meta id="meta-user-name" th:content="${currentUserName}"/>
     <title>Student Portal — Research Experiment Booking System</title>
-    <link rel="stylesheet" th:href="@{/css/portal.css}">
-    <style>
-        :root {
-            --primary: #0a192f;
-            --primary-light: #172a45;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --card-border: #e2e8f0;
-            --text-muted: #64748b;
-        }
-
-        body {
-            margin: 0;
-            background: #f4f7fb;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #0f172a;
-        }
-
-        /* Top Header */
-        header {
-            background: linear-gradient(135deg, #070d18 0%, #0a192f 50%, #1e3a5f 100%);
-            color: white;
-            padding: 16px 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .brand-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #2563eb, #0d9488);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: #ffffff;
-        }
-
-        header p {
-            margin: 2px 0 0;
-            color: #94a3b8;
-            font-size: 13px;
-        }
-
-        .user-nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .user-badge {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .user-badge strong {
-            color: #ffffff;
-        }
-
-        .btn-logout {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 7px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-logout:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
-        }
-
-        /* Sticky Navigation Tabs */
-        .dashboard-nav-bar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            overflow-x: auto;
-            padding: 0 24px;
-            gap: 4px;
-        }
-
-        .nav-tab-btn {
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            padding: 14px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-tab-btn:hover {
-            color: var(--accent);
-            background: #f8fafc;
-        }
-
-        .nav-tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            background: #f0f7ff;
-        }
-
-        .tab-counter {
-            background: #e2e8f0;
-            color: #475569;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 10px;
-        }
-
-        .nav-tab-btn.active .tab-counter {
-            background: #dbeafe;
-            color: var(--accent);
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 28px auto;
-            padding: 0 24px;
-            flex: 1;
-            width: 100%;
-        }
-
-        /* Alerts and Toasts */
-        .toast-banner {
-            display: none;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 22px;
-            font-size: 14px;
-            line-height: 1.45;
-            animation: fadeIn 0.25s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .toast-success {
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .toast-info {
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-        }
-
-        .toast-warning {
-            background: #fffbeb;
-            color: #92400e;
-            border: 1px solid #fde68a;
-        }
-
-        .toast-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .demo-mode-alert {
-            background: #f0f7ff;
-            border: 1px solid #bae6fd;
-            border-left: 4px solid #0284c7;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            color: #0369a1;
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .demo-mode-alert .badge-demo {
-            background: #0284c7;
-            color: white;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        /* Sections */
-        section {
-            background: white;
-            padding: 26px;
-            margin-bottom: 26px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
-            border: 1px solid #e2e8f0;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #0f172a;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-
-        h3 {
-            color: #1e293b;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .muted {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-top: -6px;
-            margin-bottom: 18px;
-        }
-
-        /* Experiment Cards Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .experiment-card {
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background: #ffffff;
-            transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-        }
-
-        .experiment-card:hover {
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
-            transform: translateY(-2px);
-            border-color: #93c5fd;
-        }
-
-        .experiment-card h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: #0f172a;
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .experiment-card p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.45;
-        }
-
-        button.btn-view-details {
-            background: var(--accent);
-            color: white;
-            border: 0;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 14px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        button.btn-view-details:hover {
-            background: var(--accent-hover);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Details & Slots */
-        #details {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 18px 22px;
-            margin-bottom: 20px;
-        }
-
-        #details h3 {
-            margin-top: 0;
-            color: #0f172a;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .slot-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            gap: 12px;
-        }
-
-        .slot-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 14px 18px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            flex-wrap: wrap;
-            gap: 12px;
-            transition: all 0.2s;
-        }
-
-        .slot-item:hover {
-            border-color: #93c5fd;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .slot-time-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .slot-capacity {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        .btn-book-slot {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-book-slot:hover {
-            background: #15803d;
-            box-shadow: 0 3px 8px rgba(22, 163, 74, 0.3);
-            transform: translateY(-1px);
-        }
-
-        /* Status Badges */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fde68a;
-        }
-
-        .status-confirmed {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .status-cancelled {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-        }
-
-        /* Bookings Table */
-        .bookings-table-container {
-            overflow-x: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-        }
-
-        .bookings-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background: white;
-        }
-
-        .bookings-table th {
-            background: #f8fafc;
-            color: #475569;
-            font-weight: 700;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
-        }
-
-        .bookings-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
-        }
-
-        .bookings-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .bookings-table tr:hover td {
-            background: #f8fafc;
-        }
-
-        .ref-code {
-            font-family: monospace;
-            font-weight: 700;
-            color: var(--accent);
-            background: #eff6ff;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-size: 12px;
-            border: 1px solid #bfdbfe;
-            display: inline-block;
-        }
-
-        .btn-cancel-booking {
-            background: #fff;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-cancel-booking:hover {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Filter Controls */
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            background: white;
-            border: 1px solid #cbd5e1;
-            color: #475569;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .filter-btn:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        .filter-btn.active {
-            background: #0a192f;
-            color: white;
-            border-color: #0a192f;
-        }
-
-        /* Metrics */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .metric-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 18px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-
-        .metric-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-
-        .metric-card.card-total::before { background: var(--accent); }
-        .metric-card.card-pending::before { background: #f59e0b; }
-        .metric-card.card-confirmed::before { background: #10b981; }
-        .metric-card.card-cancelled::before { background: #64748b; }
-
-        .metric-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        .metric-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .status-guide {
-            display: grid;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .status-guide-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 14px 18px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-        }
-
-        .status-guide-item p {
-            margin: 4px 0 0;
-            font-size: 13px;
-            color: #475569;
-            line-height: 1.45;
-        }
-
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 44px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        .empty-state h3 {
-            margin: 0 0 6px;
-            color: #0f172a;
-        }
-
-        .empty-state p {
-            margin: 0 0 16px;
-            font-size: 14px;
-        }
-
-        footer {
-            text-align: center;
-            color: #64748b;
-            padding: 24px;
-            font-size: 13px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            margin-top: auto;
-        }
-
-        @media (max-width: 768px) {
-            .header-content { flex-direction: column; align-items: flex-start; }
-            .slot-item { flex-direction: column; align-items: flex-start; }
-            .btn-book-slot { width: 100%; justify-content: center; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1200bc",
+                        "primary-container": "#1d00ff",
+                        "ink-deep": "#1600b8",
+                        "surface": "#fcfae8",
+                        "surface-container": "#f0efdd",
+                        "surface-container-low": "#f6f4e2",
+                        "surface-container-high": "#ebe9d7",
+                        "surface-variant": "#e5e3d2",
+                        "paper-pure": "#ffffff",
+                        "secondary": "#626200",
+                        "secondary-container": "#e9e94d",
+                        "electric-cyan": "#7df5ff",
+                        "soft-blush": "#ffe6f2",
+                        "on-surface": "#1c1c12",
+                        "on-surface-variant": "#454558",
+                        "on-primary": "#ffffff",
+                        "status-confirmed": "#4ade80",
+                        "status-pending": "#f59e0b",
+                        "status-rejected": "#ef4444"
+                    },
+                    fontFamily: {
+                        "headline": ["EB Garamond", "serif"],
+                        "body": ["Space Grotesk", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"]
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- PaperLab Custom Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/portal.css}"/>
 </head>
-<body>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
 
-<header>
-    <div class="header-content">
-        <div class="brand-block">
-            <div class="brand-icon">🔬</div>
+    <!-- Top Sticky Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#fcfae8]/95 backdrop-blur-md border-b-2 border-primary shadow-[0_4px_0_0_#1d00ff]">
+        <div class="h-20 max-w-[1240px] mx-auto px-6 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <a th:href="@{/landing}" class="flex items-center gap-3 no-underline group">
+                <div class="w-10 h-10 rounded-full bg-paper-pure border-2 border-primary shadow-[2px_2px_0px_#1d00ff] flex items-center justify-center -rotate-2 group-hover:rotate-0 transition-transform">
+                    <span class="material-symbols-outlined text-primary text-[22px]">science</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-headline text-2xl font-bold text-primary italic leading-none">PaperLab</span>
+                    <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Research Ephemera &bull; Student</span>
+                </div>
+            </a>
+
+            <!-- User Info & Logout Form -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-paper-pure border-2 border-primary shadow-[2px_2px_0px_#1d00ff] transform rotate-1">
+                    <span class="font-mono text-xs uppercase text-primary font-bold">
+                        🎓 Logged in as: <strong id="current-user-email" th:text="${currentUserEmail != null ? currentUserEmail : 'Student'}">student@example.com</strong>
+                    </span>
+                </div>
+                <form th:action="@{/logout}" method="post" style="margin: 0;">
+                    <button type="submit" id="logout-button" class="px-4 py-1.5 rounded-full bg-soft-blush text-primary border-2 border-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] hover:bg-red-100 hover:text-red-700 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer">
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full pt-24 max-w-[1240px] mx-auto px-6 py-6 flex-1">
+        <!-- Live Notification Toast -->
+        <div id="toast-message" class="toast-banner hidden mb-6 p-4 rounded-xl border-2 border-primary bg-secondary-container text-primary font-mono text-xs uppercase font-bold shadow-[4px_4px_0px_#1d00ff]"></div>
+
+        <!-- 1. MASCOT BANNER: Beaky the Beaker-Bot -->
+        <section class="relative bg-soft-blush border-2 border-primary rounded-xl shadow-[4px_4px_0px_#1d00ff] p-5 mb-6 overflow-hidden transition-all duration-300" id="mascot-banner">
+            <!-- Washi tape corner accent -->
+            <div class="absolute -top-3 left-8 px-3 py-0.5 bg-secondary-container border-2 border-primary -rotate-2 pointer-events-none shadow-[2px_2px_0px_#1d00ff] z-10 flex items-center justify-center">
+                <span class="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">NOTEBOOK PIN</span>
+            </div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-1">
+                <!-- Mascot Avatar & Speech -->
+                <div class="flex items-start sm:items-center gap-4">
+                    <div class="relative flex-shrink-0 w-12 h-12 rounded-full bg-paper-pure border-2 border-primary shadow-[2px_2px_0px_#1d00ff] flex items-center justify-center -rotate-2">
+                        <span class="text-2xl">⚗️</span>
+                    </div>
+                    <div class="relative bg-paper-pure border-2 border-primary rounded-xl px-4 py-2.5 shadow-[2px_2px_0px_#1d00ff] max-w-2xl">
+                        <div class="flex items-center gap-2 font-mono text-[10px] text-primary uppercase font-bold tracking-wider mb-0.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-status-confirmed animate-pulse"></span>
+                            Beaky the Beaker-Bot &bull; Lab Aide
+                        </div>
+                        <p class="font-body text-sm text-on-surface leading-snug m-0" id="beaky-speech">
+                            Welcome to your laboratory notebook! You are currently browsing active university research studies.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Active Mode Indicator (Satisfies exact string test requirement) -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <div class="demo-mode-alert px-3 py-1.5 rounded-full bg-secondary-container border-2 border-primary text-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff]">
+                        <span>Real-time Laboratory Backend Integration Active &bull; Demo Booking Experience Active</span>
+                    </div>
+                    <button type="button" onclick="refreshStudentData()" class="px-3 py-1.5 rounded-full bg-paper-pure border-2 border-primary font-mono text-xs uppercase font-bold text-primary shadow-[2px_2px_0px_#1d00ff] hover:bg-electric-cyan transition-colors" title="Sync data">
+                        ↻ Sync
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Title Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
             <div>
-                <h1>Research Experiment Booking System</h1>
-                <p>Student Portal — Discover research studies and reserve laboratory time slots</p>
+                <h1 class="font-headline text-3xl sm:text-4xl text-primary font-bold italic leading-tight m-0">
+                    Research Experiment Booking System
+                </h1>
+                <p class="font-mono text-xs text-on-surface-variant uppercase font-bold mt-1 m-0">
+                    Student Scholar Laboratory Portal &bull; Discover Studies &amp; Reserve Verified Slots
+                </p>
             </div>
-        </div>
-        <div class="user-nav">
-            <span class="user-badge">
-                <span>🎓</span> Logged in as: <strong id="current-user-email" th:text="${currentUserEmail != null ? currentUserEmail : 'Student'}">student@example.com</strong> (Student)
-            </span>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" id="logout-button" class="btn-logout">Sign Out</button>
-            </form>
-        </div>
-    </div>
-</header>
-
-<!-- Dashboard Section Navigation Tabs -->
-<div class="dashboard-nav-bar">
-    <div class="nav-container" role="tablist">
-        <button type="button" id="tab-experiments" class="nav-tab-btn active" onclick="showSection('experiments')">
-            🔬 Available Experiments
-        </button>
-        <button type="button" id="tab-details" class="nav-tab-btn" onclick="showSection('details')">
-            📅 Experiment Details & Slots
-        </button>
-        <button type="button" id="tab-bookings" class="nav-tab-btn" onclick="showSection('bookings')">
-            📋 My Bookings <span id="badge-bookings-count" class="tab-counter">0</span>
-        </button>
-        <button type="button" id="tab-status" class="nav-tab-btn" onclick="showSection('status')">
-            📊 Booking Status Overview
-        </button>
-        <button type="button" id="tab-all" class="nav-tab-btn" onclick="showSection('all')">
-            🌐 View All Sections
-        </button>
-    </div>
-</div>
-
-<main>
-    <!-- Live Notification Toast -->
-    <div id="toast-message" class="toast-banner"></div>
-
-    <!-- Active Mode Indicator (Satisfies exact string test requirement) -->
-    <div class="demo-mode-alert">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="badge-demo">Live Connected</span>
-            <span>Real-time Laboratory Backend Integration Active &bull; Demo Booking Experience Active</span>
-        </div>
-        <button type="button" onclick="refreshStudentData()" style="background: white; border: 1px solid #bae6fd; color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-            ↻ Sync Backend Data
-        </button>
-    </div>
-
-    <!-- 1. Available Experiments Section -->
-    <section id="experiments-section">
-        <h2>Available Experiments</h2>
-        <p class="muted">Select an experiment to view details and available time slots.</p>
-        <div id="experiments" class="grid" aria-live="polite">
-            Loading experiments...
-        </div>
-    </section>
-
-    <!-- 2. Experiment Details & Available Slots Section -->
-    <section id="details-section">
-        <h2>Experiment Details</h2>
-        <div id="details" aria-live="polite">
-            Select an experiment above to view its details.
-        </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin: 20px 0 12px;">
-            <h3 style="margin: 0;">Available Slots</h3>
-            <button type="button" id="btn-refresh-slots" onclick="refreshCurrentSlots()" style="display:none; background:#f1f5f9; border:1px solid #cbd5e1; color:#475569; padding:6px 14px; border-radius:6px; font-size:13px; cursor:pointer; font-weight:600; transition:background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
-                ↻ Refresh Slots
-            </button>
-        </div>
-        <div id="slots" aria-live="polite">No experiment selected.</div>
-    </section>
-
-    <!-- 3. My Bookings Section -->
-    <section id="bookings-section">
-        <h2>My Bookings</h2>
-        <p class="muted">Review your upcoming, confirmed, and past experiment reservations stored in the central database.</p>
-
-        <!-- Filter Controls -->
-        <div class="filter-bar">
-            <button type="button" class="filter-btn active" onclick="filterBookings('ALL')">All (<span id="count-all">0</span>)</button>
-            <button type="button" class="filter-btn" onclick="filterBookings('PENDING')">Pending (<span id="count-pending">0</span>)</button>
-            <button type="button" class="filter-btn" onclick="filterBookings('CONFIRMED')">Confirmed (<span id="count-confirmed">0</span>)</button>
-            <button type="button" class="filter-btn" onclick="filterBookings('CANCELLED')">Cancelled (<span id="count-cancelled">0</span>)</button>
-        </div>
-
-        <div id="bookings-table-wrapper" class="bookings-table-container">
-            <div class="empty-state">
-                <div class="icon">⏳</div>
-                <h3>Loading Bookings...</h3>
-                <p>Retrieving your laboratory reservations from the backend.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. Booking Status Overview Section -->
-    <section id="status-section">
-        <h2>Booking Status Overview</h2>
-        <p class="muted">Current breakdown of all active, pending, and past experiment bookings.</p>
-
-        <div class="metrics-grid">
-            <div class="metric-card card-total">
-                <span class="metric-label">Total Reservations</span>
-                <span class="metric-value" id="metric-total">0</span>
-            </div>
-            <div class="metric-card card-pending">
-                <span class="metric-label">Pending Confirmation</span>
-                <span class="metric-value" id="metric-pending" style="color: #d97706;">0</span>
-            </div>
-            <div class="metric-card card-confirmed">
-                <span class="metric-label">Confirmed Slots</span>
-                <span class="metric-value" id="metric-confirmed" style="color: #059669;">0</span>
-            </div>
-            <div class="metric-card card-cancelled">
-                <span class="metric-label">Cancelled Sessions</span>
-                <span class="metric-value" id="metric-cancelled" style="color: #dc2626;">0</span>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full bg-electric-cyan border-2 border-primary text-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] transform rotate-1">
+                    ✦ IRB Verified Sessions
+                </span>
             </div>
         </div>
 
-        <h3>Status Lifecycle & Guidelines</h3>
-        <div class="status-guide">
-            <div class="status-guide-item">
-                <span class="status-badge status-pending">PENDING</span>
+        <!-- Dashboard Section Navigation Tabs -->
+        <div class="dashboard-nav-bar mb-6">
+            <div class="flex flex-wrap items-end gap-2 border-b-2 border-primary pt-2 px-1" role="tablist">
+                <button type="button" id="tab-experiments" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-secondary-container text-primary font-bold shadow-[2px_-2px_0px_#1d00ff] -mb-[2px] z-10 flex items-center gap-1.5 transition-all cursor-pointer" onclick="showSection('experiments')">
+                    🔬 Available Experiments
+                </button>
+                <button type="button" id="tab-details" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="showSection('details')">
+                    📅 Experiment Details
+                </button>
+                <button type="button" id="tab-bookings" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="showSection('bookings')">
+                    📋 My Bookings <span id="badge-bookings-count" class="tab-counter px-2 py-0.5 rounded-full bg-primary text-white font-mono text-[10px]">0</span>
+                </button>
+                <button type="button" id="tab-status" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="showSection('status')">
+                    📊 Booking Status Overview
+                </button>
+                <button type="button" id="tab-all" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="showSection('all')">
+                    🌐 View All Sections
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. Available Experiments Section -->
+        <section id="experiments-section" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5 flex items-center justify-between">
                 <div>
-                    <strong>Awaiting Laboratory Approval</strong>
-                    <p>The booking request has been submitted to the database and queued for faculty review. Students can cancel pending requests at any time before acceptance.</p>
+                    <h2 class="font-headline text-2xl text-primary font-bold italic m-0">Available Experiments</h2>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Select an experiment to view details and available time slots.</p>
+                </div>
+                <span class="font-mono text-xs uppercase font-bold text-primary bg-secondary-container border border-primary px-3 py-1 rounded-full">
+                    Live Catalog
+                </span>
+            </div>
+            <div id="experiments" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" aria-live="polite">
+                Loading experiments...
+            </div>
+        </section>
+
+        <!-- 2. Experiment Details & Available Slots Section -->
+        <section id="details-section" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5">
+                <h2 class="font-headline text-2xl text-primary font-bold italic m-0">Experiment Details</h2>
+                <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Detailed protocol criteria and scheduled lab sessions.</p>
+            </div>
+            
+            <div id="details" class="bg-surface-container-low border-2 border-primary rounded-xl p-5 mb-5 shadow-[2px_2px_0px_#1d00ff]" aria-live="polite">
+                Select an experiment above to view its details.
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-headline text-xl text-primary font-bold italic m-0">Available Slots</h3>
+                <button type="button" id="btn-refresh-slots" onclick="refreshCurrentSlots()" class="hidden px-3 py-1 rounded-full bg-paper-pure border-2 border-primary text-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] hover:bg-electric-cyan transition-colors cursor-pointer">
+                    ↻ Refresh Slots
+                </button>
+            </div>
+            <div id="slots" class="min-h-[60px]" aria-live="polite">
+                No experiment selected.
+            </div>
+        </section>
+
+        <!-- 3. My Bookings Section -->
+        <section id="bookings-section" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="font-headline text-2xl text-primary font-bold italic m-0">My Bookings</h2>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Review your upcoming, confirmed, and past experiment reservations stored in the central database.</p>
+                </div>
+                <span class="font-mono text-xs text-on-surface-variant uppercase font-bold bg-surface-container border border-primary px-3 py-1 rounded-full self-start">
+                    Scholar Ledger
+                </span>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-primary text-white font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] cursor-pointer" onclick="filterBookings('ALL')">
+                    All (<span id="count-all">0</span>)
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterBookings('PENDING')">
+                    Pending (<span id="count-pending">0</span>)
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterBookings('CONFIRMED')">
+                    Confirmed (<span id="count-confirmed">0</span>)
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterBookings('CANCELLED')">
+                    Cancelled (<span id="count-cancelled">0</span>)
+                </button>
+            </div>
+
+            <div id="bookings-table-wrapper" class="overflow-x-auto">
+                <div class="empty-state text-center py-10">
+                    <div class="text-3xl mb-2">⏳</div>
+                    <h3 class="font-headline text-xl text-primary font-bold italic m-0">Loading Bookings...</h3>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Retrieving your laboratory reservations from the backend.</p>
                 </div>
             </div>
-            <div class="status-guide-item">
-                <span class="status-badge status-confirmed">CONFIRMED</span>
-                <div>
-                    <strong>Confirmed Laboratory Appointment</strong>
-                    <p>The time slot and station have been confirmed by the laboratory supervisor. Capacity has been allocated. If you cannot attend, please cancel promptly to release the slot for other students.</p>
+        </section>
+
+        <!-- 4. Booking Status Overview Section -->
+        <section id="status-section" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5">
+                <h2 class="font-headline text-2xl text-primary font-bold italic m-0">Booking Status Overview</h2>
+                <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Current breakdown of all active, pending, and past experiment bookings.</p>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-paper-pure border-2 border-primary rounded-xl p-4 shadow-[3px_3px_0px_#1d00ff] flex flex-col justify-between">
+                    <span class="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Total Reservations</span>
+                    <div class="font-headline text-3xl font-bold text-primary mt-2" id="metric-total">0</div>
+                    <span class="font-mono text-[10px] text-primary mt-1 font-bold">All Submissions</span>
+                </div>
+                <div class="bg-paper-pure border-2 border-primary rounded-xl p-4 shadow-[3px_3px_0px_#1d00ff] flex flex-col justify-between">
+                    <span class="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Pending Review</span>
+                    <div class="font-headline text-3xl font-bold text-status-pending mt-2" id="metric-pending">0</div>
+                    <span class="font-mono text-[10px] text-status-pending mt-1 font-bold">Awaiting Faculty</span>
+                </div>
+                <div class="bg-paper-pure border-2 border-primary rounded-xl p-4 shadow-[3px_3px_0px_#1d00ff] flex flex-col justify-between">
+                    <span class="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Confirmed Slots</span>
+                    <div class="font-headline text-3xl font-bold text-status-confirmed mt-2" id="metric-confirmed">0</div>
+                    <span class="font-mono text-[10px] text-status-confirmed mt-1 font-bold">Allotted &bull; Ready</span>
+                </div>
+                <div class="bg-paper-pure border-2 border-primary rounded-xl p-4 shadow-[3px_3px_0px_#1d00ff] flex flex-col justify-between">
+                    <span class="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Cancelled Sessions</span>
+                    <div class="font-headline text-3xl font-bold text-status-rejected mt-2" id="metric-cancelled">0</div>
+                    <span class="font-mono text-[10px] text-status-rejected mt-1 font-bold">Released Capacity</span>
                 </div>
             </div>
-            <div class="status-guide-item">
-                <span class="status-badge status-cancelled">CANCELLED</span>
-                <div>
-                    <strong>Session Cancelled</strong>
-                    <p>The reservation was cancelled either by the student or the supervisor. The slot capacity is released back to the laboratory schedule. Cancelled requests remain in the audit log.</p>
+
+            <!-- Status Lifecycle Guide -->
+            <h3 class="font-headline text-xl text-primary font-bold italic mb-3">Status Lifecycle &amp; Guidelines</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-surface-container-low border-2 border-primary rounded-xl shadow-[2px_2px_0px_#1d00ff]">
+                    <div class="inline-block px-2.5 py-0.5 rounded-full bg-secondary-container border border-primary font-mono text-[10px] uppercase font-bold text-primary mb-2">
+                        PENDING
+                    </div>
+                    <h4 class="font-headline text-base text-primary font-bold italic m-0">Awaiting Laboratory Approval</h4>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">
+                        The booking request has been submitted to the database and queued for faculty review. Students can cancel pending requests at any time before acceptance.
+                    </p>
+                </div>
+                <div class="p-4 bg-surface-container-low border-2 border-primary rounded-xl shadow-[2px_2px_0px_#1d00ff]">
+                    <div class="inline-block px-2.5 py-0.5 rounded-full bg-electric-cyan border border-primary font-mono text-[10px] uppercase font-bold text-primary mb-2">
+                        CONFIRMED
+                    </div>
+                    <h4 class="font-headline text-base text-primary font-bold italic m-0">Confirmed Laboratory Appointment</h4>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">
+                        The time slot and station have been confirmed by the laboratory supervisor. Capacity has been allocated. If you cannot attend, please cancel promptly.
+                    </p>
+                </div>
+                <div class="p-4 bg-surface-container-low border-2 border-primary rounded-xl shadow-[2px_2px_0px_#1d00ff]">
+                    <div class="inline-block px-2.5 py-0.5 rounded-full bg-soft-blush border border-primary font-mono text-[10px] uppercase font-bold text-primary mb-2">
+                        CANCELLED
+                    </div>
+                    <h4 class="font-headline text-base text-primary font-bold italic m-0">Session Cancelled</h4>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">
+                        The reservation was cancelled either by the student or supervisor. Slot capacity is released back to the laboratory schedule.
+                    </p>
                 </div>
             </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-paper-pure border-t-2 border-primary py-6 mt-auto shadow-[0_-4px_0_0_#1d00ff]">
+        <div class="max-w-[1240px] mx-auto px-6 text-center font-mono text-xs text-primary font-bold">
+            Research Experiment Booking System &copy; 2026. University Research &amp; Laboratory Management Platform.
         </div>
-    </section>
-</main>
+    </footer>
 
-<footer>
-    Research Experiment Booking System &copy; 2026. University Research & Laboratory Management Platform.
-</footer>
+    <!-- JavaScript Data Logic -->
+    <script>
+        // Global State
+        let currentSelectedExperiment = null;
+        let currentFilter = 'ALL';
+        let realBookings = [];
+        let authenticatedUser = null;
 
-<script>
-    // Global State
-    let currentSelectedExperiment = null;
-    let currentFilter = 'ALL';
-    let realBookings = [];
-    let authenticatedUser = null;
-
-    // Helper: format ISO date-time
-    function formatDateTime(iso) {
-        if (!iso) return "TBD";
-        try {
-            const d = new Date(iso);
-            return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-        } catch (e) {
-            return iso;
+        // Helper: format ISO date-time
+        function formatDateTime(iso) {
+            if (!iso) return "TBD";
+            try {
+                const d = new Date(iso);
+                return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+            } catch (e) {
+                return iso;
+            }
         }
-    }
 
-    function escapeHtml(text) {
-        if (!text) return "";
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-    }
+        function escapeHtml(text) {
+            if (!text) return "";
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-    // Retrieve Student Identity (Thymeleaf model or /api/users/me)
-    async function resolveCurrentStudent() {
-        const metaId = document.getElementById("meta-user-id");
-        const metaEmail = document.getElementById("meta-user-email");
-        const metaName = document.getElementById("meta-user-name");
+        // Retrieve Student Identity (Thymeleaf model or /api/users/me)
+        async function resolveCurrentStudent() {
+            const metaId = document.getElementById("meta-user-id");
+            const metaEmail = document.getElementById("meta-user-email");
+            const metaName = document.getElementById("meta-user-name");
 
-        if (metaId && metaId.content && metaId.content.trim() !== "") {
+            if (metaId && metaId.content && metaId.content.trim() !== "") {
+                authenticatedUser = {
+                    userId: parseInt(metaId.content.trim(), 10),
+                    email: (metaEmail && metaEmail.content) || "student@example.com",
+                    fullName: (metaName && metaName.content) || "Student Participant"
+                };
+                return authenticatedUser;
+            }
+
+            try {
+                const res = await fetch("/api/users/me");
+                if (res.ok) {
+                    authenticatedUser = await res.json();
+                    return authenticatedUser;
+                }
+            } catch (e) {
+                console.warn("Could not fetch current user profile:", e);
+            }
+
+            // Fallback default for mock test sessions
             authenticatedUser = {
-                userId: parseInt(metaId.content.trim(), 10),
-                email: (metaEmail && metaEmail.content) || "student@example.com",
-                fullName: (metaName && metaName.content) || "Student Participant"
+                userId: 1,
+                email: "student@example.com",
+                fullName: "Student Participant"
             };
             return authenticatedUser;
         }
 
-        try {
-            const res = await fetch("/api/users/me");
-            if (res.ok) {
-                authenticatedUser = await res.json();
-                return authenticatedUser;
-            }
-        } catch (e) {
-            console.warn("Could not fetch current user profile:", e);
-        }
+        // Tab Management
+        function showSection(sectionKey) {
+            const sections = {
+                'experiments': document.getElementById('experiments-section'),
+                'details': document.getElementById('details-section'),
+                'bookings': document.getElementById('bookings-section'),
+                'status': document.getElementById('status-section')
+            };
 
-        // Fallback default for mock test sessions
-        authenticatedUser = {
-            userId: 1,
-            email: "student@example.com",
-            fullName: "Student Participant"
-        };
-        return authenticatedUser;
-    }
+            const tabs = {
+                'experiments': document.getElementById('tab-experiments'),
+                'details': document.getElementById('tab-details'),
+                'bookings': document.getElementById('tab-bookings'),
+                'status': document.getElementById('tab-status'),
+                'all': document.getElementById('tab-all')
+            };
 
-    // Tab Management
-    function showSection(sectionKey) {
-        const sections = {
-            'experiments': document.getElementById('experiments-section'),
-            'details': document.getElementById('details-section'),
-            'bookings': document.getElementById('bookings-section'),
-            'status': document.getElementById('status-section')
-        };
+            Object.values(tabs).forEach(tab => {
+                if (tab) {
+                    tab.classList.remove('bg-secondary-container', 'text-primary');
+                    tab.classList.add('bg-paper-pure', 'text-on-surface-variant');
+                }
+            });
 
-        const tabs = {
-            'experiments': document.getElementById('tab-experiments'),
-            'details': document.getElementById('tab-details'),
-            'bookings': document.getElementById('tab-bookings'),
-            'status': document.getElementById('tab-status'),
-            'all': document.getElementById('tab-all')
-        };
-
-        Object.values(tabs).forEach(tab => tab && tab.classList.remove('active'));
-
-        if (sectionKey === 'all') {
-            Object.values(sections).forEach(sec => sec && (sec.style.display = 'block'));
-            tabs.all.classList.add('active');
-            loadStudentBookings();
-            return;
-        }
-
-        if (tabs[sectionKey]) {
-            tabs[sectionKey].classList.add('active');
-        }
-
-        if (sectionKey === 'experiments') {
-            sections.experiments.style.display = 'block';
-            sections.details.style.display = 'block';
-            sections.bookings.style.display = 'none';
-            sections.status.style.display = 'none';
-        } else if (sectionKey === 'details') {
-            sections.experiments.style.display = 'none';
-            sections.details.style.display = 'block';
-            sections.bookings.style.display = 'none';
-            sections.status.style.display = 'none';
-            sections.details.scrollIntoView({ behavior: 'smooth' });
-            if (currentSelectedExperiment) refreshCurrentSlots();
-        } else if (sectionKey === 'bookings') {
-            sections.experiments.style.display = 'none';
-            sections.details.style.display = 'none';
-            sections.bookings.style.display = 'block';
-            sections.status.style.display = 'none';
-            loadStudentBookings();
-        } else if (sectionKey === 'status') {
-            sections.experiments.style.display = 'none';
-            sections.details.style.display = 'none';
-            sections.bookings.style.display = 'none';
-            sections.status.style.display = 'block';
-            loadStudentBookings();
-        }
-    }
-
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast-message');
-        toast.className = 'toast-banner toast-' + type;
-        toast.innerHTML = message;
-        toast.style.display = 'block';
-        toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        setTimeout(() => { toast.style.display = 'none'; }, 7000);
-    }
-
-    // Load Experiments
-    async function loadExperiments() {
-        const experimentsContainer = document.getElementById("experiments");
-        try {
-            const response = await fetch("/api/experiments");
-            if (!response.ok) throw new Error("Unable to load experiments");
-
-            const experiments = await response.json();
-            experimentsContainer.textContent = "";
-
-            if (!experiments || experiments.length === 0) {
-                experimentsContainer.textContent = "No active experiments currently available.";
+            if (sectionKey === 'all') {
+                Object.values(sections).forEach(sec => sec && (sec.style.display = 'block'));
+                if (tabs.all) {
+                    tabs.all.classList.add('bg-secondary-container', 'text-primary');
+                    tabs.all.classList.remove('bg-paper-pure', 'text-on-surface-variant');
+                }
+                loadStudentBookings();
                 return;
             }
 
-            experiments.forEach(exp => {
-                const card = document.createElement("article");
-                card.className = "experiment-card";
+            if (tabs[sectionKey]) {
+                tabs[sectionKey].classList.add('bg-secondary-container', 'text-primary');
+                tabs[sectionKey].classList.remove('bg-paper-pure', 'text-on-surface-variant');
+            }
 
-                const title = document.createElement("h3");
-                title.textContent = exp.title || "Untitled Experiment";
-
-                const desc = document.createElement("p");
-                desc.textContent = exp.description || "No description provided.";
-
-                const lab = document.createElement("p");
-                lab.innerHTML = "<strong>Lab:</strong> " + (exp.laboratoryName ? escapeHtml(exp.laboratoryName) : "General Research Lab");
-
-                const duration = document.createElement("p");
-                duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " mins";
-
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "btn-view-details";
-                btn.textContent = "View Details & Slots";
-                btn.onclick = () => selectExperiment(exp);
-
-                card.appendChild(title);
-                card.appendChild(desc);
-                card.appendChild(lab);
-                card.appendChild(duration);
-                card.appendChild(btn);
-
-                experimentsContainer.appendChild(card);
-            });
-        } catch (err) {
-            experimentsContainer.textContent = "Failed to load experiments. Please refresh the page.";
+            if (sectionKey === 'experiments') {
+                sections.experiments.style.display = 'block';
+                sections.details.style.display = 'block';
+                sections.bookings.style.display = 'none';
+                sections.status.style.display = 'none';
+            } else if (sectionKey === 'details') {
+                sections.experiments.style.display = 'none';
+                sections.details.style.display = 'block';
+                sections.bookings.style.display = 'none';
+                sections.status.style.display = 'none';
+                sections.details.scrollIntoView({ behavior: 'smooth' });
+                if (currentSelectedExperiment) refreshCurrentSlots();
+            } else if (sectionKey === 'bookings') {
+                sections.experiments.style.display = 'none';
+                sections.details.style.display = 'none';
+                sections.bookings.style.display = 'block';
+                sections.status.style.display = 'none';
+                loadStudentBookings();
+            } else if (sectionKey === 'status') {
+                sections.experiments.style.display = 'none';
+                sections.details.style.display = 'none';
+                sections.bookings.style.display = 'none';
+                sections.status.style.display = 'block';
+                loadStudentBookings();
+            }
         }
-    }
 
-    // Select Experiment & Load Details
-    async function selectExperiment(exp) {
-        currentSelectedExperiment = exp;
-        const detailsSection = document.getElementById("details-section");
-        const detailsContainer = document.getElementById("details");
-        const slotsContainer = document.getElementById("slots");
-        const refreshBtn = document.getElementById("btn-refresh-slots");
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-message');
+            toast.className = 'toast-banner block mb-6 p-4 rounded-xl border-2 border-primary font-mono text-xs uppercase font-bold shadow-[4px_4px_0px_#1d00ff] ' +
+                (type === 'success' ? 'bg-secondary-container text-primary' : (type === 'error' ? 'bg-red-100 text-red-800' : 'bg-electric-cyan text-primary'));
+            toast.innerHTML = message;
+            toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { toast.className = 'toast-banner hidden'; }, 7000);
+        }
 
-        detailsSection.style.display = "block";
-        detailsContainer.textContent = "";
+        // Load Experiments
+        async function loadExperiments() {
+            const experimentsContainer = document.getElementById("experiments");
+            try {
+                const response = await fetch("/api/experiments");
+                if (!response.ok) throw new Error("Unable to load experiments");
 
-        const title = document.createElement("h3");
-        title.textContent = exp.title;
+                const experiments = await response.json();
+                experimentsContainer.textContent = "";
 
-        const lab = document.createElement("p");
-        lab.innerHTML = "<strong>Laboratory:</strong> " + escapeHtml(exp.laboratoryName || "N/A");
+                if (!experiments || experiments.length === 0) {
+                    experimentsContainer.textContent = "No active experiments currently available.";
+                    return;
+                }
 
-        const duration = document.createElement("p");
-        duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " minutes";
+                experiments.forEach(exp => {
+                    const card = document.createElement("article");
+                    card.className = "experiment-card bg-paper-pure border-2 border-primary rounded-xl p-5 shadow-[3px_3px_0px_#1d00ff] hover:shadow-[5px_5px_0px_#1d00ff] transition-all flex flex-col justify-between";
 
-        const desc = document.createElement("p");
-        desc.textContent = exp.description || "";
+                    const title = document.createElement("h3");
+                    title.className = "font-headline text-xl text-primary font-bold italic leading-snug mb-2";
+                    title.textContent = exp.title || "Untitled Experiment";
 
-        detailsContainer.appendChild(title);
-        detailsContainer.appendChild(lab);
-        detailsContainer.appendChild(duration);
-        detailsContainer.appendChild(desc);
+                    const desc = document.createElement("p");
+                    desc.className = "font-body text-xs text-on-surface-variant mb-2 line-clamp-2";
+                    desc.textContent = exp.description || "No description provided.";
 
-        if (refreshBtn) refreshBtn.style.display = "inline-block";
+                    const lab = document.createElement("p");
+                    lab.className = "font-mono text-xs text-primary mb-1";
+                    lab.innerHTML = "<strong>Lab:</strong> " + (exp.laboratoryName ? escapeHtml(exp.laboratoryName) : "General Research Lab");
 
-        await loadSlotsForExperiment(exp, slotsContainer);
-    }
+                    const duration = document.createElement("p");
+                    duration.className = "font-mono text-xs text-primary mb-4";
+                    duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " mins";
 
-    async function refreshCurrentSlots() {
-        if (!currentSelectedExperiment) return;
-        const slotsContainer = document.getElementById("slots");
-        slotsContainer.textContent = "Loading slots...";
-        await loadSlotsForExperiment(currentSelectedExperiment, slotsContainer);
-    }
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "btn-view-details w-full py-2 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer";
+                    btn.textContent = "View Details & Slots";
+                    btn.onclick = () => selectExperiment(exp);
 
-    async function loadSlotsForExperiment(exp, slotsContainer) {
-        slotsContainer.textContent = "Loading slots...";
+                    card.appendChild(title);
+                    card.appendChild(desc);
+                    card.appendChild(lab);
+                    card.appendChild(duration);
+                    card.appendChild(btn);
 
-        try {
-            const response = await fetch("/api/experiments/" + exp.experimentId + "/slots");
-            if (!response.ok) throw new Error("Unable to load slots");
+                    experimentsContainer.appendChild(card);
+                });
+            } catch (err) {
+                experimentsContainer.textContent = "Failed to load experiments. Please refresh the page.";
+            }
+        }
 
-            const slots = await response.json();
-            slotsContainer.textContent = "";
+        // Select Experiment & Load Details
+        async function selectExperiment(exp) {
+            currentSelectedExperiment = exp;
+            const detailsSection = document.getElementById("details-section");
+            const detailsContainer = document.getElementById("details");
+            const slotsContainer = document.getElementById("slots");
+            const refreshBtn = document.getElementById("btn-refresh-slots");
 
-            if (!slots || slots.length === 0) {
-                slotsContainer.textContent = "No time slots currently scheduled for this experiment.";
+            detailsSection.style.display = "block";
+            detailsContainer.textContent = "";
+
+            const title = document.createElement("h3");
+            title.className = "font-headline text-2xl text-primary font-bold italic mb-2";
+            title.textContent = exp.title;
+
+            const lab = document.createElement("p");
+            lab.className = "font-mono text-xs text-primary mb-1";
+            lab.innerHTML = "<strong>Laboratory:</strong> " + escapeHtml(exp.laboratoryName || "N/A");
+
+            const duration = document.createElement("p");
+            duration.className = "font-mono text-xs text-primary mb-2";
+            duration.innerHTML = "<strong>Duration:</strong> " + (exp.durationMinutes || 0) + " minutes";
+
+            const desc = document.createElement("p");
+            desc.className = "font-body text-sm text-on-surface-variant m-0";
+            desc.textContent = exp.description || "";
+
+            detailsContainer.appendChild(title);
+            detailsContainer.appendChild(lab);
+            detailsContainer.appendChild(duration);
+            detailsContainer.appendChild(desc);
+
+            if (refreshBtn) refreshBtn.style.display = "inline-block";
+
+            await loadSlotsForExperiment(exp, slotsContainer);
+        }
+
+        async function refreshCurrentSlots() {
+            if (!currentSelectedExperiment) return;
+            const slotsContainer = document.getElementById("slots");
+            slotsContainer.textContent = "Loading slots...";
+            await loadSlotsForExperiment(currentSelectedExperiment, slotsContainer);
+        }
+
+        async function loadSlotsForExperiment(exp, slotsContainer) {
+            slotsContainer.textContent = "Loading slots...";
+
+            try {
+                const response = await fetch("/api/experiments/" + exp.experimentId + "/slots");
+                if (!response.ok) throw new Error("Unable to load slots");
+
+                const slots = await response.json();
+                slotsContainer.textContent = "";
+
+                if (!slots || slots.length === 0) {
+                    slotsContainer.textContent = "No time slots currently scheduled for this experiment.";
+                    return;
+                }
+
+                const list = document.createElement("ul");
+                list.className = "slot-list flex flex-col gap-3 p-0 m-0 list-none";
+
+                slots.forEach(slot => {
+                    const item = document.createElement("li");
+                    item.className = "slot-item flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border-2 border-primary bg-surface-container-low shadow-[2px_2px_0px_#1d00ff] gap-3";
+
+                    const times = document.createElement("span");
+                    times.className = "slot-time-info font-mono text-xs text-primary font-bold";
+                    times.innerHTML = "🕒 " + formatDateTime(slot.startTime) + " – " + formatDateTime(slot.endTime);
+
+                    const cap = document.createElement("span");
+                    cap.className = "slot-capacity px-2.5 py-0.5 rounded-full bg-paper-pure border border-primary font-mono text-[11px] text-primary font-bold";
+                    cap.textContent = "Capacity: " + slot.capacity;
+
+                    const bookBtn = document.createElement("button");
+                    bookBtn.type = "button";
+                    bookBtn.className = "btn-book-slot px-4 py-1.5 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer";
+                    bookBtn.innerHTML = "Book Slot";
+                    bookBtn.onclick = () => bookSlotReal(slot, exp);
+
+                    const rightBox = document.createElement("div");
+                    rightBox.className = "flex items-center gap-3";
+                    rightBox.appendChild(cap);
+                    rightBox.appendChild(bookBtn);
+
+                    item.appendChild(times);
+                    item.appendChild(rightBox);
+                    list.appendChild(item);
+                });
+
+                slotsContainer.appendChild(list);
+            } catch (err) {
+                slotsContainer.textContent = "Failed to load slots for this experiment.";
+            }
+        }
+
+        // Real Backend Booking Creation
+        async function bookSlotReal(slot, exp) {
+            await resolveCurrentStudent();
+
+            const purpose = prompt("Please provide research purpose or notes for this booking request:", "Academic research study participant");
+            if (purpose === null) return; // User cancelled prompt
+
+            try {
+                const res = await fetch("/api/bookings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: authenticatedUser.userId,
+                        slotId: slot.slotId,
+                        purpose: purpose.trim() || "Research study participant"
+                    })
+                });
+
+                if (!res.ok) {
+                    let errText = "Unable to complete booking.";
+                    try {
+                        const errObj = await res.json();
+                        if (errObj.message) errText = errObj.message;
+                        else if (errObj.error) errText = errObj.error;
+                    } catch(e) {}
+                    showToast("<strong>Booking Failed:</strong> " + escapeHtml(errText), "error");
+                    return;
+                }
+
+                const booking = await res.json();
+                showToast(
+                    `<strong>Booking Request Submitted!</strong><br>Booking Reference: <strong>#BK-${booking.bookingId}</strong> for <em>${escapeHtml(exp.title)}</em>.<br>Status: <span class="px-2 py-0.5 rounded-full bg-secondary-container border border-primary font-mono text-[10px] text-primary font-bold">PENDING</span> &bull; Awaiting lab supervisor confirmation.`,
+                    "success"
+                );
+
+                // Navigate to My Bookings and reload real data
+                showSection('bookings');
+            } catch (err) {
+                showToast("Network error submitting booking request. Please try again.", "error");
+            }
+        }
+
+        // Load Real Bookings from Backend API
+        async function loadStudentBookings() {
+            await resolveCurrentStudent();
+            const wrapper = document.getElementById('bookings-table-wrapper');
+
+            try {
+                const res = await fetch(`/api/bookings/user/${authenticatedUser.userId}/enriched`);
+                if (res.ok) {
+                    realBookings = await res.json();
+                } else {
+                    const fallbackRes = await fetch(`/api/bookings/user/${authenticatedUser.userId}`);
+                    if (fallbackRes.ok) realBookings = await fallbackRes.json();
+                    else realBookings = [];
+                }
+            } catch (e) {
+                console.warn("Could not retrieve enriched bookings:", e);
+                realBookings = [];
+            }
+
+            updateMetricsAndBadges();
+            renderBookingsTable();
+        }
+
+        function updateMetricsAndBadges() {
+            const total = realBookings.length;
+            const pending = realBookings.filter(b => b.status === 'PENDING').length;
+            const confirmed = realBookings.filter(b => b.status === 'CONFIRMED').length;
+            const cancelled = realBookings.filter(b => b.status === 'CANCELLED').length;
+
+            document.getElementById('metric-total').textContent = total;
+            document.getElementById('metric-pending').textContent = pending;
+            document.getElementById('metric-confirmed').textContent = confirmed;
+            document.getElementById('metric-cancelled').textContent = cancelled;
+
+            document.getElementById('count-all').textContent = total;
+            document.getElementById('count-pending').textContent = pending;
+            document.getElementById('count-confirmed').textContent = confirmed;
+            document.getElementById('count-cancelled').textContent = cancelled;
+
+            const navBadge = document.getElementById('badge-bookings-count');
+            if (navBadge) navBadge.textContent = total;
+        }
+
+        function filterBookings(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-paper-pure', 'text-primary');
+                if (btn.textContent.toUpperCase().includes(status)) {
+                    btn.classList.add('bg-primary', 'text-white');
+                    btn.classList.remove('bg-paper-pure', 'text-primary');
+                }
+            });
+            renderBookingsTable();
+        }
+
+        function renderBookingsTable() {
+            const wrapper = document.getElementById('bookings-table-wrapper');
+            const filtered = currentFilter === 'ALL'
+                ? realBookings
+                : realBookings.filter(b => b.status === currentFilter);
+
+            if (filtered.length === 0) {
+                wrapper.innerHTML = `
+                    <div class="empty-state text-center py-10 bg-surface-container-low rounded-xl border-2 border-primary shadow-[2px_2px_0px_#1d00ff]">
+                        <div class="text-3xl mb-2">📂</div>
+                        <h3 class="font-headline text-xl text-primary font-bold italic m-0">No Bookings Found</h3>
+                        <p class="font-body text-xs text-on-surface-variant mt-1 mb-4">There are no reservations matching the "<strong>${currentFilter}</strong>" filter.</p>
+                        <button type="button" class="btn-view-details px-4 py-1.5 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer" onclick="showSection('experiments')">
+                            Discover Available Experiments
+                        </button>
+                    </div>
+                `;
                 return;
             }
 
-            const list = document.createElement("ul");
-            list.className = "slot-list";
-
-            slots.forEach(slot => {
-                const item = document.createElement("li");
-                item.className = "slot-item";
-
-                const times = document.createElement("span");
-                times.className = "slot-time-info";
-                times.innerHTML = "🕒 " + formatDateTime(slot.startTime) + " – " + formatDateTime(slot.endTime);
-
-                const cap = document.createElement("span");
-                cap.className = "slot-capacity";
-                cap.textContent = "Capacity: " + slot.capacity;
-
-                const bookBtn = document.createElement("button");
-                bookBtn.type = "button";
-                bookBtn.className = "btn-book-slot";
-                bookBtn.innerHTML = "Book Slot";
-                bookBtn.onclick = () => bookSlotReal(slot, exp);
-
-                item.appendChild(times);
-                item.appendChild(cap);
-                item.appendChild(bookBtn);
-                list.appendChild(item);
-            });
-
-            slotsContainer.appendChild(list);
-        } catch (err) {
-            slotsContainer.textContent = "Failed to load slots for this experiment.";
-        }
-    }
-
-    // Real Backend Booking Creation
-    async function bookSlotReal(slot, exp) {
-        await resolveCurrentStudent();
-
-        const purpose = prompt("Please provide research purpose or notes for this booking request:", "Academic research study participant");
-        if (purpose === null) return; // User cancelled prompt
-
-        try {
-            const res = await fetch("/api/bookings", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userId: authenticatedUser.userId,
-                    slotId: slot.slotId,
-                    purpose: purpose.trim() || "Research study participant"
-                })
-            });
-
-            if (!res.ok) {
-                let errText = "Unable to complete booking.";
-                try {
-                    const errObj = await res.json();
-                    if (errObj.message) errText = errObj.message;
-                    else if (errObj.error) errText = errObj.error;
-                } catch(e) {}
-                showToast("<strong>Booking Failed:</strong> " + escapeHtml(errText), "error");
-                return;
-            }
-
-            const booking = await res.json();
-            showToast(
-                `<strong>Booking Request Submitted!</strong><br>Booking Reference: <strong>#BK-${booking.bookingId}</strong> for <em>${escapeHtml(exp.title)}</em>.<br>Status: <span class="status-badge status-pending">PENDING</span> &bull; Awaiting lab supervisor confirmation.`,
-                "success"
-            );
-
-            // Navigate to My Bookings and reload real data
-            showSection('bookings');
-        } catch (err) {
-            showToast("Network error submitting booking request. Please try again.", "error");
-        }
-    }
-
-    // Load Real Bookings from Backend API
-    async function loadStudentBookings() {
-        await resolveCurrentStudent();
-        const wrapper = document.getElementById('bookings-table-wrapper');
-
-        try {
-            const res = await fetch(`/api/bookings/user/${authenticatedUser.userId}/enriched`);
-            if (res.ok) {
-                realBookings = await res.json();
-            } else {
-                // Fallback to non-enriched if needed
-                const fallbackRes = await fetch(`/api/bookings/user/${authenticatedUser.userId}`);
-                if (fallbackRes.ok) realBookings = await fallbackRes.json();
-                else realBookings = [];
-            }
-        } catch (e) {
-            console.warn("Could not retrieve enriched bookings:", e);
-            realBookings = [];
-        }
-
-        updateMetricsAndBadges();
-        renderBookingsTable();
-    }
-
-    function updateMetricsAndBadges() {
-        const total = realBookings.length;
-        const pending = realBookings.filter(b => b.status === 'PENDING').length;
-        const confirmed = realBookings.filter(b => b.status === 'CONFIRMED').length;
-        const cancelled = realBookings.filter(b => b.status === 'CANCELLED').length;
-
-        document.getElementById('metric-total').textContent = total;
-        document.getElementById('metric-pending').textContent = pending;
-        document.getElementById('metric-confirmed').textContent = confirmed;
-        document.getElementById('metric-cancelled').textContent = cancelled;
-
-        document.getElementById('count-all').textContent = total;
-        document.getElementById('count-pending').textContent = pending;
-        document.getElementById('count-confirmed').textContent = confirmed;
-        document.getElementById('count-cancelled').textContent = cancelled;
-
-        const navBadge = document.getElementById('badge-bookings-count');
-        if (navBadge) navBadge.textContent = total;
-    }
-
-    function filterBookings(status) {
-        currentFilter = status;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent.toUpperCase().includes(status)) {
-                btn.classList.add('active');
-            }
-        });
-        renderBookingsTable();
-    }
-
-    function renderBookingsTable() {
-        const wrapper = document.getElementById('bookings-table-wrapper');
-        const filtered = currentFilter === 'ALL'
-            ? realBookings
-            : realBookings.filter(b => b.status === currentFilter);
-
-        if (filtered.length === 0) {
-            wrapper.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">📂</div>
-                    <h3>No Bookings Found</h3>
-                    <p>There are no reservations matching the "<strong>${currentFilter}</strong>" filter.</p>
-                    <button type="button" class="btn-view-details" style="margin: 0 auto;" onclick="showSection('experiments')">
-                        Discover Available Experiments
-                    </button>
-                </div>
+            let html = `
+                <table class="bookings-table w-full text-left border-collapse border-2 border-primary rounded-xl overflow-hidden shadow-[3px_3px_0px_#1d00ff]">
+                    <thead>
+                        <tr class="bg-surface-container border-b-2 border-primary font-mono text-xs uppercase text-primary font-bold">
+                            <th class="py-3 px-4">Booking Ref</th>
+                            <th class="py-3 px-4">Experiment</th>
+                            <th class="py-3 px-4">Laboratory</th>
+                            <th class="py-3 px-4">Schedule</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y-2 divide-primary/20 bg-paper-pure font-body text-xs">
             `;
-            return;
-        }
 
-        let html = `
-            <table class="bookings-table">
-                <thead>
-                    <tr>
-                        <th>Booking Ref</th>
-                        <th>Experiment</th>
-                        <th>Laboratory</th>
-                        <th>Schedule</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+            filtered.forEach(b => {
+                let statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-secondary-container border border-primary font-mono text-[10px] uppercase font-bold text-primary">${b.status}</span>`;
+                if (b.status === 'CONFIRMED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-electric-cyan border border-primary font-mono text-[10px] uppercase font-bold text-primary">${b.status}</span>`;
+                } else if (b.status === 'REJECTED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-red-100 border border-primary font-mono text-[10px] uppercase font-bold text-red-700">${b.status}</span>`;
+                } else if (b.status === 'CANCELLED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-surface-container border border-primary font-mono text-[10px] uppercase font-bold text-on-surface-variant">${b.status}</span>`;
+                }
+
+                let actionHtml = `<span class="text-on-surface-variant font-mono text-xs">—</span>`;
+                if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
+                    actionHtml = `<button type="button" class="btn-cancel-booking px-3 py-1 rounded-full bg-soft-blush border border-primary text-primary font-mono text-[11px] uppercase font-bold hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer" onclick="cancelBookingReal(${b.bookingId}, '${escapeHtml(b.experimentTitle || 'Experiment')}')">Cancel</button>`;
+                }
+
+                const expTitle = b.experimentTitle || `Experiment #${b.slotId || ''}`;
+                const lab = b.laboratoryName || 'Departmental Lab';
+                const timeRange = b.startTime ? `${formatDateTime(b.startTime)} – ${formatDateTime(b.endTime)}` : 'Scheduled Session';
+
+                html += `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3 px-4 font-mono font-bold text-primary">
+                            #BK-${b.bookingId}
+                        </td>
+                        <td class="py-3 px-4">
+                            <strong class="font-headline text-sm font-bold text-primary">${escapeHtml(expTitle)}</strong>
+                            <div class="font-body text-[11px] text-on-surface-variant mt-0.5">${escapeHtml(b.purpose || '')}</div>
+                        </td>
+                        <td class="py-3 px-4 font-mono text-xs text-primary">
+                            🏛️ ${escapeHtml(lab)}
+                        </td>
+                        <td class="py-3 px-4 font-mono text-xs">
+                            ${timeRange}
+                        </td>
+                        <td class="py-3 px-4">
+                            ${statusBadge}
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            ${actionHtml}
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-        `;
-
-        filtered.forEach(b => {
-            let statusBadgeClass = 'status-pending';
-            if (b.status === 'CONFIRMED') statusBadgeClass = 'status-confirmed';
-            else if (b.status === 'REJECTED') statusBadgeClass = 'status-rejected';
-            else if (b.status === 'CANCELLED') statusBadgeClass = 'status-cancelled';
-
-            let actionHtml = `<span style="color: #94a3b8; font-size: 13px;">—</span>`;
-            if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
-                actionHtml = `<button type="button" class="btn-cancel-booking" onclick="cancelBookingReal(${b.bookingId}, '${escapeHtml(b.experimentTitle || 'Experiment')}')">Cancel</button>`;
-            }
-
-            const expTitle = b.experimentTitle || `Experiment #${b.slotId || ''}`;
-            const lab = b.laboratoryName || 'Departmental Lab';
-            const timeRange = b.startTime ? `${formatDateTime(b.startTime)} – ${formatDateTime(b.endTime)}` : 'Scheduled Session';
+                `;
+            });
 
             html += `
-                <tr>
-                    <td>
-                        <span class="ref-code">#BK-${b.bookingId}</span>
-                    </td>
-                    <td>
-                        <strong>${escapeHtml(expTitle)}</strong>
-                        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${escapeHtml(b.purpose || '')}</div>
-                    </td>
-                    <td>
-                        <span>🏛️ ${escapeHtml(lab)}</span>
-                    </td>
-                    <td>
-                        <div>${timeRange}</div>
-                    </td>
-                    <td>
-                        <span class="status-badge ${statusBadgeClass}">${b.status}</span>
-                    </td>
-                    <td>${actionHtml}</td>
-                </tr>
+                    </tbody>
+                </table>
             `;
-        });
-
-        html += `
-                </tbody>
-            </table>
-        `;
-        wrapper.innerHTML = html;
-    }
-
-    // Real Backend Cancellation
-    async function cancelBookingReal(bookingId, expTitle) {
-        if (!confirm(`Are you sure you want to cancel booking #BK-${bookingId} for "${expTitle}"?`)) {
-            return;
+            wrapper.innerHTML = html;
         }
 
-        await resolveCurrentStudent();
-
-        try {
-            const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    cancelledBy: authenticatedUser.userId,
-                    reason: "Cancelled by student participant"
-                })
-            });
-
-            if (!res.ok) {
-                let errText = "Unable to cancel booking.";
-                try {
-                    const errObj = await res.json();
-                    if (errObj.message) errText = errObj.message;
-                } catch(e) {}
-                showToast("<strong>Cancellation Failed:</strong> " + escapeHtml(errText), "error");
+        // Real Backend Cancellation
+        async function cancelBookingReal(bookingId, expTitle) {
+            if (!confirm(`Are you sure you want to cancel booking #BK-${bookingId} for "${expTitle}"?`)) {
                 return;
             }
 
-            showToast(`<strong>Booking #BK-${bookingId} Cancelled:</strong> The time slot has been released.`, "info");
-            loadStudentBookings();
-        } catch (e) {
-            showToast("Network error while cancelling booking.", "error");
+            await resolveCurrentStudent();
+
+            try {
+                const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        cancelledBy: authenticatedUser.userId,
+                        reason: "Cancelled by student participant"
+                    })
+                });
+
+                if (!res.ok) {
+                    let errText = "Unable to cancel booking.";
+                    try {
+                        const errObj = await res.json();
+                        if (errObj.message) errText = errObj.message;
+                    } catch(e) {}
+                    showToast("<strong>Cancellation Failed:</strong> " + escapeHtml(errText), "error");
+                    return;
+                }
+
+                showToast(`<strong>Booking #BK-${bookingId} Cancelled:</strong> The time slot has been released.`, "info");
+                loadStudentBookings();
+            } catch (e) {
+                showToast("Network error while cancelling booking.", "error");
+            }
         }
-    }
 
-    function refreshStudentData() {
-        loadExperiments();
-        loadStudentBookings();
-        showToast("Synchronized real-time laboratory and booking data with server.", "success");
-    }
+        function refreshStudentData() {
+            loadExperiments();
+            loadStudentBookings();
+            showToast("Synchronized real-time laboratory and booking data with server.", "success");
+        }
 
-    // Startup
-    document.addEventListener("DOMContentLoaded", () => {
-        resolveCurrentStudent();
-        loadExperiments();
-        loadStudentBookings();
-    });
-</script>
+        // Startup
+        document.addEventListener("DOMContentLoaded", () => {
+            resolveCurrentStudent();
+            loadExperiments();
+            loadStudentBookings();
+        });
+    </script>
 </body>
 </html>

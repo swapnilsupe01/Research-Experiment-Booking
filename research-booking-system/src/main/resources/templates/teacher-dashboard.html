@@ -1,984 +1,860 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta id="meta-teacher-id" th:content="${currentUserId}">
-    <meta id="meta-teacher-email" th:content="${currentUserEmail}">
-    <meta id="meta-teacher-name" th:content="${currentUserName}">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta id="meta-teacher-id" th:content="${currentUserId}"/>
+    <meta id="meta-teacher-email" th:content="${currentUserEmail}"/>
+    <meta id="meta-teacher-name" th:content="${currentUserName}"/>
     <title>Teacher Portal — Research Experiment Booking System</title>
-    <link rel="stylesheet" th:href="@{/css/portal.css}">
-    <style>
-        :root {
-            --primary: #0a192f;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --teal: #0d9488;
-            --card-border: #e2e8f0;
-            --text-muted: #64748b;
-        }
-
-        body {
-            margin: 0;
-            background: #f4f7fb;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #0f172a;
-        }
-
-        header {
-            background: linear-gradient(135deg, #070d18 0%, #0a192f 50%, #1e3a5f 100%);
-            color: white;
-            padding: 16px 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .brand-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #0d9488, #2563eb);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: #ffffff;
-        }
-
-        header p {
-            margin: 2px 0 0;
-            color: #94a3b8;
-            font-size: 13px;
-        }
-
-        .user-nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .user-badge {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .user-badge strong {
-            color: #ffffff;
-        }
-
-        .btn-logout {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 7px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-logout:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
-        }
-
-        .dashboard-nav-bar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            overflow-x: auto;
-            padding: 0 24px;
-            gap: 4px;
-        }
-
-        .nav-tab-btn {
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            padding: 14px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-tab-btn:hover {
-            color: var(--teal);
-            background: #f8fafc;
-        }
-
-        .nav-tab-btn.active {
-            color: var(--teal);
-            border-bottom-color: var(--teal);
-            background: #f0fdfa;
-        }
-
-        .badge-pending-count {
-            background: #f59e0b;
-            color: white;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 10px;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 28px auto;
-            padding: 0 24px;
-            flex: 1;
-            width: 100%;
-        }
-
-        section {
-            background: white;
-            padding: 26px;
-            margin-bottom: 26px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
-            border: 1px solid #e2e8f0;
-        }
-
-        .teacher-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 14px;
-        }
-
-        .teacher-header-row h2 {
-            margin: 0;
-            color: #0f172a;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .teacher-exp-card {
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 20px 24px;
-            margin-bottom: 18px;
-            background: #fafcff;
-            transition: all 0.2s;
-        }
-
-        .teacher-exp-card:hover {
-            border-color: #93c5fd;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
-        }
-
-        .teacher-exp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .teacher-exp-header h3 {
-            margin: 0 0 6px;
-            font-size: 18px;
-            color: #0f172a;
-            font-weight: 700;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        /* Requests Table */
-        .requests-table-container {
-            overflow-x: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-        }
-
-        .requests-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background: white;
-        }
-
-        .requests-table th {
-            background: #f8fafc;
-            color: #475569;
-            font-weight: 700;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
-        }
-
-        .requests-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
-        }
-
-        .requests-table tr:hover td {
-            background: #f8fafc;
-        }
-
-        .btn-confirm-allot {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 7px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .btn-confirm-allot:hover {
-            background: #15803d;
-            transform: translateY(-1px);
-        }
-
-        .btn-reject {
-            background: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-            padding: 7px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-reject:hover {
-            background: #fca5a5;
-            color: #7f1d1d;
-        }
-
-        footer {
-            text-align: center;
-            color: #64748b;
-            padding: 24px;
-            font-size: 13px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            margin-top: auto;
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1200bc",
+                        "primary-container": "#1d00ff",
+                        "ink-deep": "#1600b8",
+                        "surface": "#fcfae8",
+                        "surface-container": "#f0efdd",
+                        "surface-container-low": "#f6f4e2",
+                        "surface-container-high": "#ebe9d7",
+                        "surface-variant": "#e5e3d2",
+                        "paper-pure": "#ffffff",
+                        "secondary": "#626200",
+                        "secondary-container": "#e9e94d",
+                        "electric-cyan": "#7df5ff",
+                        "soft-blush": "#ffe6f2",
+                        "on-surface": "#1c1c12",
+                        "on-surface-variant": "#454558",
+                        "on-primary": "#ffffff",
+                        "status-confirmed": "#4ade80",
+                        "status-pending": "#f59e0b",
+                        "status-rejected": "#ef4444"
+                    },
+                    fontFamily: {
+                        "headline": ["EB Garamond", "serif"],
+                        "body": ["Space Grotesk", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"]
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- PaperLab Custom Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/portal.css}"/>
 </head>
-<body>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
 
-<header>
-    <div class="header-content">
-        <div class="brand-block">
-            <div class="brand-icon">👨‍🏫</div>
-            <div>
-                <h1>Research Experiment Booking System</h1>
-                <p>Teacher & Supervisor Portal — Manage laboratory experiments, time slots, and student allotments</p>
+    <!-- Top Sticky Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#fcfae8]/95 backdrop-blur-md border-b-2 border-primary shadow-[0_4px_0_0_#1d00ff]">
+        <div class="h-20 max-w-[1240px] mx-auto px-6 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <a th:href="@{/landing}" class="flex items-center gap-3 no-underline group">
+                <div class="w-10 h-10 rounded-full bg-paper-pure border-2 border-primary shadow-[2px_2px_0px_#1d00ff] flex items-center justify-center -rotate-2 group-hover:rotate-0 transition-transform">
+                    <span class="material-symbols-outlined text-primary text-[22px]">assignment_ind</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-headline text-2xl font-bold text-primary italic leading-none">PaperLab</span>
+                    <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Faculty Portal &bull; Supervisor Desk</span>
+                </div>
+            </a>
+
+            <!-- User Info & Logout Form -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-paper-pure border-2 border-primary shadow-[2px_2px_0px_#1d00ff] transform rotate-1">
+                    <span class="font-mono text-xs uppercase text-primary font-bold">
+                        🏛️ Faculty: <strong id="current-teacher-email" th:text="${currentUserEmail != null ? currentUserEmail : 'Teacher'}">teacher@university.edu</strong>
+                    </span>
+                </div>
+                <form th:action="@{/logout}" method="post" style="margin: 0;">
+                    <button type="submit" id="logout-button" class="px-4 py-1.5 rounded-full bg-soft-blush text-primary border-2 border-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] hover:bg-red-100 hover:text-red-700 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer">
+                        Sign Out
+                    </button>
+                </form>
             </div>
         </div>
-        <div class="user-nav">
-            <span class="user-badge">
-                <span>🏛️</span> Faculty: <strong id="current-teacher-email" th:text="${currentUserEmail != null ? currentUserEmail : 'Teacher'}">teacher@university.edu</strong>
-            </span>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" id="logout-button" class="btn-logout">Sign Out</button>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full pt-24 max-w-[1240px] mx-auto px-6 py-6 flex-1">
+        <!-- Live Alert Toast -->
+        <div id="teacher-toast" class="portal-alert hidden mb-6 p-4 rounded-xl border-2 border-primary bg-secondary-container text-primary font-mono text-xs uppercase font-bold shadow-[4px_4px_0px_#1d00ff]"></div>
+
+        <!-- 1. Top Coordinator / Mascot Ribbon Banner -->
+        <section class="relative bg-paper-pure border-2 border-primary rounded-xl shadow-[4px_4px_0px_#1d00ff] p-5 mb-6 overflow-hidden transition-all duration-300">
+            <!-- Washi Tape Accent Pin -->
+            <div class="absolute -top-3 left-8 bg-secondary-container border-2 border-primary px-3 py-0.5 rounded-full shadow-[2px_2px_0px_#1d00ff] -rotate-2 select-none z-10">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-primary font-bold">PI DESK SESSION ACTIVE &bull; RESEARCH SEMESTER 2026</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pt-1">
+                <!-- Mascot & Speech Dialogue -->
+                <div class="flex items-start sm:items-center gap-4">
+                    <div class="relative w-12 h-12 rounded-full bg-electric-cyan border-2 border-primary flex-shrink-0 flex items-center justify-center shadow-[2px_2px_0px_#1d00ff] rotate-3">
+                        <span class="text-2xl">⚗️</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-mono text-[10px] uppercase text-primary font-bold tracking-wide">Beaky the Beaker-Bot &bull; Lab Aide</span>
+                            <span class="bg-surface-container border border-primary px-2 py-0.5 rounded-full font-mono text-[10px] text-on-surface-variant font-bold">Supervisor AI</span>
+                        </div>
+                        <div class="bg-surface-container-low p-2.5 rounded-lg border-2 border-primary shadow-[2px_2px_0px_#1d00ff] max-w-2xl">
+                            <p class="font-body text-xs sm:text-sm text-on-surface m-0 leading-relaxed">
+                                Welcome back to the laboratory supervisor portal! Manage research protocols, allocate station capacity, and confirm student participant bookings in real-time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mascot Direct Action Buttons -->
+                <div class="flex items-center gap-2.5 flex-wrap w-full lg:w-auto justify-end">
+                    <button type="button" class="px-4 py-2 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[3px_3px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-1.5 cursor-pointer" onclick="openCreateExperimentModal()">
+                        <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                        <span>+ Create Experiment</span>
+                    </button>
+                    <button type="button" class="px-4 py-2 rounded-full bg-paper-pure text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:bg-electric-cyan transition-colors flex items-center gap-1.5 cursor-pointer" onclick="loadTeacherRequests()">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span>
+                        <span>Refresh Requests</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Title Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <div>
+                <h1 class="font-headline text-3xl sm:text-4xl text-primary font-bold italic leading-tight m-0">
+                    Research Experiment Booking System
+                </h1>
+                <p class="font-mono text-xs text-on-surface-variant uppercase font-bold mt-1 m-0">
+                    Teacher &amp; Supervisor Portal &bull; Laboratory Experiment Scheduling &amp; Allotment
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full bg-soft-blush border-2 border-primary text-primary font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] transform -rotate-1">
+                    ✦ Supervisor Authorization Active
+                </span>
+            </div>
+        </div>
+
+        <!-- Dashboard Navigation Tabs -->
+        <div class="dashboard-nav-bar mb-6">
+            <div class="flex flex-wrap items-end gap-2 border-b-2 border-primary pt-2 px-1" role="tablist">
+                <button type="button" id="tab-experiments" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-secondary-container text-primary font-bold shadow-[2px_-2px_0px_#1d00ff] -mb-[2px] z-10 flex items-center gap-1.5 transition-all cursor-pointer" onclick="switchTeacherTab('experiments')">
+                    🔬 My Experiments &amp; Slots
+                </button>
+                <button type="button" id="tab-requests" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="switchTeacherTab('requests')">
+                    📋 Student Booking Requests &amp; Lab Allotment
+                    <span id="badge-pending-requests" class="badge-pending-count px-2 py-0.5 rounded-full bg-status-pending text-white font-mono text-[10px] hidden font-bold">0</span>
+                </button>
+                <button type="button" id="tab-all" class="nav-tab-btn font-mono text-xs uppercase px-4 py-2.5 rounded-t-xl border-t-2 border-x-2 border-primary bg-paper-pure text-on-surface-variant hover:text-primary shadow-[2px_-1px_0px_#1d00ff] -mb-[2px] transition-all flex items-center gap-1.5 cursor-pointer" onclick="switchTeacherTab('all')">
+                    🌐 View All Sections
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 1: My Experiments (Satisfies "My Experiments" test requirement) -->
+        <section id="section-experiments" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-headline text-2xl text-primary font-bold italic m-0">My Experiments</h2>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Supervised laboratory research studies under your departmental direction.</p>
+                </div>
+                <button type="button" class="px-4 py-2 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer" onclick="openCreateExperimentModal()">
+                    + Create New Experiment
+                </button>
+            </div>
+
+            <div id="teacher-experiments-list" class="flex flex-col gap-4">
+                <div class="empty-box bg-surface-container-low p-8 rounded-xl border-2 border-primary text-center shadow-[2px_2px_0px_#1d00ff]">
+                    <div class="text-3xl mb-2">⏳</div>
+                    <h4 class="font-headline text-xl text-primary font-bold italic m-0">Loading Experiments...</h4>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Retrieving experiments managed by your supervisor account.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Student Slot Requests & Lab Allotment -->
+        <section id="section-requests" class="bg-paper-pure border-2 border-primary rounded-xl p-6 shadow-[4px_4px_0px_#1d00ff] mb-8">
+            <div class="border-b-2 border-primary pb-3 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-headline text-2xl text-primary font-bold italic m-0">Student Slot Requests &amp; Lab Allotment</h2>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Review, confirm, or reject student participation requests from the central database.</p>
+                </div>
+                <button type="button" class="px-4 py-1.5 rounded-full bg-paper-pure text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:bg-electric-cyan transition-colors cursor-pointer" onclick="loadTeacherRequests()">
+                    ↻ Refresh Requests
+                </button>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-primary text-white font-mono text-xs uppercase font-bold shadow-[2px_2px_0px_#1d00ff] cursor-pointer" onclick="filterRequests('ALL')">
+                    All Requests
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterRequests('PENDING')">
+                    Pending Review
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterRequests('CONFIRMED')">
+                    Confirmed
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterRequests('REJECTED')">
+                    Rejected
+                </button>
+                <button type="button" class="filter-btn px-3 py-1 rounded-full border-2 border-primary bg-paper-pure text-primary font-mono text-xs uppercase font-bold hover:bg-secondary-container shadow-[2px_2px_0px_#1d00ff] cursor-pointer transition-colors" onclick="filterRequests('CANCELLED')">
+                    Cancelled
+                </button>
+            </div>
+
+            <div id="requests-table-wrapper" class="overflow-x-auto">
+                <div class="empty-box bg-surface-container-low p-8 rounded-xl border-2 border-primary text-center shadow-[2px_2px_0px_#1d00ff]">
+                    <div class="text-3xl mb-2">📂</div>
+                    <h4 class="font-headline text-xl text-primary font-bold italic m-0">No Pending Requests</h4>
+                    <p class="font-body text-xs text-on-surface-variant mt-1 m-0">There are no student booking requests awaiting review.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Create Experiment Modal -->
+    <div id="modal-create-exp" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm hidden">
+        <div class="relative w-full max-w-xl bg-paper-pure rounded-xl p-6 sm:p-8 border-2 border-primary shadow-[6px_6px_0px_#1d00ff]">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-0.5 bg-secondary-container border-2 border-primary font-mono text-xs uppercase font-bold text-primary rounded-full shadow-[2px_2px_0px_#1d00ff] -rotate-1">
+                NEW PROTOCOL DOSSIER
+            </div>
+            <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-primary">
+                <h3 class="font-headline text-2xl text-primary font-bold italic m-0">Create New Research Experiment</h3>
+                <button type="button" class="w-8 h-8 rounded-full bg-paper-pure hover:bg-soft-blush border-2 border-primary flex items-center justify-center font-bold text-primary cursor-pointer" onclick="closeModal('modal-create-exp')">&times;</button>
+            </div>
+            <form id="form-create-exp" onsubmit="handleCreateExperiment(event)" class="space-y-4">
+                <div>
+                    <label for="new-exp-title" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Experiment Title</label>
+                    <input type="text" id="new-exp-title" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required placeholder="e.g. Cognitive Memory under Dual Task Load"/>
+                </div>
+                <div>
+                    <label for="new-exp-lab" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Laboratory Name / Room</label>
+                    <input type="text" id="new-exp-lab" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required placeholder="e.g. Neuro-Cognitive Lab (Room 302)"/>
+                </div>
+                <div>
+                    <label for="new-exp-duration" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Duration (Minutes)</label>
+                    <input type="number" id="new-exp-duration" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required value="60" min="15" max="480"/>
+                </div>
+                <div>
+                    <label for="new-exp-desc" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Research Description</label>
+                    <textarea id="new-exp-desc" rows="3" class="w-full px-4 py-2 bg-surface-container-low rounded-xl border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" placeholder="Describe experimental procedure, study requirements, and student instructions."></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-3 border-t-2 border-primary/20">
+                    <button type="button" class="px-4 py-1.5 rounded-full bg-paper-pure border-2 border-primary font-mono text-xs uppercase font-bold text-on-surface-variant hover:text-primary cursor-pointer shadow-[2px_2px_0px_#1d00ff]" onclick="closeModal('modal-create-exp')">Cancel</button>
+                    <button type="submit" class="px-6 py-2 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[3px_3px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer">Save Experiment ➔</button>
+                </div>
             </form>
         </div>
     </div>
-</header>
 
-<div class="dashboard-nav-bar">
-    <div class="nav-container" role="tablist">
-        <button type="button" id="tab-experiments" class="nav-tab-btn active" onclick="switchTeacherTab('experiments')">
-            🔬 My Experiments & Slots
-        </button>
-        <button type="button" id="tab-requests" class="nav-tab-btn" onclick="switchTeacherTab('requests')">
-            📋 Student Booking Requests & Lab Allotment
-            <span id="badge-pending-requests" class="badge-pending-count" style="display: none;">0</span>
-        </button>
-        <button type="button" id="tab-all" class="nav-tab-btn" onclick="switchTeacherTab('all')">
-            🌐 View All Sections
-        </button>
-    </div>
-</div>
-
-<main>
-    <div id="teacher-toast" class="portal-alert" style="display: none;"></div>
-
-    <!-- Section 1: My Experiments (Satisfies "My Experiments" test requirement) -->
-    <section id="section-experiments">
-        <div class="teacher-header-row">
-            <div>
-                <h2>My Experiments</h2>
-                <p class="muted" style="margin-bottom: 0;">Supervised laboratory research studies under your departmental direction.</p>
+    <!-- Add Time Slot Modal -->
+    <div id="modal-add-slot" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm hidden">
+        <div class="relative w-full max-w-lg bg-paper-pure rounded-xl p-6 sm:p-8 border-2 border-primary shadow-[6px_6px_0px_#1d00ff]">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-primary">
+                <h3 class="font-headline text-2xl text-primary font-bold italic m-0">Add Time Slot to Experiment</h3>
+                <button type="button" class="w-8 h-8 rounded-full bg-paper-pure hover:bg-soft-blush border-2 border-primary flex items-center justify-center font-bold text-primary cursor-pointer" onclick="closeModal('modal-add-slot')">&times;</button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="openCreateExperimentModal()">
-                + Create New Experiment
-            </button>
-        </div>
-
-        <div id="teacher-experiments-list">
-            <div class="empty-box">
-                <div class="icon">⏳</div>
-                <h4>Loading Experiments...</h4>
-                <p>Retrieving experiments managed by your supervisor account.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 2: Student Slot Requests & Lab Allotment -->
-    <section id="section-requests">
-        <div class="teacher-header-row">
-            <div>
-                <h2>Student Slot Requests & Lab Allotment</h2>
-                <p class="muted" style="margin-bottom: 0;">Review, confirm, or reject student participation requests from the central database.</p>
-            </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="loadTeacherRequests()">
-                ↻ Refresh Requests
-            </button>
-        </div>
-
-        <div class="filter-bar">
-            <button type="button" class="filter-btn active" onclick="filterRequests('ALL')">All Requests</button>
-            <button type="button" class="filter-btn" onclick="filterRequests('PENDING')">Pending Review</button>
-            <button type="button" class="filter-btn" onclick="filterRequests('CONFIRMED')">Confirmed</button>
-            <button type="button" class="filter-btn" onclick="filterRequests('REJECTED')">Rejected</button>
-            <button type="button" class="filter-btn" onclick="filterRequests('CANCELLED')">Cancelled</button>
-        </div>
-
-        <div id="requests-table-wrapper" class="requests-table-container">
-            <div class="empty-box">
-                <div class="icon">📂</div>
-                <h4>No Pending Requests</h4>
-                <p>There are no student booking requests awaiting review.</p>
-            </div>
-        </div>
-    </section>
-</main>
-
-<!-- Create Experiment Modal -->
-<div id="modal-create-exp" class="modal-backdrop">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3>Create New Research Experiment</h3>
-            <button type="button" class="modal-close" onclick="closeModal('modal-create-exp')">&times;</button>
-        </div>
-        <form id="form-create-exp" onsubmit="handleCreateExperiment(event)">
-            <div class="form-group">
-                <label for="new-exp-title">Experiment Title</label>
-                <input type="text" id="new-exp-title" class="form-control" required placeholder="e.g. Cognitive Memory under Dual Task Load">
-            </div>
-            <div class="form-group">
-                <label for="new-exp-lab">Laboratory Name / Room</label>
-                <input type="text" id="new-exp-lab" class="form-control" required placeholder="e.g. Neuro-Cognitive Lab (Room 302)">
-            </div>
-            <div class="form-group">
-                <label for="new-exp-duration">Duration (Minutes)</label>
-                <input type="number" id="new-exp-duration" class="form-control" required value="60" min="15" max="480">
-            </div>
-            <div class="form-group">
-                <label for="new-exp-desc">Research Description</label>
-                <textarea id="new-exp-desc" class="form-control" rows="3" placeholder="Describe experimental procedure, study requirements, and student instructions."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create-exp')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Experiment</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Add Time Slot Modal -->
-<div id="modal-add-slot" class="modal-backdrop">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3>Add Time Slot to Experiment</h3>
-            <button type="button" class="modal-close" onclick="closeModal('modal-add-slot')">&times;</button>
-        </div>
-        <form id="form-add-slot" onsubmit="handleAddSlot(event)">
-            <input type="hidden" id="slot-exp-id">
-            <div class="form-group">
-                <label>Target Experiment</label>
-                <div id="slot-exp-title-display" style="font-weight: 700; color: #0f172a; font-size: 14px; padding: 6px 0;"></div>
-            </div>
-            <div class="form-group">
-                <label for="slot-start-time">Start Date & Time</label>
-                <input type="datetime-local" id="slot-start-time" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="slot-end-time">End Date & Time</label>
-                <input type="datetime-local" id="slot-end-time" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="slot-capacity">Station Participant Capacity</label>
-                <input type="number" id="slot-capacity" class="form-control" required value="5" min="1" max="100">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-slot')">Cancel</button>
-                <button type="submit" class="btn btn-teal">Add Slot to Schedule</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- View Slots Modal -->
-<div id="modal-view-slots" class="modal-backdrop">
-    <div class="modal-dialog" style="max-width: 650px;">
-        <div class="modal-header">
-            <h3 id="view-slots-header">Experiment Slots</h3>
-            <button type="button" class="modal-close" onclick="closeModal('modal-view-slots')">&times;</button>
-        </div>
-        <div id="view-slots-content">
-            <div class="empty-box">Loading slots...</div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-view-slots')">Close</button>
+            <form id="form-add-slot" onsubmit="handleAddSlot(event)" class="space-y-4">
+                <input type="hidden" id="slot-exp-id"/>
+                <div>
+                    <label class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Target Experiment</label>
+                    <div id="slot-exp-title-display" class="font-headline text-lg font-bold text-primary"></div>
+                </div>
+                <div>
+                    <label for="slot-start-time" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Start Date &amp; Time</label>
+                    <input type="datetime-local" id="slot-start-time" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required/>
+                </div>
+                <div>
+                    <label for="slot-end-time" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">End Date &amp; Time</label>
+                    <input type="datetime-local" id="slot-end-time" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required/>
+                </div>
+                <div>
+                    <label for="slot-capacity" class="block font-mono text-xs uppercase font-bold text-on-surface-variant mb-1">Station Participant Capacity</label>
+                    <input type="number" id="slot-capacity" class="w-full px-4 py-2 bg-surface-container-low rounded-full border-2 border-primary font-body text-sm text-primary focus:outline-none focus:bg-paper-pure shadow-[2px_2px_0px_#1d00ff]" required value="5" min="1" max="100"/>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-3 border-t-2 border-primary/20">
+                    <button type="button" class="px-4 py-1.5 rounded-full bg-paper-pure border-2 border-primary font-mono text-xs uppercase font-bold text-on-surface-variant hover:text-primary cursor-pointer shadow-[2px_2px_0px_#1d00ff]" onclick="closeModal('modal-add-slot')">Cancel</button>
+                    <button type="submit" class="px-6 py-2 rounded-full bg-electric-cyan text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[3px_3px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer">Add Slot to Schedule ➔</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<footer>
-    Research Experiment Booking System &copy; 2026. Departmental Laboratory Administration.
-</footer>
+    <!-- View Slots Modal -->
+    <div id="modal-view-slots" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm hidden">
+        <div class="relative w-full max-w-2xl bg-paper-pure rounded-xl p-6 sm:p-8 border-2 border-primary shadow-[6px_6px_0px_#1d00ff] max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-primary">
+                <h3 id="view-slots-header" class="font-headline text-2xl text-primary font-bold italic m-0">Experiment Slots</h3>
+                <button type="button" class="w-8 h-8 rounded-full bg-paper-pure hover:bg-soft-blush border-2 border-primary flex items-center justify-center font-bold text-primary cursor-pointer" onclick="closeModal('modal-view-slots')">&times;</button>
+            </div>
+            <div id="view-slots-content" class="overflow-y-auto flex-1 mb-4">
+                <div class="empty-box p-4 text-center font-mono text-xs">Loading slots...</div>
+            </div>
+            <div class="flex justify-end pt-3 border-t-2 border-primary/20">
+                <button type="button" class="px-5 py-2 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] cursor-pointer" onclick="closeModal('modal-view-slots')">Close</button>
+            </div>
+        </div>
+    </div>
 
-<script>
-    let myExperiments = [];
-    let departmentBookings = [];
-    let currentFilter = 'ALL';
-    let currentTeacher = null;
+    <!-- Footer -->
+    <footer class="w-full bg-paper-pure border-t-2 border-primary py-6 mt-auto shadow-[0_-4px_0_0_#1d00ff]">
+        <div class="max-w-[1240px] mx-auto px-6 text-center font-mono text-xs text-primary font-bold">
+            Research Experiment Booking System &copy; 2026. Departmental Laboratory Administration.
+        </div>
+    </footer>
 
-    function formatDateTime(iso) {
-        if (!iso) return "TBD";
-        try {
-            const d = new Date(iso);
-            return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-        } catch (e) {
-            return iso;
+    <!-- JavaScript Data Logic -->
+    <script>
+        let myExperiments = [];
+        let departmentBookings = [];
+        let currentFilter = 'ALL';
+        let currentTeacher = null;
+
+        function formatDateTime(iso) {
+            if (!iso) return "TBD";
+            try {
+                const d = new Date(iso);
+                return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+            } catch (e) {
+                return iso;
+            }
         }
-    }
 
-    function escapeHtml(text) {
-        if (!text) return "";
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-    }
+        function escapeHtml(text) {
+            if (!text) return "";
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-    async function resolveCurrentTeacher() {
-        const metaId = document.getElementById("meta-teacher-id");
-        const metaEmail = document.getElementById("meta-teacher-email");
-        if (metaId && metaId.content && metaId.content.trim() !== "") {
-            currentTeacher = {
-                userId: parseInt(metaId.content.trim(), 10),
-                email: (metaEmail && metaEmail.content) || "teacher@university.edu"
-            };
+        async function resolveCurrentTeacher() {
+            const metaId = document.getElementById("meta-teacher-id");
+            const metaEmail = document.getElementById("meta-teacher-email");
+            if (metaId && metaId.content && metaId.content.trim() !== "") {
+                currentTeacher = {
+                    userId: parseInt(metaId.content.trim(), 10),
+                    email: (metaEmail && metaEmail.content) || "teacher@university.edu"
+                };
+                return currentTeacher;
+            }
+
+            try {
+                const res = await fetch("/api/users/me");
+                if (res.ok) {
+                    currentTeacher = await res.json();
+                    return currentTeacher;
+                }
+            } catch(e) {}
+
+            currentTeacher = { userId: 1, email: "teacher@university.edu" };
             return currentTeacher;
         }
 
-        try {
-            const res = await fetch("/api/users/me");
-            if (res.ok) {
-                currentTeacher = await res.json();
-                return currentTeacher;
-            }
-        } catch(e) {}
-
-        currentTeacher = { userId: 1, email: "teacher@university.edu" };
-        return currentTeacher;
-    }
-
-    function showTeacherToast(msg, type = 'info') {
-        const t = document.getElementById('teacher-toast');
-        t.className = 'portal-alert alert-' + type;
-        t.innerHTML = msg;
-        t.style.display = 'flex';
-        t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        setTimeout(() => { t.style.display = 'none'; }, 6000);
-    }
-
-    function switchTeacherTab(tabKey) {
-        const secExp = document.getElementById("section-experiments");
-        const secReq = document.getElementById("section-requests");
-
-        const tabExp = document.getElementById("tab-experiments");
-        const tabReq = document.getElementById("tab-requests");
-        const tabAll = document.getElementById("tab-all");
-
-        [tabExp, tabReq, tabAll].forEach(t => t && t.classList.remove("active"));
-
-        if (tabKey === 'all') {
-            secExp.style.display = "block";
-            secReq.style.display = "block";
-            tabAll.classList.add("active");
-            loadTeacherExperiments();
-            loadTeacherRequests();
-            return;
+        function showTeacherToast(msg, type = 'info') {
+            const t = document.getElementById('teacher-toast');
+            t.className = 'portal-alert block mb-6 p-4 rounded-xl border-2 border-primary font-mono text-xs uppercase font-bold shadow-[4px_4px_0px_#1d00ff] ' +
+                (type === 'success' ? 'bg-secondary-container text-primary' : (type === 'error' ? 'bg-red-100 text-red-800' : 'bg-electric-cyan text-primary'));
+            t.innerHTML = msg;
+            t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { t.className = 'portal-alert hidden'; }, 6000);
         }
 
-        if (tabKey === 'requests') {
-            secExp.style.display = "none";
-            secReq.style.display = "block";
-            tabReq.classList.add("active");
-            loadTeacherRequests();
-        } else {
-            secExp.style.display = "block";
-            secReq.style.display = "none";
-            tabExp.classList.add("active");
-            loadTeacherExperiments();
-        }
-    }
+        function switchTeacherTab(tabKey) {
+            const secExp = document.getElementById("section-experiments");
+            const secReq = document.getElementById("section-requests");
 
-    // Modal Helpers
-    function openModal(id) {
-        const m = document.getElementById(id);
-        if (m) m.style.display = 'flex';
-    }
+            const tabExp = document.getElementById("tab-experiments");
+            const tabReq = document.getElementById("tab-requests");
+            const tabAll = document.getElementById("tab-all");
 
-    function closeModal(id) {
-        const m = document.getElementById(id);
-        if (m) m.style.display = 'none';
-    }
+            [tabExp, tabReq, tabAll].forEach(t => {
+                if (t) {
+                    t.classList.remove('bg-secondary-container', 'text-primary');
+                    t.classList.add('bg-paper-pure', 'text-on-surface-variant');
+                }
+            });
 
-    function openCreateExperimentModal() {
-        document.getElementById('form-create-exp').reset();
-        openModal('modal-create-exp');
-    }
-
-    // Load Teacher's Experiments from Real Backend API
-    async function loadTeacherExperiments() {
-        const container = document.getElementById('teacher-experiments-list');
-        try {
-            const res = await fetch('/api/experiments/supervisor/me');
-            if (!res.ok) throw new Error("Failed to load");
-            myExperiments = await res.json();
-
-            if (!myExperiments || myExperiments.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-box">
-                        <div class="icon">🔬</div>
-                        <h4>No Supervised Experiments Yet</h4>
-                        <p>Click "Create New Experiment" above to schedule laboratory research.</p>
-                    </div>
-                `;
+            if (tabKey === 'all') {
+                secExp.style.display = "block";
+                secReq.style.display = "block";
+                if (tabAll) {
+                    tabAll.classList.add('bg-secondary-container', 'text-primary');
+                    tabAll.classList.remove('bg-paper-pure', 'text-on-surface-variant');
+                }
+                loadTeacherExperiments();
+                loadTeacherRequests();
                 return;
             }
 
-            let html = '';
-            myExperiments.forEach(exp => {
-                const activeBadge = exp.active
-                    ? `<span class="badge" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">ACTIVE</span>`
-                    : `<span class="badge" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;">INACTIVE</span>`;
+            if (tabKey === 'requests') {
+                secExp.style.display = "none";
+                secReq.style.display = "block";
+                if (tabReq) {
+                    tabReq.classList.add('bg-secondary-container', 'text-primary');
+                    tabReq.classList.remove('bg-paper-pure', 'text-on-surface-variant');
+                }
+                loadTeacherRequests();
+            } else {
+                secExp.style.display = "block";
+                secReq.style.display = "none";
+                if (tabExp) {
+                    tabExp.classList.add('bg-secondary-container', 'text-primary');
+                    tabExp.classList.remove('bg-paper-pure', 'text-on-surface-variant');
+                }
+                loadTeacherExperiments();
+            }
+        }
 
-                html += `
-                    <div class="teacher-exp-card">
-                        <div class="teacher-exp-header">
-                            <div>
-                                <h3>${escapeHtml(exp.title)}</h3>
-                                <div style="font-size: 13.5px; color: #475569; margin-top: 4px;">
-                                    🏛️ <strong>Lab:</strong> ${escapeHtml(exp.laboratoryName || 'General Lab')} &bull;
-                                    ⏱️ <strong>Duration:</strong> ${exp.durationMinutes || 60} mins
+        // Modal Helpers
+        function openModal(id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.add('hidden');
+        }
+
+        function openCreateExperimentModal() {
+            document.getElementById('form-create-exp').reset();
+            openModal('modal-create-exp');
+        }
+
+        // Load Teacher's Experiments from Real Backend API
+        async function loadTeacherExperiments() {
+            const container = document.getElementById('teacher-experiments-list');
+            try {
+                const res = await fetch('/api/experiments/supervisor/me');
+                if (!res.ok) throw new Error("Failed to load");
+                myExperiments = await res.json();
+
+                if (!myExperiments || myExperiments.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-box bg-surface-container-low p-8 rounded-xl border-2 border-primary text-center shadow-[2px_2px_0px_#1d00ff]">
+                            <div class="text-3xl mb-2">🔬</div>
+                            <h4 class="font-headline text-xl text-primary font-bold italic m-0">No Supervised Experiments Yet</h4>
+                            <p class="font-body text-xs text-on-surface-variant mt-1 m-0">Click "Create New Experiment" above to schedule laboratory research.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                myExperiments.forEach(exp => {
+                    const activeBadge = exp.active
+                        ? `<span class="px-2.5 py-0.5 rounded-full bg-secondary-container border border-primary font-mono text-[10px] uppercase font-bold text-primary">ACTIVE</span>`
+                        : `<span class="px-2.5 py-0.5 rounded-full bg-surface-container border border-primary font-mono text-[10px] uppercase font-bold text-on-surface-variant">INACTIVE</span>`;
+
+                    html += `
+                        <div class="teacher-exp-card bg-paper-pure rounded-xl p-5 border-2 border-primary shadow-[3px_3px_0px_#1d00ff] hover:shadow-[5px_5px_0px_#1d00ff] transition-all">
+                            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                <div>
+                                    <h3 class="font-headline text-2xl text-primary font-bold italic m-0">${escapeHtml(exp.title)}</h3>
+                                    <div class="font-mono text-xs text-on-surface-variant mt-1">
+                                        🏛️ <strong>Lab:</strong> ${escapeHtml(exp.laboratoryName || 'General Lab')} &bull;
+                                        ⏱️ <strong>Duration:</strong> ${exp.durationMinutes || 60} mins
+                                    </div>
                                 </div>
+                                <div>${activeBadge}</div>
                             </div>
-                            <div>${activeBadge}</div>
-                        </div>
 
-                        <p style="font-size: 14px; color: #334155; margin: 10px 0 0; line-height: 1.5;">
-                            ${escapeHtml(exp.description || 'No description provided.')}
-                        </p>
+                            <p class="font-body text-xs sm:text-sm text-on-surface mt-2 mb-4 leading-relaxed">
+                                ${escapeHtml(exp.description || 'No description provided.')}
+                            </p>
 
-                        <div class="card-actions">
-                            <button type="button" class="btn btn-teal btn-sm" onclick="openAddSlotModal(${exp.experimentId}, '${escapeHtml(exp.title)}')">
-                                + Add Time Slot
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="openViewSlotsModal(${exp.experimentId}, '${escapeHtml(exp.title)}')">
-                                📅 View & Manage Slots
-                            </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="deactivateExperiment(${exp.experimentId}, '${escapeHtml(exp.title)}')">
-                                Deactivate
-                            </button>
+                            <div class="card-actions flex items-center gap-2 flex-wrap pt-3 border-t-2 border-primary/20">
+                                <button type="button" class="px-3 py-1.5 rounded-full bg-secondary-container text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer" onclick="openAddSlotModal(${exp.experimentId}, '${escapeHtml(exp.title)}')">
+                                    + Add Time Slot
+                                </button>
+                                <button type="button" class="px-3 py-1.5 rounded-full bg-paper-pure text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:bg-electric-cyan transition-colors cursor-pointer" onclick="openViewSlotsModal(${exp.experimentId}, '${escapeHtml(exp.title)}')">
+                                    📅 View &amp; Manage Slots
+                                </button>
+                                <button type="button" class="px-3 py-1.5 rounded-full bg-soft-blush text-primary font-mono text-xs uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer" onclick="deactivateExperiment(${exp.experimentId}, '${escapeHtml(exp.title)}')">
+                                    Deactivate
+                                </button>
+                                <button type="button" class="px-3 py-1.5 rounded-full bg-red-50 text-red-700 font-mono text-xs uppercase font-bold border-2 border-red-500 shadow-[2px_2px_0px_#b91c1c] hover:bg-red-100 hover:shadow-[3px_3px_0px_#b91c1c] transition-all cursor-pointer" onclick="deleteExperimentPermanently(${exp.experimentId}, '${escapeHtml(exp.title)}')">
+                                    🗑 Delete
+                                </button>
+                            </div>
                         </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = `
+                    <div class="empty-box bg-surface-container-low p-8 rounded-xl border-2 border-primary text-center shadow-[2px_2px_0px_#1d00ff]">
+                        <div class="text-3xl mb-2">⚠️</div>
+                        <h4 class="font-headline text-xl text-primary font-bold italic m-0">Unable to Load Experiments</h4>
+                        <p class="font-body text-xs text-on-surface-variant mt-1 m-0">There was a connection issue loading supervisor experiments.</p>
                     </div>
                 `;
-            });
-
-            container.innerHTML = html;
-        } catch (e) {
-            container.innerHTML = `
-                <div class="empty-box">
-                    <div class="icon">⚠️</div>
-                    <h4>Unable to Load Experiments</h4>
-                    <p>There was a connection issue loading supervisor experiments.</p>
-                </div>
-            `;
+            }
         }
-    }
 
-    // Create Experiment API
-    async function handleCreateExperiment(e) {
-        e.preventDefault();
-        const title = document.getElementById('new-exp-title').value.trim();
-        const laboratoryName = document.getElementById('new-exp-lab').value.trim();
-        const durationMinutes = parseInt(document.getElementById('new-exp-duration').value, 10);
-        const description = document.getElementById('new-exp-desc').value.trim();
+        // Create Experiment API
+        async function handleCreateExperiment(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-exp-title').value.trim();
+            const laboratoryName = document.getElementById('new-exp-lab').value.trim();
+            const durationMinutes = parseInt(document.getElementById('new-exp-duration').value, 10);
+            const description = document.getElementById('new-exp-desc').value.trim();
 
-        try {
-            const res = await fetch('/api/experiments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, laboratoryName, durationMinutes, description, active: true })
-            });
+            try {
+                const res = await fetch('/api/experiments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, laboratoryName, durationMinutes, description, active: true })
+                });
 
-            if (!res.ok) throw new Error("Could not create experiment");
+                if (!res.ok) throw new Error("Could not create experiment");
 
-            closeModal('modal-create-exp');
-            showTeacherToast(`<strong>Experiment Created:</strong> Successfully registered "<em>${escapeHtml(title)}</em>".`, 'success');
-            loadTeacherExperiments();
-        } catch (err) {
-            alert("Error creating experiment: " + err.message);
+                closeModal('modal-create-exp');
+                showTeacherToast(`<strong>Experiment Created:</strong> Successfully registered "<em>${escapeHtml(title)}</em>".`, 'success');
+                loadTeacherExperiments();
+            } catch (err) {
+                alert("Error creating experiment: " + err.message);
+            }
         }
-    }
 
-    // Add Slot Modal & API
-    function openAddSlotModal(expId, expTitle) {
-        document.getElementById('slot-exp-id').value = expId;
-        document.getElementById('slot-exp-title-display').textContent = expTitle;
-        // Pre-fill tomorrow 10:00 to 11:30
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(10, 0, 0, 0);
-        const tomorrowEnd = new Date(tomorrow);
-        tomorrowEnd.setHours(11, 30, 0, 0);
+        // Add Slot Modal & API
+        function openAddSlotModal(expId, expTitle) {
+            document.getElementById('slot-exp-id').value = expId;
+            document.getElementById('slot-exp-title-display').textContent = expTitle;
+            // Pre-fill tomorrow 10:00 to 11:30
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(10, 0, 0, 0);
+            const tomorrowEnd = new Date(tomorrow);
+            tomorrowEnd.setHours(11, 30, 0, 0);
 
-        const toIsoLocal = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-        document.getElementById('slot-start-time').value = toIsoLocal(tomorrow);
-        document.getElementById('slot-end-time').value = toIsoLocal(tomorrowEnd);
+            const toIsoLocal = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('slot-start-time').value = toIsoLocal(tomorrow);
+            document.getElementById('slot-end-time').value = toIsoLocal(tomorrowEnd);
 
-        openModal('modal-add-slot');
-    }
-
-    async function handleAddSlot(e) {
-        e.preventDefault();
-        const expId = document.getElementById('slot-exp-id').value;
-        const startTime = document.getElementById('slot-start-time').value;
-        const endTime = document.getElementById('slot-end-time').value;
-        const capacity = parseInt(document.getElementById('slot-capacity').value, 10);
-
-        try {
-            const res = await fetch(`/api/experiments/${expId}/slots`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ startTime, endTime, capacity })
-            });
-
-            if (!res.ok) throw new Error("Failed to create slot");
-
-            closeModal('modal-add-slot');
-            showTeacherToast(`<strong>Time Slot Added:</strong> Scheduled new session for experiment #${expId}.`, 'success');
-        } catch (err) {
-            alert("Error adding time slot: " + err.message);
+            openModal('modal-add-slot');
         }
-    }
 
-    // View & Manage Slots
-    async function openViewSlotsModal(expId, expTitle) {
-        document.getElementById('view-slots-header').textContent = `Slots for: ${expTitle}`;
-        const content = document.getElementById('view-slots-content');
-        content.innerHTML = '<div class="empty-box">Loading slots...</div>';
-        openModal('modal-view-slots');
+        async function handleAddSlot(e) {
+            e.preventDefault();
+            const expId = document.getElementById('slot-exp-id').value;
+            // Ensure seconds are always appended so Java LocalDateTime parses correctly
+            const rawStart = document.getElementById('slot-start-time').value;
+            const rawEnd   = document.getElementById('slot-end-time').value;
+            const startTime = rawStart.length === 16 ? rawStart + ':00' : rawStart;
+            const endTime   = rawEnd.length   === 16 ? rawEnd   + ':00' : rawEnd;
+            const capacity  = parseInt(document.getElementById('slot-capacity').value, 10);
 
-        try {
-            const res = await fetch(`/api/experiments/supervisor/${expId}/slots`);
-            if (!res.ok) throw new Error("Could not retrieve slots");
-            const slots = await res.json();
+            try {
+                const res = await fetch(`/api/experiments/${expId}/slots`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ startTime, endTime, capacity })
+                });
 
-            if (!slots || slots.length === 0) {
-                content.innerHTML = '<div class="empty-box"><p>No slots scheduled for this experiment yet.</p></div>';
+                if (!res.ok) {
+                    // Read the actual error message from the backend
+                    let errMsg = 'Failed to create slot';
+                    try {
+                        const errBody = await res.json();
+                        errMsg = errBody.message || errBody.error || errMsg;
+                    } catch (_) {}
+                    throw new Error(errMsg);
+                }
+
+                closeModal('modal-add-slot');
+                showTeacherToast(`<strong>Time Slot Added:</strong> Scheduled new session for experiment #${expId}.`, 'success');
+                // Refresh slots view if the view-slots modal is open for this experiment
+                loadTeacherExperiments();
+            } catch (err) {
+                alert('Error adding time slot: ' + err.message);
+            }
+        }
+
+        // View & Manage Slots
+        async function openViewSlotsModal(expId, expTitle) {
+            document.getElementById('view-slots-header').textContent = `Slots for: ${expTitle}`;
+            const content = document.getElementById('view-slots-content');
+            content.innerHTML = '<div class="empty-box p-4 text-center font-mono text-xs">Loading slots...</div>';
+            openModal('modal-view-slots');
+
+            try {
+                const res = await fetch(`/api/experiments/supervisor/${expId}/slots`);
+                if (!res.ok) throw new Error("Could not retrieve slots");
+                const slots = await res.json();
+
+                if (!slots || slots.length === 0) {
+                    content.innerHTML = '<div class="empty-box p-4 text-center font-mono text-xs"><p>No slots scheduled for this experiment yet.</p></div>';
+                    return;
+                }
+
+                let html = `
+                    <table class="requests-table w-full text-left border-collapse border-2 border-primary rounded-xl overflow-hidden shadow-[2px_2px_0px_#1d00ff]">
+                        <thead>
+                            <tr class="bg-surface-container border-b-2 border-primary font-mono text-xs uppercase text-primary font-bold">
+                                <th class="py-2.5 px-3">Slot ID</th>
+                                <th class="py-2.5 px-3">Start Time</th>
+                                <th class="py-2.5 px-3">End Time</th>
+                                <th class="py-2.5 px-3">Capacity</th>
+                                <th class="py-2.5 px-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y-2 divide-primary/20 bg-paper-pure font-body text-xs">
+                `;
+
+                slots.forEach(s => {
+                    html += `
+                        <tr class="hover:bg-surface-container-low transition-colors">
+                            <td class="py-2.5 px-3 font-mono font-bold text-primary">#${s.slotId}</td>
+                            <td class="py-2.5 px-3 font-mono text-xs">${formatDateTime(s.startTime)}</td>
+                            <td class="py-2.5 px-3 font-mono text-xs">${formatDateTime(s.endTime)}</td>
+                            <td class="py-2.5 px-3 font-mono text-xs">${s.capacity} students</td>
+                            <td class="py-2.5 px-3 text-right">
+                                <button type="button" class="px-2.5 py-1 rounded-full bg-soft-blush border border-primary text-primary font-mono text-[11px] uppercase font-bold hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer" onclick="deleteSlotReal(${s.slotId}, ${expId}, '${escapeHtml(expTitle)}')">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                content.innerHTML = html;
+            } catch (e) {
+                content.innerHTML = '<div class="empty-box p-4 text-center font-mono text-xs"><p>Failed to retrieve slots.</p></div>';
+            }
+        }
+
+        async function deleteSlotReal(slotId, expId, expTitle) {
+            if (!confirm(`Delete slot #${slotId}?`)) return;
+            try {
+                const res = await fetch(`/api/experiments/slots/${slotId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error("Could not delete slot");
+                openViewSlotsModal(expId, expTitle);
+                showTeacherToast(`Slot #${slotId} removed.`, 'info');
+            } catch (e) {
+                alert("Error deleting slot: " + e.message);
+            }
+        }
+
+        async function deactivateExperiment(expId, title) {
+            if (!confirm(`Are you sure you want to deactivate "${title}"?`)) return;
+            try {
+                const res = await fetch(`/api/experiments/${expId}`, { method: 'DELETE' });
+                if (!res.ok) {
+                    let errMsg = 'Could not deactivate';
+                    try { const b = await res.json(); errMsg = b.message || errMsg; } catch(_) {}
+                    throw new Error(errMsg);
+                }
+                showTeacherToast(`Experiment "${title}" deactivated.`, 'info');
+                loadTeacherExperiments();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function deleteExperimentPermanently(expId, title) {
+            if (!confirm(`⚠️ PERMANENTLY DELETE "${title}"?\n\nThis cannot be undone. All slots will also be removed.\n\nType OK to confirm.`)) return;
+            try {
+                const res = await fetch(`/api/experiments/${expId}/permanent`, { method: 'DELETE' });
+                if (!res.ok) {
+                    let errMsg = 'Could not delete experiment';
+                    try { const b = await res.json(); errMsg = b.message || errMsg; } catch(_) {}
+                    throw new Error(errMsg);
+                }
+                showTeacherToast(`🗑 Experiment "${title}" permanently deleted.`, 'info');
+                loadTeacherExperiments();
+            } catch (e) {
+                alert('Delete failed: ' + e.message);
+            }
+        }
+
+        // Load Department Bookings from Real Backend API
+        async function loadTeacherRequests() {
+            const wrapper = document.getElementById('requests-table-wrapper');
+            const badge = document.getElementById('badge-pending-requests');
+
+            try {
+                const res = await fetch('/api/bookings');
+                if (!res.ok) throw new Error("Could not load bookings");
+                departmentBookings = await res.json();
+            } catch (e) {
+                console.warn("Could not retrieve bookings:", e);
+                departmentBookings = [];
+            }
+
+            const pendingCount = departmentBookings.filter(b => b.status === 'PENDING').length;
+            if (badge) {
+                badge.textContent = pendingCount;
+                badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+            }
+
+            renderRequestsTable();
+        }
+
+        function filterRequests(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-paper-pure', 'text-primary');
+                if (btn.textContent.toUpperCase().includes(status)) {
+                    btn.classList.add('bg-primary', 'text-white');
+                    btn.classList.remove('bg-paper-pure', 'text-primary');
+                }
+            });
+            renderRequestsTable();
+        }
+
+        function renderRequestsTable() {
+            const wrapper = document.getElementById('requests-table-wrapper');
+            const filtered = currentFilter === 'ALL'
+                ? departmentBookings
+                : departmentBookings.filter(b => b.status === currentFilter);
+
+            if (!filtered || filtered.length === 0) {
+                wrapper.innerHTML = `
+                    <div class="empty-box bg-surface-container-low p-8 rounded-xl border-2 border-primary text-center shadow-[2px_2px_0px_#1d00ff]">
+                        <div class="text-3xl mb-2">📂</div>
+                        <h4 class="font-headline text-xl text-primary font-bold italic m-0">No Requests Found</h4>
+                        <p class="font-body text-xs text-on-surface-variant mt-1 m-0">There are no booking requests matching the "<strong>${currentFilter}</strong>" filter.</p>
+                    </div>
+                `;
                 return;
             }
 
             let html = `
-                <table class="requests-table">
+                <table class="requests-table w-full text-left border-collapse border-2 border-primary rounded-xl overflow-hidden shadow-[3px_3px_0px_#1d00ff]">
                     <thead>
-                        <tr>
-                            <th>Slot ID</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Capacity</th>
-                            <th>Action</th>
+                        <tr class="bg-surface-container border-b-2 border-primary font-mono text-xs uppercase text-primary font-bold">
+                            <th class="py-3 px-4">Ref</th>
+                            <th class="py-3 px-4">Student</th>
+                            <th class="py-3 px-4">Experiment &amp; Lab</th>
+                            <th class="py-3 px-4">Slot Time</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y-2 divide-primary/20 bg-paper-pure font-body text-xs">
             `;
 
-            slots.forEach(s => {
-                html += `
-                    <tr>
-                        <td><strong>#${s.slotId}</strong></td>
-                        <td>${formatDateTime(s.startTime)}</td>
-                        <td>${formatDateTime(s.endTime)}</td>
-                        <td>${s.capacity} students</td>
-                        <td>
-                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteSlotReal(${s.slotId}, ${expId}, '${escapeHtml(expTitle)}')">
-                                Delete
+            filtered.forEach(b => {
+                let statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-secondary-container border border-primary font-mono text-[10px] uppercase font-bold text-primary">${b.status}</span>`;
+                if (b.status === 'CONFIRMED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-electric-cyan border border-primary font-mono text-[10px] uppercase font-bold text-primary">${b.status}</span>`;
+                } else if (b.status === 'REJECTED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-red-100 border border-primary font-mono text-[10px] uppercase font-bold text-red-700">${b.status}</span>`;
+                } else if (b.status === 'CANCELLED') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full bg-surface-container border border-primary font-mono text-[10px] uppercase font-bold text-on-surface-variant">${b.status}</span>`;
+                }
+
+                let actionHtml = `<span class="text-on-surface-variant font-mono text-xs">—</span>`;
+                if (b.status === 'PENDING') {
+                    actionHtml = `
+                        <div class="flex items-center justify-end gap-2">
+                            <button type="button" class="btn-confirm-allot px-3 py-1 rounded-full bg-secondary-container border-2 border-primary text-primary font-mono text-[11px] uppercase font-bold shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer" onclick="updateStatusReal(${b.bookingId}, 'CONFIRMED')">
+                                ✓ Confirm
                             </button>
+                            <button type="button" class="btn-reject px-3 py-1 rounded-full bg-soft-blush border-2 border-primary text-primary font-mono text-[11px] uppercase font-bold hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer" onclick="updateStatusReal(${b.bookingId}, 'REJECTED')">
+                                ✗ Reject
+                            </button>
+                        </div>
+                    `;
+                }
+
+                const studentName = b.studentName || 'Student';
+                const studentEmail = b.studentEmail || `User #${b.userId}`;
+                const expTitle = b.experimentTitle || `Experiment #${b.slotId || ''}`;
+                const labName = b.laboratoryName || 'Departmental Lab';
+                const schedule = b.startTime ? `${formatDateTime(b.startTime)} – ${formatDateTime(b.endTime)}` : 'Scheduled Session';
+
+                html += `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3 px-4 font-mono font-bold text-primary">
+                            #BK-${b.bookingId}
+                        </td>
+                        <td class="py-3 px-4">
+                            <strong class="font-headline text-sm font-bold text-primary">${escapeHtml(studentName)}</strong>
+                            <div class="font-mono text-[11px] text-on-surface-variant mt-0.5">${escapeHtml(studentEmail)}</div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <strong class="font-headline text-sm font-bold text-primary">${escapeHtml(expTitle)}</strong>
+                            <div class="font-mono text-xs text-on-surface-variant mt-0.5">🏛️ ${escapeHtml(labName)}</div>
+                        </td>
+                        <td class="py-3 px-4 font-mono text-xs">
+                            ${schedule}
+                        </td>
+                        <td class="py-3 px-4">
+                            ${statusBadge}
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            ${actionHtml}
                         </td>
                     </tr>
                 `;
             });
 
             html += '</tbody></table>';
-            content.innerHTML = html;
-        } catch (e) {
-            content.innerHTML = '<div class="empty-box"><p>Failed to retrieve slots.</p></div>';
+            wrapper.innerHTML = html;
         }
-    }
 
-    async function deleteSlotReal(slotId, expId, expTitle) {
-        if (!confirm(`Delete slot #${slotId}?`)) return;
-        try {
-            const res = await fetch(`/api/experiments/slots/${slotId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Could not delete slot");
-            openViewSlotsModal(expId, expTitle);
-            showTeacherToast(`Slot #${slotId} removed.`, 'info');
-        } catch (e) {
-            alert("Error deleting slot: " + e.message);
+        // Real Backend Approval / Rejection API Call
+        async function updateStatusReal(bookingId, newStatus) {
+            await resolveCurrentTeacher();
+
+            let remarks = "";
+            if (newStatus === 'REJECTED') {
+                remarks = prompt("Enter reason for rejecting this booking request:", "Laboratory capacity limit reached for this session");
+                if (remarks === null) return; // User cancelled
+            } else {
+                remarks = "Allotted and confirmed by lab supervisor";
+            }
+
+            try {
+                const res = await fetch(`/api/bookings/${bookingId}/status`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        changedBy: currentTeacher.userId,
+                        status: newStatus,
+                        remarks: remarks
+                    })
+                });
+
+                if (!res.ok) {
+                    let errText = "Could not update status.";
+                    try {
+                        const errObj = await res.json();
+                        if (errObj.message) errText = errObj.message;
+                    } catch(e) {}
+                    showTeacherToast("<strong>Action Failed:</strong> " + escapeHtml(errText), "error");
+                    return;
+                }
+
+                showTeacherToast(`<strong>Booking #BK-${bookingId} Updated:</strong> Status changed to <strong>${newStatus}</strong>.`, "success");
+                loadTeacherRequests();
+            } catch (e) {
+                showTeacherToast("Network error updating booking status.", "error");
+            }
         }
-    }
 
-    async function deactivateExperiment(expId, title) {
-        if (!confirm(`Are you sure you want to deactivate "${title}"?`)) return;
-        try {
-            const res = await fetch(`/api/experiments/${expId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Could not deactivate");
-            showTeacherToast(`Experiment #${expId} deactivated.`, 'info');
+        document.addEventListener("DOMContentLoaded", () => {
+            resolveCurrentTeacher();
             loadTeacherExperiments();
-        } catch (e) {
-            alert("Error: " + e.message);
-        }
-    }
-
-    // Load Department Bookings from Real Backend API
-    async function loadTeacherRequests() {
-        const wrapper = document.getElementById('requests-table-wrapper');
-        const badge = document.getElementById('badge-pending-requests');
-
-        try {
-            const res = await fetch('/api/bookings');
-            if (!res.ok) throw new Error("Could not load bookings");
-            departmentBookings = await res.json();
-        } catch (e) {
-            console.warn("Could not retrieve bookings:", e);
-            departmentBookings = [];
-        }
-
-        const pendingCount = departmentBookings.filter(b => b.status === 'PENDING').length;
-        if (badge) {
-            badge.textContent = pendingCount;
-            badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
-        }
-
-        renderRequestsTable();
-    }
-
-    function filterRequests(status) {
-        currentFilter = status;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent.toUpperCase().includes(status)) {
-                btn.classList.add('active');
-            }
-        });
-        renderRequestsTable();
-    }
-
-    function renderRequestsTable() {
-        const wrapper = document.getElementById('requests-table-wrapper');
-        const filtered = currentFilter === 'ALL'
-            ? departmentBookings
-            : departmentBookings.filter(b => b.status === currentFilter);
-
-        if (!filtered || filtered.length === 0) {
-            wrapper.innerHTML = `
-                <div class="empty-box">
-                    <div class="icon">📂</div>
-                    <h4>No Requests Found</h4>
-                    <p>There are no booking requests matching the "<strong>${currentFilter}</strong>" filter.</p>
-                </div>
-            `;
-            return;
-        }
-
-        let html = `
-            <table class="requests-table">
-                <thead>
-                    <tr>
-                        <th>Ref</th>
-                        <th>Student</th>
-                        <th>Experiment & Lab</th>
-                        <th>Slot Time</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        filtered.forEach(b => {
-            let statusBadgeClass = 'status-pending';
-            if (b.status === 'CONFIRMED') statusBadgeClass = 'status-confirmed';
-            else if (b.status === 'REJECTED') statusBadgeClass = 'status-rejected';
-            else if (b.status === 'CANCELLED') statusBadgeClass = 'status-cancelled';
-
-            let actionHtml = `<span style="color: #94a3b8; font-size: 13px;">—</span>`;
-            if (b.status === 'PENDING') {
-                actionHtml = `
-                    <button type="button" class="btn-confirm-allot" onclick="updateStatusReal(${b.bookingId}, 'CONFIRMED')">
-                        ✓ Confirm
-                    </button>
-                    <button type="button" class="btn-reject" onclick="updateStatusReal(${b.bookingId}, 'REJECTED')">
-                        ✗ Reject
-                    </button>
-                `;
-            }
-
-            const studentName = b.studentName || 'Student';
-            const studentEmail = b.studentEmail || `User #${b.userId}`;
-            const expTitle = b.experimentTitle || `Experiment #${b.slotId || ''}`;
-            const labName = b.laboratoryName || 'Departmental Lab';
-            const schedule = b.startTime ? `${formatDateTime(b.startTime)} – ${formatDateTime(b.endTime)}` : 'Scheduled Session';
-
-            html += `
-                <tr>
-                    <td>
-                        <span class="ref-code">#BK-${b.bookingId}</span>
-                    </td>
-                    <td>
-                        <strong>${escapeHtml(studentName)}</strong>
-                        <div style="font-size: 11px; color: #64748b;">${escapeHtml(studentEmail)}</div>
-                    </td>
-                    <td>
-                        <strong>${escapeHtml(expTitle)}</strong>
-                        <div style="font-size: 12px; color: #475569; margin-top: 2px;">🏛️ ${escapeHtml(labName)}</div>
-                    </td>
-                    <td>
-                        <div>${schedule}</div>
-                    </td>
-                    <td>
-                        <span class="status-badge ${statusBadgeClass}">${b.status}</span>
-                    </td>
-                    <td>${actionHtml}</td>
-                </tr>
-            `;
-        });
-
-        html += '</tbody></table>';
-        wrapper.innerHTML = html;
-    }
-
-    // Real Backend Approval / Rejection API Call
-    async function updateStatusReal(bookingId, newStatus) {
-        await resolveCurrentTeacher();
-
-        let remarks = "";
-        if (newStatus === 'REJECTED') {
-            remarks = prompt("Enter reason for rejecting this booking request:", "Laboratory capacity limit reached for this session");
-            if (remarks === null) return; // User cancelled
-        } else {
-            remarks = "Allotted and confirmed by lab supervisor";
-        }
-
-        try {
-            const res = await fetch(`/api/bookings/${bookingId}/status`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    changedBy: currentTeacher.userId,
-                    status: newStatus,
-                    remarks: remarks
-                })
-            });
-
-            if (!res.ok) {
-                let errText = "Could not update status.";
-                try {
-                    const errObj = await res.json();
-                    if (errObj.message) errText = errObj.message;
-                } catch(e) {}
-                showTeacherToast("<strong>Action Failed:</strong> " + escapeHtml(errText), "error");
-                return;
-            }
-
-            showTeacherToast(`<strong>Booking #BK-${bookingId} Updated:</strong> Status changed to <strong>${newStatus}</strong>.`, "success");
             loadTeacherRequests();
-        } catch (e) {
-            showTeacherToast("Network error updating booking status.", "error");
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        resolveCurrentTeacher();
-        loadTeacherExperiments();
-        loadTeacherRequests();
-    });
-</script>
+        });
+    </script>
 </body>
 </html>

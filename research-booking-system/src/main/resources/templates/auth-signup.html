@@ -1,254 +1,200 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account — Research Experiment Booking System</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-            --card-bg: rgba(255, 255, 255, 0.06);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Create Student Account — Research Experiment Booking System</title>
+    <!-- PaperLab Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/portal.css}"/>
+    <!-- Tailwind CSS with Stitch PaperLab Design Tokens -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1200bc",
+              "primary-container": "#1d00ff",
+              "ink-deep": "#1600B8",
+              "surface": "#fcfae8",
+              "surface-container-low": "#f6f4e2",
+              "surface-container": "#f0efdd",
+              "paper-pure": "#FFFFFF",
+              "on-surface": "#1c1c12",
+              "on-surface-variant": "#454558",
+              "secondary-fixed": "#e9e94d",
+              "secondary-container": "#e9e94d",
+              "electric-cyan": "#7DF5FF",
+              "soft-blush": "#FFE6F2",
+              "status-pending": "#F59E0B",
+              "status-confirmed": "#4ADE80",
+              "status-rejected": "#EF4444"
+            },
+            fontFamily: {
+              serif: ["EB Garamond", "serif"],
+              sans: ["Space Grotesk", "sans-serif"],
+              mono: ["Space Mono", "monospace"]
+            }
+          }
         }
-
-        * { box-sizing: border-box; }
-
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: var(--bg-gradient);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
-            padding: 20px;
-        }
-
-        .auth-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 40px 38px;
-            width: 100%;
-            max-width: 460px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .auth-header .logo-badge {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 14px;
-            font-size: 26px;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
-        }
-
-        .auth-header h1 {
-            color: var(--text-main);
-            font-size: 23px;
-            margin: 0 0 6px;
-            font-weight: 700;
-        }
-
-        .auth-header p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #cbd5e1;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .form-group input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-        }
-
-        .form-group input::placeholder {
-            color: #64748b;
-        }
-
-        .role-notice {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #93c5fd;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 13px;
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
-            margin-top: 8px;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        #message {
-            margin: 16px 0 0;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 14px;
-            text-align: center;
-            display: none;
-            line-height: 1.4;
-        }
-
-        #message.success {
-            display: block;
-            background: rgba(34, 197, 94, 0.15);
-            color: #86efac;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        #message.error {
-            display: block;
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .auth-footer {
-            text-align: center;
-            margin-top: 24px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .auth-footer a {
-            color: #60a5fa;
-            text-decoration: none;
-            font-weight: 600;
-            margin-left: 4px;
-            transition: color 0.2s;
-        }
-
-        .auth-footer a:hover {
-            color: #93c5fd;
-            text-decoration: underline;
-        }
-    </style>
+      };
+    </script>
 </head>
-<body>
-    <div class="auth-container">
-        <div class="auth-header">
-            <div class="logo-badge">🎓</div>
-            <h1>Create Student Account</h1>
-            <p>Join the research experiment booking platform</p>
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex items-center justify-center p-4 sm:p-6">
+    <main class="w-full max-w-[560px] mx-auto relative my-8">
+
+        <!-- Top Banner / Mascot Dialogue Box -->
+        <div class="relative w-full mb-6">
+            <div class="absolute -top-3 left-8 z-20 px-3 py-0.5 bg-electric-cyan text-ink-deep font-mono text-[11px] font-bold uppercase tracking-wider shadow-[2px_2px_0px_#1d00ff] -rotate-2 select-none border-2 border-primary">
+                ★ RECRUIT DESK · INTAKE
+            </div>
+            <div class="w-full bg-paper-pure border-2 border-primary rounded-xl p-4 pt-5 shadow-[3px_3px_0px_#1d00ff] relative flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-secondary-container border-2 border-primary flex items-center justify-center text-primary shadow-[2px_2px_0px_#1d00ff] rotate-3">
+                    <span class="material-symbols-outlined text-2xl font-bold" style="font-variation-settings: 'FILL' 1;">science</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="font-mono text-xs uppercase text-primary font-bold">Beaky the Beaker-Bot</span>
+                        <span class="font-mono text-[10px] bg-soft-blush text-primary px-2 py-0.5 rounded-full border border-primary">Participant Intake</span>
+                    </div>
+                    <p class="font-sans text-xs text-on-surface leading-snug">
+                        "Welcome new scholar! Create your account to explore and book laboratory experiments, EEG sessions, and cognitive trials."
+                    </p>
+                </div>
+                <div class="flex-shrink-0 flex items-center self-end sm:self-center">
+                    <span class="font-mono text-[10px] bg-surface-container border border-primary text-primary px-2 py-0.5 rounded shadow-[1.5px_1.5px_0px_#1d00ff] rotate-1 select-none font-bold">
+                        IRB #2026-REG
+                    </span>
+                </div>
+            </div>
         </div>
 
-        <div class="role-notice">
-            <span>ℹ️</span>
-            <span>Public registration creates a verified Student account. Teacher accounts are provisioned administratively.</span>
-        </div>
-
-        <form id="registration-form">
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName"
-                       placeholder="e.g. Jane Doe" required minlength="2"
-                       autocomplete="name">
+        <!-- Main Scientific Intake Dossier Notebook Card -->
+        <div class="w-full bg-paper-pure border-2 border-primary rounded-xl p-6 sm:p-8 shadow-[5px_5px_0px_#1d00ff] relative mb-6">
+            <!-- Pinned Washi Tape & Brass Paperclip -->
+            <div class="absolute -top-3.5 right-6 z-20 px-3 py-1 bg-secondary-container text-ink-deep font-mono text-[10px] uppercase font-bold border-2 border-primary shadow-[2px_2px_0px_#1d00ff] rotate-1 select-none">
+                INTAKE DOSSIER · COHORT 2026
+            </div>
+            <div class="absolute -top-4 left-6 z-10 text-primary select-none pointer-events-none">
+                <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'wght' 300;">attach_file</span>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email"
-                       placeholder="jane@university.edu" required
-                       autocomplete="email">
+            <!-- Notebook Header -->
+            <div class="mt-2 pb-4 border-b-2 border-primary/20">
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">PaperLab · Scholar Pool System</span>
+                    <span class="font-mono text-[10px] text-on-surface-variant flex items-center gap-1 font-bold">
+                        <span class="inline-block w-2 h-2 rounded-full bg-status-confirmed border border-primary animate-pulse"></span>
+                        PORTAL ACTIVE
+                    </span>
+                </div>
+                <h1 class="font-serif text-3xl font-bold italic text-primary mt-1">
+                    Create Student Account
+                </h1>
+                <p class="font-sans text-xs text-on-surface-variant mt-0.5">
+                    Set up your participant passport to claim course credits and reserve laboratory slots.
+                </p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password"
-                       placeholder="Minimum 8 characters" required minlength="8"
-                       autocomplete="new-password">
+            <!-- Role Notice Box -->
+            <div class="mt-4 mb-4 p-3 rounded-lg border border-primary bg-secondary-container/40 flex items-center gap-2 text-xs font-sans text-on-surface">
+                <span class="text-base">ℹ️</span>
+                <span>Public registration creates a verified Student account. Teacher accounts are provisioned administratively.</span>
             </div>
 
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword"
-                       placeholder="Re-enter your password" required minlength="8"
-                       autocomplete="new-password">
+            <!-- The Registration Form -->
+            <form id="registration-form" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label for="fullName" class="font-mono text-xs uppercase text-primary font-bold">
+                        Full Name <span class="text-status-rejected">*</span>
+                    </label>
+                    <input type="text" id="fullName" name="fullName"
+                           placeholder="e.g. Jane Doe" required minlength="2"
+                           autocomplete="name"
+                           class="w-full bg-surface-container-lowest border-2 border-primary px-3.5 py-2.5 text-sm text-on-surface rounded-full shadow-[2px_2px_0px_#1d00ff] focus:outline-none focus:bg-yellow-50 focus:shadow-[3px_3px_0px_#1d00ff] transition-all">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label for="email" class="font-mono text-xs uppercase text-primary font-bold">
+                        University Email Address <span class="text-status-rejected">*</span>
+                    </label>
+                    <div class="relative flex items-center">
+                        <input type="email" id="email" name="email"
+                               placeholder="jane@university.edu" required
+                               autocomplete="email"
+                               class="w-full bg-surface-container-lowest border-2 border-primary px-3.5 py-2.5 text-sm text-on-surface rounded-full shadow-[2px_2px_0px_#1d00ff] focus:outline-none focus:bg-yellow-50 focus:shadow-[3px_3px_0px_#1d00ff] transition-all">
+                        <span class="absolute right-3.5 material-symbols-outlined text-primary text-base">verified_user</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label for="password" class="font-mono text-xs uppercase text-primary font-bold">
+                        Password <span class="text-status-rejected">*</span>
+                    </label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Minimum 8 characters" required minlength="8"
+                           autocomplete="new-password"
+                           class="w-full bg-surface-container-lowest border-2 border-primary px-3.5 py-2.5 text-sm text-on-surface rounded-full shadow-[2px_2px_0px_#1d00ff] focus:outline-none focus:bg-yellow-50 focus:shadow-[3px_3px_0px_#1d00ff] transition-all tracking-wider">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label for="confirmPassword" class="font-mono text-xs uppercase text-primary font-bold">
+                        Confirm Password <span class="text-status-rejected">*</span>
+                    </label>
+                    <input type="password" id="confirmPassword" name="confirmPassword"
+                           placeholder="Re-enter your password" required minlength="8"
+                           autocomplete="new-password"
+                           class="w-full bg-surface-container-lowest border-2 border-primary px-3.5 py-2.5 text-sm text-on-surface rounded-full shadow-[2px_2px_0px_#1d00ff] focus:outline-none focus:bg-yellow-50 focus:shadow-[3px_3px_0px_#1d00ff] transition-all tracking-wider">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="register-button"
+                        class="w-full mt-2 py-3 px-6 rounded-full bg-secondary-fixed text-primary font-mono text-sm font-bold uppercase tracking-wider border-2 border-primary shadow-[3px_3px_0px_#1d00ff] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_#1d00ff] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span>Create Account</span>
+                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                </button>
+            </form>
+
+            <!-- Status message container for Selenium and user feedback -->
+            <p id="message" role="status" aria-live="polite" class="mt-4 p-3 rounded-xl border font-sans text-xs font-bold text-center" style="display: none;"></p>
+
+            <!-- Card Footer -->
+            <div class="mt-6 pt-4 border-t border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 bg-surface-container-low p-3.5 rounded-xl border border-primary shadow-[2px_2px_0px_#1d00ff]">
+                <div class="flex items-center gap-2 font-sans text-xs text-on-surface">
+                    <span>Already have an account?</span>
+                </div>
+                <a th:href="@{/login}" id="login-link" class="px-4 py-1.5 rounded-full bg-electric-cyan border border-primary text-primary font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_#1d00ff] hover:-translate-y-0.5 transition-all">
+                    Login ✎
+                </a>
             </div>
 
-            <button type="submit" id="register-button" class="btn-submit">Create Account</button>
-        </form>
-
-        <p id="message" role="status" aria-live="polite"></p>
-
-        <div class="auth-footer">
-            Already have an account?
-            <a th:href="@{/login}" id="login-link">Login</a>
-            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                <a th:href="@{/landing}" style="color: #93c5fd; font-size: 13px; font-weight: normal; text-decoration: none;">
-                    🔍 Explore Research Studies & Platform &rarr;
+            <!-- Public Explore Link -->
+            <div class="mt-4 text-center">
+                <a th:href="@{/landing}" class="font-mono text-xs text-primary font-bold hover:underline flex items-center justify-center gap-1">
+                    <span>🔍</span> Explore Research Studies &amp; Platform Catalog &rarr;
                 </a>
             </div>
         </div>
-    </div>
+
+        <!-- Ephemera Footer Badges -->
+        <div class="w-full flex flex-wrap items-center justify-between gap-3 px-2 text-on-surface-variant font-mono text-[11px] mb-4 font-bold">
+            <div class="flex items-center gap-2 bg-paper-pure border border-primary px-3 py-1 rounded-full shadow-[2px_2px_0px_#1d00ff] -rotate-1">
+                <span class="w-2 h-2 rounded-full bg-status-confirmed"></span>
+                <span>PARTICIPANT INTAKE ONLINE</span>
+            </div>
+            <div class="flex items-center gap-3 text-primary">
+                <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    256-BIT IRB VAULT
+                </span>
+            </div>
+        </div>
+    </main>
 
     <script>
         const form = document.getElementById('registration-form');
@@ -257,7 +203,7 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            messageEl.className = '';
+            messageEl.className = 'mt-4 p-3 rounded-xl border font-sans text-xs font-bold text-center';
             messageEl.textContent = '';
             messageEl.style.display = 'none';
 
@@ -323,7 +269,11 @@
 
         function showMessage(text, type) {
             messageEl.textContent = text;
-            messageEl.className = type;
+            if (type === 'success') {
+                messageEl.className = 'mt-4 p-3 rounded-xl border-2 border-status-confirmed bg-green-100 text-status-confirmed font-sans text-xs font-bold text-center success';
+            } else {
+                messageEl.className = 'mt-4 p-3 rounded-xl border-2 border-status-rejected bg-red-100 text-status-rejected font-sans text-xs font-bold text-center error';
+            }
             messageEl.style.display = 'block';
         }
     </script>

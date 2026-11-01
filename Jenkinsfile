@@ -155,7 +155,7 @@ echo.
                 bat '''
 docker rm -f %CONTAINER_NAME% >nul 2>&1
 docker pull %FULL_IMAGE%:%IMAGE_VERSION% || exit /b 1
-docker run -d --name %CONTAINER_NAME% --restart unless-stopped -p %HOST_PORT%:8080 -e SERVER_PORT=8080 -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/research_booking_system" --label version=%IMAGE_VERSION% %FULL_IMAGE%:%IMAGE_VERSION% || exit /b 1
+docker run -d --name %CONTAINER_NAME% --restart unless-stopped -p %HOST_PORT%:8081 -e SERVER_PORT=8081 -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/research_booking_system" --label version=%IMAGE_VERSION% %FULL_IMAGE%:%IMAGE_VERSION% || exit /b 1
 docker ps --filter name=%CONTAINER_NAME%
 '''
             }

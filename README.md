@@ -1,194 +1,313 @@
-# Research Experiment Booking System
+﻿# PaperLab — Research Experiment Booking System
 
-A web-based application developed using Spring Boot and MySQL to manage research experiments, laboratory time slots, booking requests, approvals, cancellations, and booking history.
+> A full-stack **Spring Boot + MySQL** web application for managing university research experiment schedules, laboratory time slots, student booking requests, approvals, cancellations, and booking history.
+> The project ships with a restyled **PaperLab** front-end, REST APIs, Selenium UI tests, a Jenkins CI/CD pipeline, and Docker-based deployment.
 
-The project includes REST APIs, a web UI, automated Selenium tests, Jenkins CI/CD integration, Nginx reverse proxy support, and Docker-based deployment.
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Technology Stack](#technology-stack)
+3. [System Architecture](#system-architecture)
+4. [Prerequisites](#prerequisites)
+5. [Quick Start — Choose Your Method](#quick-start--choose-your-method)
+   - [Method A — Run Locally (JAR)](#method-a--run-locally-jar)
+   - [Method B — Run with Docker Compose](#method-b--run-with-docker-compose)
+   - [Method C — Jenkins CI/CD Pipeline](#method-c--jenkins-cicd-pipeline-docker-cd)
+6. [Application Pages and URLs](#application-pages-and-urls)
+7. [Demo Login Credentials](#demo-login-credentials)
+8. [Database Setup](#database-setup)
+9. [REST API Reference](#rest-api-reference)
+10. [Booking Workflow](#booking-workflow)
+11. [Running Tests](#running-tests)
+12. [Everyday Docker Commands](#everyday-docker-commands)
+13. [Troubleshooting](#troubleshooting)
+14. [Jenkins CI/CD Details](#jenkins-cicd-details)
+15. [Selenium UI Testing](#selenium-ui-testing)
+16. [Git Workflow](#git-workflow)
+17. [Future Enhancements](#future-enhancements)
+
+---
 
 ## Project Overview
 
-Research laboratories need an organized way to manage experiment schedules, laboratory availability, and student booking requests. Manual scheduling can cause conflicts and make it difficult to track bookings.
+Research laboratories need an organised way to manage experiment schedules, laboratory availability, and student booking requests. Manual scheduling causes conflicts and makes it hard to track who is booked where.
 
-The Research Experiment Booking System provides a centralized application for viewing experiments, registering students, requesting bookings, managing booking statuses, and recording booking history.
+**PaperLab** provides a centralised application for:
 
-## Objectives
+- Viewing active experiments and available time slots.
+- Registering students and submitting booking requests.
+- Confirming, rejecting, or cancelling bookings.
+- Recording a full history of booking status changes.
+- Teacher dashboard for managing experiments and approvals.
 
-- Centralize research experiment and laboratory slot information.
-- Display experiment details and available time slots.
-- Allow students to register and submit booking requests.
-- Support booking confirmation, rejection, and cancellation.
-- Maintain a history of booking status changes.
-- Store application data in a MySQL relational database.
-- Automate build and testing through Jenkins.
-- Support deployment through Docker and Nginx.
-
-## Features
-
-### Experiment Management
-- Retrieve active experiments.
-- View experiment details.
-- Retrieve experiment time slots.
-- View upcoming slots.
-
-### Booking Management
-- Submit booking requests.
-- Retrieve booking details and user bookings.
-- Confirm or reject pending booking requests.
-- Cancel eligible bookings.
-- Validate future slots and booking capacity.
-
-### Booking History
-- Record previous and new booking statuses.
-- Record the user associated with a status change.
-- Maintain timestamps and remarks.
-
-### User Management and Security
-- Register students through the registration API.
-- Authenticate protected requests using Spring Security HTTP Basic authentication.
-- Require authentication for protected endpoints.
-
-**Security note:** Authentication and role-based authorization are different. Teacher-only operations must be protected by backend role checks before the application can be considered fully role-secured.
+---
 
 ## Technology Stack
 
 | Component | Technology |
 |---|---|
-| Programming language | Java |
-| Backend framework | Spring Boot |
-| Build tool | Maven |
-| Database | MySQL |
-| Data persistence | Spring Data JPA |
-| ORM | Hibernate |
+| Language | Java 21 |
+| Backend framework | Spring Boot 4.x |
+| Build tool | Maven (Maven Wrapper included) |
+| Database | MySQL (XAMPP, port 3307) |
+| Data persistence | Spring Data JPA / Hibernate |
 | Security | Spring Security |
-| API style | REST API |
-| Application server | Embedded Apache Tomcat |
-| Reverse proxy | Nginx |
-| Containerization | Docker |
-| CI/CD | Jenkins |
-| Automated UI testing | Selenium |
-| Version control | Git |
-| Repository hosting | GitHub |
-| Development environment | Windows, PowerShell |
+| Templating | Thymeleaf |
+| Front-end styling | Tailwind CSS (CDN) + Custom CSS |
+| Application server | Embedded Apache Tomcat (port 8081) |
+| Containerisation | Docker + Docker Compose |
+| CI/CD | Jenkins (port 8080) |
+| Automated UI tests | Selenium WebDriver |
+| Version control | Git / GitHub |
+| Dev environment | Windows 11, PowerShell |
+
+---
 
 ## System Architecture
 
-The application follows a layered architecture:
-
-1. **Controller layer:** Handles HTTP requests and responses.
-2. **Service layer:** Implements application and booking business logic.
-3. **Repository layer:** Accesses data through Spring Data JPA.
-4. **Entity layer:** Represents users, experiments, slots, and bookings.
-5. **Database layer:** Stores application records in MySQL.
-
-The application can be accessed directly through Spring Boot, through Nginx, or through the Docker CD deployment, depending on which services are running.
-
-## Application URLs and Deployment
-
-Use the URL that corresponds to the deployment you want to access.
-
-| Deployment | URL | Description |
-|---|---|---|
-| Docker App (Recommended) | `http://localhost:8081/` | Opens the auth login page served by the Dockerized Spring Boot application. |
-| Direct Spring Boot | `http://localhost:8081/login` | Opens the UI served by the local Spring Boot application directly. |
-| Nginx reverse proxy | `http://localhost:8082/ui` | Opens the UI through Nginx, which forwards requests to the Spring Boot application. |
-| Docker CD deployment | `http://localhost:9091/ui` | Opens the UI served by the deployed CD Docker container (`research-booking-cd`). |
-| Jenkins | `http://localhost:8080` | Opens Jenkins to view pipeline builds, test results, and deployment logs. |
-
-**Important:** These URLs work only when their corresponding services are running.
-
-### Docker App Access (Port 8081)
-
-The application can be run directly inside Docker using Docker Compose:
-
-```powershell
-# 1. Package the application JAR
-cd research-booking-system
-.\mvnw.cmd clean package -DskipTests
-cd ..
-
-# 2. Build the Docker image and start the container in background
-docker compose up -d --build
-
-# 3. Stream live application logs
-docker logs -f research-booking-app
+```
+Browser
+   |
+   v
+Spring Boot — Tomcat :8081
+   |-- SecurityConfig     (Spring Security — form login, RBAC)
+   |-- Controllers        (HTTP request/response handling)
+   |-- Services           (Business logic — bookings, experiments)
+   |-- Repositories       (Spring Data JPA)
+   `-- Entities           (User, Experiment, TimeSlot, Booking, BookingHistory)
+         |
+         v
+    MySQL :3307
+    (research_booking_system)
 ```
 
-*(See [Running with Docker (Recommended)](#running-with-docker-recommended) below for prerequisites, MySQL setup, and everyday Docker commands.)*
-
-- **Sign In Page:** `http://localhost:8081/` or `http://localhost:8081/login`
-- **Sign Up Page:** `http://localhost:8081/signup`
-- **Student Dashboard:** `http://localhost:8081/dashboard/student` (after login)
-- **Teacher Dashboard:** `http://localhost:8081/dashboard/teacher` (after login)
-
-### Direct Spring Boot Access
-
-Start the application locally without Docker:
-
-```powershell
-cd research-booking-system
-.\mvnw.cmd spring-boot:run
-```
-
-When startup succeeds and the application is listening on port `8081`, open `http://localhost:8081/login`.
-
-### Nginx Reverse Proxy Access
-
-Nginx is configured to receive requests on port `8082` and forward them to the Spring Boot application on port `8081`.
-
-Open:
-
-```text
-http://localhost:8082/ui
-```
-
-The Spring Boot application must be running on the configured upstream port for the proxied UI to work.
-
-### Docker CD Deployment Access (Port 9091)
-
-The Jenkins CD deployment uses the Docker image and container configuration established by the deployment pipeline.
-
-The deployed container is named `research-booking-cd` and is exposed on host port `9091`.
-
-Open:
-
-```text
-http://localhost:9091/ui
-```
+---
 
 ## Prerequisites
 
-Install or configure:
+| Tool | Minimum Version | How to verify |
+|---|---|---|
+| Java JDK | 21 | `java -version` |
+| Maven | 3.9+ (or use `mvnw.cmd`) | `mvn -version` |
+| MySQL | 8.0+ | XAMPP Control Panel |
+| XAMPP | Any recent | Open XAMPP Control Panel |
+| Git | Any | `git --version` |
+| Docker Desktop | 24+ | `docker --version` |
+| Jenkins | LTS | `http://localhost:8080` |
 
-- A compatible Java Development Kit.
-- MySQL Server or XAMPP with MySQL enabled.
-- Git.
-- PowerShell or another terminal.
-- Docker Desktop when building or running containers locally.
-- Jenkins for CI/CD.
-- Nginx if using the reverse proxy.
-- The Maven Wrapper included in the repository.
+> **MySQL port:** This project uses XAMPP MySQL on **port 3307** (not the default 3306).
 
-## Local Installation and Setup
+---
 
-### 1. Clone the repository
+## Quick Start — Choose Your Method
+
+| Method | Best for | App URL |
+|---|---|---|
+| **A — Local JAR** | Development / quick testing | `http://localhost:8081` |
+| **B — Docker Compose** | Production-like local testing | `http://localhost:8081` |
+| **C — Jenkins CI/CD** | Full automated pipeline demo | `http://localhost:9091` |
+
+---
+
+## Method A — Run Locally (JAR)
+
+### Step 1 — Start MySQL via XAMPP
+
+1. Open **XAMPP Control Panel**.
+2. Click **Start** next to **MySQL**.
+3. Confirm MySQL shows green / Running on port **3307**.
+
+### Step 2 — Create the database
+
+```sql
+CREATE DATABASE IF NOT EXISTS research_booking_system;
+```
+
+### Step 3 — Clone the repository
 
 ```powershell
 git clone https://github.com/swapnilsupe01/Research-Experiment-Booking.git
-cd Research-Experiment-Booking/research-booking-system
+cd Research-Experiment-Booking
 ```
 
-If the application root is directly inside the cloned repository, use the actual directory created by Git instead of assuming a nested folder exists.
+### Step 4 — Build the JAR
 
-### 2. Configure MySQL
-
-Create the database if it does not already exist:
-
-```sql
-CREATE DATABASE research_booking_system;
+```powershell
+cd research-booking-system
+.\mvnw.cmd clean package -DskipTests
 ```
 
-Configure `src/main/resources/application.properties` for your environment.
+Output JAR location:
+```
+research-booking-system/target/research-booking-system-0.0.1-SNAPSHOT.jar
+```
 
-Example:
+### Step 5 — Run the application
+
+```powershell
+java -jar target\research-booking-system-0.0.1-SNAPSHOT.jar ^
+  --spring.datasource.url=jdbc:mysql://127.0.0.1:3307/research_booking_system ^
+  --spring.datasource.username=root ^
+  --spring.datasource.password= ^
+  --server.port=8081
+```
+
+> Replace `--spring.datasource.password=` with your MySQL root password if set.
+
+### Step 6 — Wait for this log line
+
+```
+Started ResearchBookingSystemApplication in X.XXX seconds
+```
+
+### Step 7 — Open the application
+
+| Page | URL |
+|---|---|
+| Landing / Hero | http://localhost:8081/landing |
+| Student Login | http://localhost:8081/login |
+| Teacher Login | http://localhost:8081/login?portal=teacher |
+| Student Sign Up | http://localhost:8081/signup |
+| Student Dashboard | http://localhost:8081/dashboard/student |
+| Teacher Dashboard | http://localhost:8081/dashboard/teacher |
+
+---
+
+## Method B — Run with Docker Compose
+
+### Step 1 — Start MySQL via XAMPP (required first)
+
+Follow Method A Step 1. MySQL must be running before Docker starts.
+
+### Step 2 — Build the JAR
+
+```powershell
+cd research-booking-system
+.\mvnw.cmd clean package -DskipTests
+cd ..
+```
+
+### Step 3 — Build and start the Docker container
+
+Run from the **project root**:
+
+```powershell
+docker compose up -d --build
+```
+
+Expected output:
+```
+[+] Building ... done
+[+] Running 1/1
+ v Container research-booking-app  Started
+```
+
+### Step 4 — Verify the container
+
+```powershell
+docker ps --filter "name=research-booking-app"
+docker logs -f research-booking-app
+```
+
+Wait for `Started ResearchBookingSystemApplication`. Press `Ctrl+C` to stop log streaming.
+
+### Step 5 — Open the application
+
+`http://localhost:8081/landing`
+
+### Rebuild after any code changes
+
+```powershell
+docker compose down
+cd research-booking-system
+mvn clean package -DskipTests
+cd ..
+docker compose up -d --build
+```
+
+---
+
+## Method C — Jenkins CI/CD Pipeline (Docker CD)
+
+Jenkins runs the full pipeline automatically: checkout, build, test, Selenium, Docker build, push to registry, deploy, verify.
+
+The deployed container is exposed on host port **9091**.
+
+### Step 1 — Open Jenkins
+
+`http://localhost:8080`
+
+### Step 2 — Create the pipeline job
+
+1. **New Item** → **Pipeline** → name: `Research-Experiment-Booking` → **OK**
+2. **General** → check **This project is parameterized**
+3. Add **String Parameter**:
+   - Name: `HOST_PORT`
+   - Default Value: `9091`
+   - Description: `Host port for the Docker container`
+4. **Build Triggers** → check **Poll SCM** → Schedule: `H/5 * * * *`
+5. **Pipeline** → **Definition**: `Pipeline script from SCM`
+   - SCM: `Git`
+   - Repository URL: `https://github.com/swapnilsupe01/Research-Experiment-Booking.git`
+   - Branch: `*/main`
+   - Script Path: `Jenkinsfile`
+6. **Save**
+
+### Step 3 — Run the pipeline
+
+Click **Build with Parameters** → confirm `HOST_PORT = 9091` → **Build**
+
+### Step 4 — Pipeline stages
+
+| Stage | What it does |
+|---|---|
+| Checkout | Pulls latest `main` from GitHub |
+| Build and Test | `mvn clean verify` — compiles + all unit/integration tests |
+| Selenium Continuous Tests | Starts JAR on port 8083, runs `SeleniumJourneyChecks`, stops JAR |
+| Package | `mvn package -DskipTests` — final deployment JAR |
+| Version | Tags image as `1.0.<BUILD_NUMBER>` |
+| Docker Build | Builds image, tags in local registry `localhost:5000` |
+| Push to Registry | Pushes to local Docker registry on port 5000 |
+| Deploy Container | Removes old container, starts `research-booking-cd` on `9091:8081` |
+| Verify Container | Polls `/api/experiments` and `/ui` until HTTP 200, writes `cd-evidence.txt` |
+
+### Step 5 — Access the deployed app
+
+```
+http://localhost:9091/landing
+http://localhost:9091/login
+```
+
+---
+
+## Application Pages and URLs
+
+| Page | Path | Login required |
+|---|---|---|
+| Landing / Hero | `/landing` or `/` | No |
+| Student Login | `/login` | No |
+| Teacher Login | `/login?portal=teacher` | No |
+| Student Registration | `/signup` | No |
+| Student Dashboard | `/dashboard/student` | Yes — STUDENT |
+| Teacher Dashboard | `/dashboard/teacher` | Yes — TEACHER |
+| Experiments API | `/api/experiments` | No |
+
+---
+
+## Demo Login Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Teacher | `teacher@university.edu` | `TeacherPass123!` |
+| Student | Register at `/signup` | Your chosen password |
+
+---
+
+## Database Setup
+
+### application.properties (already configured)
 
 ```properties
 spring.application.name=research-booking-system
@@ -206,397 +325,221 @@ spring.jpa.open-in-view=false
 server.port=8081
 ```
 
-Adjust the database port and credentials to match your MySQL installation.
+> `ddl-auto=validate` checks the schema but does NOT create tables automatically.
 
-The `ddl-auto=validate` setting checks the existing database schema. It does not automatically create missing tables. The required schema must exist before startup.
-
-Do not commit production credentials to GitHub.
-
-### 3. Build and test
-
-```powershell
-.\mvnw.cmd clean test
-```
-
-### 4. Package the application
-
-```powershell
-.\mvnw.cmd package
-```
-
-### 5. Start the application
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-After successful startup, open `http://localhost:8081/login`.
-
----
-
-## Running with Docker (Recommended)
-
-The project uses a **two-step** Docker setup:
-- **MySQL** runs locally via **XAMPP** on port `3307` (host machine)
-- **Spring Boot app** runs inside a **Docker container** on port `8081`
-
-The Docker container connects to your host's MySQL through `host.docker.internal`.
-
----
-
-### Prerequisites
-
-Before running with Docker, make sure you have:
-
-| Requirement | How to verify |
-|---|---|
-| Docker Desktop installed & running | `docker --version` |
-| XAMPP installed with MySQL enabled | Open XAMPP Control Panel |
-| Java 21 JDK installed | `java -version` |
-| Maven installed | `mvn -version` |
-
----
-
-### Step 1 — Start XAMPP MySQL
-
-1. Open **XAMPP Control Panel**
-2. Click **Start** next to **MySQL**
-3. Confirm MySQL shows **green / Running** on port **3307**
-4. Ensure the database exists:
+### Required SQL (run once)
 
 ```sql
--- Open phpMyAdmin at http://localhost/phpmyadmin or use MySQL CLI
 CREATE DATABASE IF NOT EXISTS research_booking_system;
-```
-
-> ⚠️ **MySQL must be running BEFORE starting Docker.** The Spring Boot container connects to your host MySQL through port 3307.
-
----
-
-### Step 2 — Build the JAR
-
-The Dockerfile copies a pre-built JAR. Build it first from inside the `research-booking-system` folder:
-
-```powershell
-# Run from: C:\DevTools\Research-Experiment-Booking\research-booking-system
-.\mvnw.cmd clean package -DskipTests
-# Or if Maven is installed globally:
-# mvn clean package -DskipTests
-```
-
-This creates:
-```
-research-booking-system/target/research-booking-system-0.0.1-SNAPSHOT.jar
+-- Required tables: users, experiments, time_slots, bookings, booking_history
 ```
 
 ---
 
-### Step 3 — Build & Start the Docker Container
+## REST API Reference
 
-Run from the **project root** (`C:\DevTools\Research-Experiment-Booking`):
-
-```powershell
-# Build the Docker image and start the container in background
-docker compose up -d --build
-```
-
-Expected output:
-```
-[+] Building ... (image built)
-[+] Running 1/1
- ✔ Container research-booking-app  Started
-```
-
----
-
-### Step 4 — Verify the Container is Running
-
-```powershell
-# Check container status (should show "Up")
-docker ps --filter "name=research-booking-app"
-
-# Stream live application logs (watch for startup success message)
-docker logs -f research-booking-app
-```
-
-Look for this line in the logs to confirm successful startup:
-```
-Started ResearchBookingSystemApplication in X.XXX seconds (process running for X.XXX)
-```
-
-Press `Ctrl+C` to stop streaming logs (container keeps running).
+| Method | Endpoint | Auth | Purpose |
+|---|---|---|---|
+| POST | `/api/users/register` | None | Register a new student |
+| GET | `/api/experiments` | None | List active experiments |
+| GET | `/api/experiments/{id}` | None | Experiment details |
+| GET | `/api/experiments/{id}/slots` | None | Slots for an experiment |
+| GET | `/api/experiments/slots/upcoming` | Any | Upcoming slots |
+| POST | `/api/bookings` | STUDENT | Submit booking request |
+| GET | `/api/bookings/user/{userId}` | STUDENT | User's bookings |
+| GET | `/api/bookings/{id}` | STUDENT | Single booking |
+| PUT | `/api/bookings/{id}/status` | TEACHER | Confirm or reject |
+| PUT | `/api/bookings/{id}/cancel` | STUDENT | Cancel booking |
+| GET | `/api/bookings/{id}/history` | STUDENT | Status history |
 
 ---
-
-### Step 5 — Access the Application
-
-Open your browser and navigate to:
-
-| Page | URL |
-|---|---|
-| 🔐 Login | [http://localhost:8081/login](http://localhost:8081/login) |
-| 📝 Sign Up | [http://localhost:8081/signup](http://localhost:8081/signup) |
-| 🎓 Student Dashboard | [http://localhost:8081/dashboard/student](http://localhost:8081/dashboard/student) |
-| 👨‍🏫 Teacher Dashboard | [http://localhost:8081/dashboard/teacher](http://localhost:8081/dashboard/teacher) |
-
-#### Demo Login Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| 👨‍🏫 Teacher | `teacher@university.edu` | `TeacherPass123!` |
-| 🎓 Student | Register via `/signup` | (your chosen password) |
-
----
-
-### Everyday Docker Commands
-
-| Task | Command |
-|---|---|
-| **Start** the container | `docker compose up -d` |
-| **Stop** the container | `docker compose down` |
-| **Restart** the container | `docker compose restart app` |
-| **View live logs** | `docker logs -f research-booking-app` |
-| **Rebuild** after code changes | `docker compose up -d --build` |
-| **Check status** | `docker ps --filter "name=research-booking-app"` |
-| **Remove container** (clean start) | `docker rm -f research-booking-app` |
-
----
-
-### Rebuilding After Code Changes
-
-Whenever you change Java source code, repeat these steps:
-
-```powershell
-# 1. Stop the running container
-docker compose down
-
-# 2. Rebuild the JAR (from research-booking-system folder)
-cd research-booking-system
-mvn clean package -DskipTests
-cd ..
-
-# 3. Rebuild Docker image and start fresh
-docker compose up -d --build
-```
-
----
-
-### Troubleshooting
-
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| Container exits immediately | MySQL not running | Start XAMPP MySQL first |
-| `name "/research-booking-app" is already in use` | Old container exists | Run `docker rm -f research-booking-app` then retry |
-| `Unable to determine Dialect` error in logs | DB connection failed | Verify MySQL is on port 3307 and `research_booking_system` DB exists |
-| Login fails for teacher | Account not in DB | Check DB has teacher record with `ACTIVE` status and role `TEACHER` |
-| Port 8081 already in use | Another process on 8081 | Run `netstat -ano \| findstr :8081` to find and stop it |
-| Page not loading | Container not started | Run `docker ps` — if no container, run `docker compose up -d` |
-
----
-
-
-
-## REST API Endpoints
-
-The following endpoints are implemented in the current application.
-
-| Method | Endpoint | Purpose |
-|---|---|---|
-| POST | `/api/users/register` | Register a student |
-| GET | `/api/experiments` | Retrieve active experiments |
-| GET | `/api/experiments/{experimentId}` | Retrieve experiment details |
-| GET | `/api/experiments/{experimentId}/slots` | Retrieve slots for an experiment |
-| GET | `/api/experiments/slots/upcoming` | Retrieve upcoming slots |
-| POST | `/api/bookings` | Submit a booking request |
-| GET | `/api/bookings/user/{userId}` | Retrieve bookings for a user |
-| GET | `/api/bookings/{bookingId}` | Retrieve a booking |
-| PUT | `/api/bookings/{bookingId}/status` | Confirm or reject a pending booking |
-| PUT | `/api/bookings/{bookingId}/cancel` | Cancel an eligible booking |
-| GET | `/api/bookings/{bookingId}/history` | Retrieve booking status history |
-
-Protected endpoints require authentication according to the current Spring Security configuration. Authentication does not automatically enforce teacher-specific permissions.
 
 ## Booking Workflow
 
-A typical booking lifecycle is:
-
-```text
+```
 Select Experiment
-       |
-       v
+      |
+      v
 Select Available Slot
-       |
-       v
-Submit Booking Request
-       |
-       v
-    PENDING
-       |
-       +----------> CONFIRMED
-       |                 |
-       |                 v
-       |             CANCELLED
-       |
-       +----------> REJECTED
+      |
+      v
+Submit Booking  -->  PENDING
+                        |
+          +-------------+-------------+
+          |                           |
+          v                           v
+     CONFIRMED                    REJECTED
+          |
+          v
+     CANCELLED
 ```
 
-The service validates whether the slot is in the future and checks its confirmed-booking capacity. Booking history records status transitions performed by the application.
+Rules enforced by the service:
+- Slot must be in the future.
+- Slot must have remaining capacity.
+- No duplicate booking for the same slot.
 
-## Jenkins CI/CD Integration
+---
 
-Jenkins automates the build, test, and deployment workflow.
+## Running Tests
 
-Jenkins URL:
+### All unit and integration tests
 
-```text
-http://localhost:8080
+```powershell
+cd research-booking-system
+.\mvnw.cmd clean test
 ```
 
-The project uses the GitHub repository:
-
-```text
-https://github.com/swapnilsupe01/Research-Experiment-Booking.git
+Expected:
+```
+[INFO] Tests run: 57, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
 ```
 
-The configured SCM polling schedule is:
+### Selenium UI tests only
 
-```text
+```powershell
+# Terminal 1 — start app on port 8083
+java -jar target\research-booking-system-0.0.1-SNAPSHOT.jar --server.port=8083
+
+# Terminal 2 — run Selenium tests
+.\mvnw.cmd -Dtest=SeleniumJourneyChecks test
+```
+
+Reports: `target/surefire-reports/`
+Screenshots: `target/selenium-screenshots/`
+
+---
+
+## Everyday Docker Commands
+
+```powershell
+# Start container
+docker compose up -d
+
+# Stop and remove container
+docker compose down
+
+# Restart app container
+docker compose restart app
+
+# View live logs
+docker logs -f research-booking-app
+
+# Rebuild after code changes
+docker compose up -d --build
+
+# List project containers
+docker ps --filter "name=research-booking"
+
+# Force remove stuck container
+docker rm -f research-booking-app
+
+# View local registry
+curl http://localhost:5000/v2/_catalog
+```
+
+---
+
+## Troubleshooting
+
+| Problem | Likely cause | Fix |
+|---|---|---|
+| `Unable to determine Dialect` | MySQL not running or wrong port | Start XAMPP MySQL on port 3307 |
+| `Port 8081 already in use` | Old process running | `netstat -ano \| findstr :8081` then kill PID |
+| `Port 9091 already in use` | Old CD container | `docker rm -f research-booking-cd` |
+| Container exits immediately | MySQL not reachable | Start XAMPP MySQL before Docker |
+| `Container name already in use` | Old container not cleaned | `docker rm -f research-booking-app` |
+| Teacher login fails | No teacher DB record | Insert user with `role=TEACHER`, `account_status=ACTIVE` |
+| Hero illustration not visible | Old JAR without image bundled | `mvn package -DskipTests` then restart app |
+| Page 9091 not loading | CD container not running | Run Jenkins Build with Parameters |
+| Docker Build fails in Jenkins | Docker Desktop not running | Start Docker Desktop, retry build |
+
+---
+
+## Jenkins CI/CD Details
+
+### Port reference
+
+| Service | Port |
+|---|---|
+| Jenkins | 8080 |
+| Spring Boot (app internal) | 8081 |
+| Selenium test run | 8083 |
+| Local Docker registry | 5000 |
+| CD deployed container (host) | 9091 |
+
+### SCM auto-trigger
+
+```
 H/5 * * * *
 ```
 
-This schedules repository polling approximately every five minutes, with Jenkins distributing the exact minute using its hash-based scheduling.
+Push any commit to `main` — Jenkins detects it within 5 minutes and runs the full pipeline.
 
-### Jenkins SCM Polling Test
+### CD evidence file sample
 
-The purpose of this test is to verify that Jenkins detects changes in the GitHub repository and starts the configured pipeline.
-
-#### Step 1: Make a small test change
-
-Edit a harmless README line, for example:
-
-```text
-Documentation updated to verify Jenkins SCM polling.
+```
+Build 12 | Version 1.0.12 | Commit a1b2c3d | 2026-10-26T18:10:00Z
+---- docker ps ----
+research-booking-cd   Up 2 minutes   0.0.0.0:9091->8081/tcp
+---- HTTP checks ----
+api=200 ui=200
 ```
 
-#### Step 2: Commit and push the change
-
-```powershell
-git add README.md
-git commit -m "docs: verify Jenkins SCM polling"
-git push origin main
-```
-
-Run these commands from the repository's Git working directory.
-
-#### Step 3: Check Jenkins
-
-1. Open `http://localhost:8080`.
-2. Open the `Research-Experiment-Booking` Jenkins job.
-3. Check the build history after the polling interval.
-4. Open the new build and inspect **Console Output**.
-5. Verify that Jenkins detected the repository change and started the pipeline.
-
-If the build does not start, check the SCM polling configuration, repository URL, branch configuration, Jenkins credentials, and console logs.
-
-#### Step 4: Verify the pipeline result
-
-Confirm the following, where configured in the pipeline:
-
-- The repository change was detected.
-- The source code was checked out.
-- Maven build and test stages completed.
-- Selenium test reports were published.
-- Deployment proceeded only after required tests passed.
-- The deployment verification stage completed successfully.
-
-A successful manual build alone does not prove SCM polling works. The test must demonstrate that a pushed repository change is detected and triggers a build.
+---
 
 ## Selenium UI Testing
 
-The Selenium suite checks important UI workflows, including:
+The `SeleniumJourneyChecks` class verifies:
+- Experiment cards render on the page.
+- Experiment details and slot data load.
+- Registration form validation works.
+- Student registration completes successfully.
 
-- Experiment cards displayed on the dashboard.
-- Experiment details and slot information loaded.
-- Required registration fields validated.
-- Student registration completed successfully.
+### Locators used (do not rename)
 
-Run the Selenium suite locally with:
+| CSS selector | Element |
+|---|---|
+| `#experiments article.experiment-card` | Experiment card |
+| `#experiments article.experiment-card button` | Book Slot button |
+| `#details h3` | Experiment title in detail view |
 
-```powershell
-mvn "-Dtest=SeleniumJourneyChecks" test
-```
-
-The default Selenium base URL is `http://localhost:8083/ui`, as configured in the test class. Ensure the application under test is available at that URL before running the suite.
-
-The test reports are generated under:
-
-```text
-target/surefire-reports/
-```
-
-Failure screenshots, when generated, are saved under:
-
-```text
-target/selenium-screenshots/
-```
-
-The Jenkins pipeline should publish the JUnit XML reports and stop deployment when required tests fail.
+---
 
 ## Git Workflow
 
-Suggested branch naming conventions:
+```powershell
+git switch -c feature/my-feature
+git add .
+git commit -m "feat: describe the change"
+git push -u origin feature/my-feature
+```
 
-| Type | Example |
+| Branch type | Example |
 |---|---|
 | Feature | `feature/booking-history` |
 | Bug fix | `fix/slot-validation` |
 | Documentation | `docs/update-readme` |
-| Tests | `test/booking-workflow` |
+| Tests | `test/selenium-registration` |
 
-Example:
-
-```powershell
-git switch -c docs/update-readme
-git add README.md
-git commit -m "docs: update deployment and Jenkins instructions"
-git push -u origin docs/update-readme
-```
-
-Use the repository's normal review and merge process before merging changes into `main`.
-
-Ansible Configuration Management (Task 14).
-1. Task 14 Overview — Configuration management using Ansible on Ubuntu (WSL).
-2. Tools Used — Ubuntu/WSL, Ansible, localhost, sudo, and systemd.
-3. Directory Structure — Task14-Configuration/ containing:
-   - playbook.yml — Ansible automation.
-   - inventory.ini — Target host configuration.
-   - execution-log.txt — Successful execution log.
-4. Ubuntu Setup Steps — Commands to navigate to the project directory and verify Ansible installation.
-5. Ansible Connectivity Test — Verify the localhost connection using ansible -i inventory.ini localhost -m ping.
-6. Playbook Execution — Run the playbook using ansible-playbook -i inventory.ini playbook.yml --ask-become-pass.
-7. Execution Logging — Save output using tee execution-log.txt.
-8. Configuration Verification — Display /etc/research-booking/application.conf and verify its contents.
-9. Service Verification — Confirm that the cron service is active using systemctl is-active cron.
-10. User and Directory Verification — Check the researchapp user and the application, configuration, and log directories.
-11. Execution Results — Document ok=7, changed=0, unreachable=0, and failed=0.
-12. College Submission Checklist — Include the three required files and screenshots of the successful execution.
+---
 
 ## Future Enhancements
 
-- Complete role-based authorization for student and teacher operations.
-- Add teacher experiment and slot management screens.
-- Improve booking validation and error handling.
-- Expand automated API and UI tests.
-- Add OpenAPI/Swagger documentation.
-- Improve handling of concurrent booking requests.
-- Automate configuration management for deployment prerequisites.
+- Complete role-based authorisation for all teacher operations.
+- Add teacher screens for creating and managing experiments and slots.
+- Improve booking validation and concurrent request handling.
+- Expand automated API and UI test coverage.
+- Add OpenAPI / Swagger documentation.
+- Automate DB migrations with Flyway or Liquibase.
 
-## License
-
-No license has been specified yet. Add an appropriate `LICENSE` file if the project is intended for public reuse.
+---
 
 ## Author
 
-Research Experiment Booking System — academic software project.
+**Swapnil Supe** — PaperLab Research Experiment Booking System
 
-Refer to the repository's documentation, Jenkins build history, and GitHub Issues for project setup and development tasks.
+Academic full-stack project · Spring Boot · MySQL · Docker · Jenkins · Selenium
+
+Repository: https://github.com/swapnilsupe01/Research-Experiment-Booking
